@@ -573,25 +573,30 @@ function generatePortfolioResponse(
   const q = normalizeText(query);
 
   // 1. High Risk / Critical Projects
-  if (q.includes('critical') || q.includes('high risk') || q.includes('top risk')) {
+  if (
+    q.includes('critical') ||
+    q.includes('high risk') ||
+    q.includes('top risk') ||
+    q.includes('highest risk') ||
+    q.includes('highest') ||
+    q.includes('at risk') ||
+    q.includes('riskiest') ||
+    q.includes('risk list')
+  ) {
     const criticalProjects = [...projects]
       .sort((a, b) => b.overallRiskScore - a.overallRiskScore)
       .slice(0, 5);
 
-    const reply = `### 🔴 Top Critical Infrastructure Projects (MoSPI NirmaanX Monitoring)
+    const reply = `### 🔴 Current Highest-Risk Projects (MoSPI Infrastructure Monitoring)
 
-Based on our multi-factor predictive risk model, the top critical projects requiring immediate intervention are:
+| Rank | Project Code | Project Name | Sector | Risk Score | Risk Category | Primary Delay & Cost Drivers |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+${criticalProjects.map((p, i) => `| ${i + 1} | \`${p.projectCode}\` | **${p.name}** | ${p.sector} | **${p.overallRiskScore}/100** | ${getRiskEmoji(p.riskLevel)} ${p.riskLevel} | ${p.detectedIssue.replace(/\|/g, '-')} (Delay: +${p.delayMonths}m, Escalation: +${p.costOverrunPercent}%) |`).join('\n')}
 
-${criticalProjects.map((p, i) => `
-${i + 1}. **${p.name}** (\`${p.projectCode}\`)
-   - **Risk Score**: ${getRiskEmoji(p.riskLevel)} **${p.overallRiskScore}/100 (${p.riskLevel})**
-   - **Ministry**: ${p.ministry} | **State**: ${p.state}
-   - **Delay**: **+${p.delayMonths} months** | **Cost Overrun**: **+₹${p.costOverrunAmount.toLocaleString('en-IN')} Cr (+${p.costOverrunPercent}%)**
-   - **Issue**: ${p.detectedIssue}
-   - **Action**: ${p.recommendedIntervention}
-`).join('\n')}
+#### Key Risk Drivers & Interventions Across Portfolio:
+${criticalProjects.slice(0, 3).map((p, idx) => `- **${p.name}** (${p.overallRiskScore}/100): ${p.shortIssuesSummary || p.detectedIssue} → *Action*: ${p.recommendedIntervention}`).join('\n')}
 
-*Ask me about any of these project codes (e.g., \`${criticalProjects[0]?.projectCode}\`) for deep root-cause analysis!*`;
+*Send any project code (e.g. \`${criticalProjects[0]?.projectCode}\`) for deep root-cause analysis and milestone projections!*`;
 
     return { reply, source: 'NirmaanX Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
   }
@@ -752,8 +757,10 @@ GROUND TRUTH DATA FOR PROJECT:
 - Expected Mitigation Impact: ${project.expectedMitigationImpact}
 
 INSTRUCTIONS:
-1. Answer the user's specific query directly (e.g. if they ask when it started, state the start and sanction dates; if they ask why at risk, detail the root causes, delay drivers, cost overruns, and clearances; if they ask about cost, provide the exact rupee amounts).
-2. Use clear markdown headers, bold figures, and emojis (🔴 for Critical, 🟠 for High, 🟡 for Medium, 🟢 for Low).
-3. Do NOT reply generally. Focus strictly on this specific project using the real data provided above.
-4. Conclude with the actionable prescription and the responsible authority.`;
+1. Answer the user's specific query directly using the exact ground-truth figures above.
+2. RISK SCORE MUST BE OUT OF 100: Always state the score as "${project.overallRiskScore}/100". Never scale down to 10 (e.g. do NOT write "${(project.overallRiskScore / 10).toFixed(1)}/10").
+3. FORMAT CONCISELY & PROFESSIONALLY: Provide an executive summary with bullet points, bold key numbers, and risk emojis (🔴 Critical, 🟠 High, 🟡 Medium, 🟢 Low).
+4. CLEAN TABLES: If formatting tables, ensure every row is on its own separate line with proper markdown columns.
+5. NO FAKE APIS: Do not fabricate imaginary URL endpoints or commands (do not write "GET /projects/...").
+6. Conclude with the actionable MoSPI intervention and the responsible authority.`;
 }

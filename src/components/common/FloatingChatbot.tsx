@@ -1,8 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, X, Send, Sparkles, User, MessageSquare, RefreshCw, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { InfrastructureProject } from '../../types';
 import { generateProjectIntelligenceResponse } from '../../utils/projectAiEngine';
+
+const cleanMarkdown = (raw: string): string => {
+  if (!raw) return '';
+  let text = raw;
+  // Fix single-line markdown table rows
+  text = text.replace(/\|\s*\|/g, '|\n|');
+  text = text.replace(/(\|\s*[-:]+[-| :]*\|)\s*(\|)/g, '$1\n$2');
+  
+  // Enforce score out of 100
+  text = text.replace(/(\b[0-9](\.[0-9]+)?)\s*\/\s*10\b/g, (_m, score) => {
+    const val = Math.min(100, Math.max(0, Math.round(parseFloat(score) * 10)));
+    return `${val}/100`;
+  });
+  text = text.replace(/\b10(\.0+)?\s*\/\s*10\b/g, '100/100');
+  text = text.replace(/\(0\s*=\s*no risk,\s*10\s*=\s*maximum risk\)/gi, '(0 = low risk, 100 = critical risk)');
+  text = text.replace(/GET\s+\/projects\/[^\s\n]+/gi, '');
+  return text.trim();
+};
 
 interface FloatingChatbotProps {
   projects: InfrastructureProject[];
@@ -91,6 +110,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: queryToSend,
+          provider: localStorage.getItem('nirmaanx_ai_provider') || 'groq',
           activeProjectId: activeProject?.id,
           activeProject: activeProject,
           projectContext: {
@@ -228,7 +248,33 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                     <p className="whitespace-pre-wrap">{msg.text}</p>
                   ) : (
                     <div className="prose prose-xs prose-p:leading-relaxed prose-headings:text-xs prose-headings:font-bold prose-headings:my-1 text-slate-800 max-w-none prose-li:my-0.5">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          table: ({ node, ...props }) => (
+                            <div className="my-2 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs max-w-full">
+                              <table className="w-full text-left text-[11px] border-collapse min-w-[360px]" {...props} />
+                            </div>
+                          ),
+                          thead: ({ node, ...props }) => (
+                            <thead className="bg-slate-100 text-slate-700 font-semibold text-[10px] uppercase border-b border-slate-200" {...props} />
+                          ),
+                          tbody: ({ node, ...props }) => (
+                            <tbody className="divide-y divide-slate-100 bg-white" {...props} />
+                          ),
+                          tr: ({ node, ...props }) => (
+                            <tr className="hover:bg-slate-50/70" {...props} />
+                          ),
+                          th: ({ node, ...props }) => (
+                            <th className="px-2.5 py-1.5 font-bold text-slate-800 text-[10px] border-b border-slate-200 whitespace-nowrap" {...props} />
+                          ),
+                          td: ({ node, ...props }) => (
+                            <td className="px-2.5 py-1.5 text-slate-700 align-top text-[11px]" {...props} />
+                          ),
+                        }}
+                      >
+                        {cleanMarkdown(msg.text)}
+                      </ReactMarkdown>
                     </div>
                   )}
                   <div className={`text-[9px] mt-1.5 flex items-center justify-between ${isUser ? 'text-purple-200' : 'text-slate-400'}`}>

@@ -11,10 +11,33 @@ import {
   RotateCcw,
   Layers,
   CheckCircle2,
-  HelpCircle
+  HelpCircle,
+  Zap,
+  ShieldCheck
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { generateProjectIntelligenceResponse } from '../../utils/projectAiEngine';
+
+const cleanMarkdown = (raw: string): string => {
+  if (!raw) return '';
+  let text = raw;
+  // Fix single-line or compressed markdown tables: | col | |---| -> | col |\n|---|
+  text = text.replace(/\|\s*\|/g, '|\n|');
+  text = text.replace(/(\|\s*[-:]+[-| :]*\|)\s*(\|)/g, '$1\n$2');
+  
+  // Strictly enforce risk scores out of 100 instead of /10
+  text = text.replace(/(\b[0-9](\.[0-9]+)?)\s*\/\s*10\b/g, (_m, score) => {
+    const val = Math.min(100, Math.max(0, Math.round(parseFloat(score) * 10)));
+    return `${val}/100`;
+  });
+  text = text.replace(/\b10(\.0+)?\s*\/\s*10\b/g, '100/100');
+  text = text.replace(/\(0\s*=\s*no risk,\s*10\s*=\s*maximum risk\)/gi, '(0 = low risk, 100 = critical risk)');
+
+  // Clean hallucinated fake endpoint paths
+  text = text.replace(/GET\s+\/projects\/[^\s\n]+/gi, '');
+  return text.trim();
+};
 
 interface AiAssistantViewProps {
   projects: InfrastructureProject[];
@@ -36,6 +59,15 @@ export const AiAssistantView: React.FC<AiAssistantViewProps> = ({
   onSelectProject,
   onNavigate,
 }) => {
+  const [selectedProvider, setSelectedProvider] = useState<'groq' | 'gemini' | 'offline'>(() => {
+    return (localStorage.getItem('nirmaanx_ai_provider') as any) || 'groq';
+  });
+
+  const handleProviderChange = (p: 'groq' | 'gemini' | 'offline') => {
+    setSelectedProvider(p);
+    localStorage.setItem('nirmaanx_ai_provider', p);
+  };
+
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     try {
       const stored = sessionStorage.getItem('paimana_ai_chat_session');
@@ -52,7 +84,9 @@ export const AiAssistantView: React.FC<AiAssistantViewProps> = ({
 
 I am your official decision-support assistant for the **Ministry of Statistics and Programme Implementation (MoSPI)** infrastructure monitoring portfolio, engineered by **Team InfraMinds**.
 
-**I am trained to answer questions about all ${projects.length} monitored projects.** You can ask me:
+**I am trained to answer questions about all ${projects.length} monitored projects.** You can switch between **Groq (Llama 3.3)**, **Gemini 3.7**, and **Offline Engine** using the model toggle above!
+
+Try asking me:
 - **Why a project is at risk**: e.g., *"Why is Delhi-Amritsar-Katra Expressway at risk?"*
 - **When a project started**: e.g., *"When did Subansiri project start?"*
 - **Cost & Expenditure**: e.g., *"What is the cost overrun of AIIMS Guwahati?"*
@@ -127,6 +161,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: textToSend,
+          provider: selectedProvider,
           history: messages.slice(-6).map(m => ({
             role: m.sender === 'user' ? 'user' : 'model',
             text: m.text,
@@ -176,31 +211,85 @@ I am your official decision-support assistant for the **Ministry of Statistics a
   return (
     <div className="space-y-6 pb-12">
       {/* Title Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">
-              Gemini 3.7 Flash Model Powered
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                selectedProvider === 'groq'
+                  ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                  : selectedProvider === 'gemini'
+                  ? 'bg-purple-50 text-purple-800 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800'
+                  : 'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
+              }`}
+            >
+              {selectedProvider === 'groq'
+                ? '⚡ Groq (Llama 3.3 70B) Active'
+                : selectedProvider === 'gemini'
+                ? '✨ Gemini 3.7 Flash Active'
+                : '🛡️ Offline Rules Active'}
             </span>
             <span className="text-xs text-slate-400 font-mono">
-              Grounded on 110 Live Infrastructure Projects
+              Grounded on {projects.length} MoSPI Projects
             </span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             LLM Project Intelligence Assistant
           </h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Query project delays, budget escalations, and root-cause explanations in natural language.
           </p>
         </div>
 
-        <button
-          onClick={handleClearChat}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 text-xs font-medium hover:bg-slate-100 transition-all border border-slate-200 shadow-2xs"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Clear Session</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Dual Engine Model Switcher */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <button
+              onClick={() => handleProviderChange('groq')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                selectedProvider === 'groq'
+                  ? 'bg-amber-500 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Groq Llama 3.3 70B (Sub-second speed)"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Groq (GPT-OSS / Llama)</span>
+            </button>
+            <button
+              onClick={() => handleProviderChange('gemini')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                selectedProvider === 'gemini'
+                  ? 'bg-purple-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Google Gemini 3.7 Flash"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Gemini 3.7</span>
+            </button>
+            <button
+              onClick={() => handleProviderChange('offline')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                selectedProvider === 'offline'
+                  ? 'bg-slate-700 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Built-in Offline Heuristic & Rule Engine"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Offline</span>
+            </button>
+          </div>
+
+          <button
+            onClick={handleClearChat}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 hover:text-slate-900 text-xs font-medium hover:bg-slate-100 transition-all border border-slate-200 shadow-2xs"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Clear Session</span>
+          </button>
+        </div>
       </div>
 
       {/* Preset Suggested Questions */}
@@ -270,8 +359,55 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                   {isUser ? (
                     <p className="whitespace-pre-wrap text-sm sm:text-base font-medium">{msg.text}</p>
                   ) : (
-                    <div className="prose prose-sm sm:prose-base max-w-none text-slate-800 space-y-3 leading-relaxed">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                    <div className="prose prose-sm sm:prose-base max-w-none text-slate-800 space-y-2 leading-relaxed">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          table: ({ node, ...props }) => (
+                            <div className="my-3 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs max-w-full">
+                              <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[540px]" {...props} />
+                            </div>
+                          ),
+                          thead: ({ node, ...props }) => (
+                            <thead className="bg-slate-100/90 text-slate-700 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider" {...props} />
+                          ),
+                          tbody: ({ node, ...props }) => (
+                            <tbody className="divide-y divide-slate-100 bg-white" {...props} />
+                          ),
+                          tr: ({ node, ...props }) => (
+                            <tr className="hover:bg-slate-50/80 transition-colors" {...props} />
+                          ),
+                          th: ({ node, ...props }) => (
+                            <th className="px-3.5 py-2.5 font-bold text-slate-800 text-xs border-b border-slate-200 whitespace-nowrap" {...props} />
+                          ),
+                          td: ({ node, ...props }) => (
+                            <td className="px-3.5 py-2.5 text-slate-700 align-top text-xs sm:text-sm leading-snug" {...props} />
+                          ),
+                          p: ({ node, ...props }) => (
+                            <p className="my-1.5 leading-relaxed" {...props} />
+                          ),
+                          ul: ({ node, ...props }) => (
+                            <ul className="my-2 list-disc list-inside space-y-1" {...props} />
+                          ),
+                          ol: ({ node, ...props }) => (
+                            <ol className="my-2 list-decimal list-inside space-y-1" {...props} />
+                          ),
+                          li: ({ node, ...props }) => (
+                            <li className="leading-relaxed" {...props} />
+                          ),
+                          h1: ({ node, ...props }) => (
+                            <h1 className="text-base sm:text-lg font-bold text-slate-900 mt-3 mb-1" {...props} />
+                          ),
+                          h2: ({ node, ...props }) => (
+                            <h2 className="text-sm sm:text-base font-bold text-slate-900 mt-2.5 mb-1" {...props} />
+                          ),
+                          h3: ({ node, ...props }) => (
+                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 mt-2 mb-1" {...props} />
+                          ),
+                        }}
+                      >
+                        {cleanMarkdown(msg.text)}
+                      </ReactMarkdown>
                     </div>
                   )}
 

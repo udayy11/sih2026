@@ -60,8 +60,21 @@ function AppContent({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Application Data State
-  const [projects, setProjects] = useState<InfrastructureProject[]>(MOCK_PROJECTS);
+  // Application Data State - Persisted across reloads
+  const [projects, setProjects] = useState<InfrastructureProject[]>(() => {
+    try {
+      const cached = localStorage.getItem('nirmaanx_imported_projects');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to read cached projects from localStorage:', err);
+    }
+    return MOCK_PROJECTS;
+  });
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<InfrastructureProject | null>(null);
   const [targetModuleProjectId, setTargetModuleProjectId] = useState<string>(MOCK_PROJECTS[0]?.id || '');
 
@@ -97,6 +110,9 @@ function AppContent({
   };
 
   const handleResetData = () => {
+    try {
+      localStorage.removeItem('nirmaanx_imported_projects');
+    } catch (e) {}
     setProjects(MOCK_PROJECTS);
   };
 
@@ -235,7 +251,20 @@ function AppContent({
                 element={
                   <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
                     <DataImportView
-                      onImportSuccess={(newProjects) => setProjects(newProjects)}
+                      onImportSuccess={(newProjects) => {
+                        setProjects(prevProjects => {
+                          const map = new Map<string, InfrastructureProject>();
+                          prevProjects.forEach(p => map.set(p.id, p));
+                          newProjects.forEach(p => map.set(p.id, p));
+                          const merged = Array.from(map.values());
+                          try {
+                            localStorage.setItem('nirmaanx_imported_projects', JSON.stringify(merged));
+                          } catch (e) {
+                            console.warn('LocalStorage limit reached for projects:', e);
+                          }
+                          return merged;
+                        });
+                      }}
                       onNavigate={handleNavigate}
                     />
                   </RoleGuard>

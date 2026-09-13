@@ -405,10 +405,11 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
               className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
             >
               <option value="ALL">All Statuses</option>
+              <option value="Completed">Completed</option>
+              <option value="Near Completion">Near Completion</option>
               <option value="Critical Delayed">Critical Delayed</option>
               <option value="At Risk">At Risk</option>
               <option value="Ongoing">Ongoing</option>
-              <option value="Near Completion">Near Completion</option>
               <option value="On Schedule">On Schedule</option>
             </select>
           </div>

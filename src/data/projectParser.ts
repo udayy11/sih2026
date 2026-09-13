@@ -134,11 +134,19 @@ export function transformMospiRecord(raw: RawMospiProject, index: number): Infra
     (0.20 * expenditureProgressRiskScore)
   );
 
-  // Ensure robust distribution across risk levels
+  // Ensure robust distribution across risk levels and accurate status classification
   let riskLevel: RiskLevel = 'LOW';
   let status: ProjectStatus = 'On Schedule';
 
-  if (overallRiskScore >= 72 || delayMonths >= 24 || costOverrunPercent >= 30) {
+  if (safePhysicalProgress >= 100 || raw.tableSource === 'Table-3 Completed') {
+    status = 'Completed';
+    riskLevel = 'LOW';
+    overallRiskScore = Math.min(18, overallRiskScore);
+  } else if (safePhysicalProgress >= 95) {
+    status = 'Near Completion';
+    riskLevel = delayMonths >= 12 ? 'MEDIUM' : 'LOW';
+    overallRiskScore = Math.min(42, overallRiskScore);
+  } else if (overallRiskScore >= 72 || delayMonths >= 24 || costOverrunPercent >= 30) {
     riskLevel = 'CRITICAL';
     status = 'Critical Delayed';
     overallRiskScore = Math.max(75, overallRiskScore);
@@ -151,7 +159,7 @@ export function transformMospiRecord(raw: RawMospiProject, index: number): Infra
     status = 'Ongoing';
   } else {
     riskLevel = 'LOW';
-    status = safePhysicalProgress >= 95 ? 'Near Completion' : 'On Schedule';
+    status = 'On Schedule';
   }
 
   const costOverrunProbability = costRiskScore;

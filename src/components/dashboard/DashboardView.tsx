@@ -48,7 +48,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const revisedCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
   const expenditure = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
   
-  const completedDuringMonth = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress >= 98).length;
+  const completedDuringMonth = activeProjects.filter(p => p.status === 'Completed' || p.physicalProgress >= 98).length;
   const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length;
 
   // AI Risk Averages
