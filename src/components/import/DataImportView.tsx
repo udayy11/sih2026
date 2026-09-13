@@ -165,7 +165,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
           <h1 className="text-2xl font-bold text-slate-800">Project Data Import</h1>
         </div>
         <p className="text-slate-500 mb-8">
-          Upload your PAIMANA monthly monitoring report in CSV format to automatically generate AI risk scores, compute schedule delays, and update dashboard analytics.
+          Upload your NirmaanX monthly monitoring report in CSV format to automatically generate AI risk scores, compute schedule delays, and update dashboard analytics.
         </p>
 
         {/* Upload Dropzone */}
@@ -281,7 +281,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
         </div>
         <h3 className="text-xl font-semibold mb-3 relative z-10">What happens during processing?</h3>
         <p className="text-indigo-200 mb-6 max-w-2xl relative z-10 leading-relaxed">
-          The PAIMANA engine doesn't just display your data. It automatically engineers complex AI features by analyzing historical patterns.
+          The NirmaanX engine doesn't just display your data. It automatically engineers complex AI features by analyzing historical patterns.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">

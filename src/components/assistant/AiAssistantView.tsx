@@ -48,9 +48,9 @@ export const AiAssistantView: React.FC<AiAssistantViewProps> = ({
       {
         id: 'welcome-msg',
         sender: 'assistant',
-        text: `### Welcome to PAIMANA AI Project Intelligence Assistant
+        text: `### Welcome to NirmaanX AI Project Intelligence Assistant
 
-I am your official decision-support assistant for the **Ministry of Statistics and Programme Implementation (MoSPI)** infrastructure monitoring portfolio.
+I am your official decision-support assistant for the **Ministry of Statistics and Programme Implementation (MoSPI)** infrastructure monitoring portfolio, engineered by **Team InfraMinds**.
 
 **I am trained to answer questions about all ${projects.length} monitored projects.** You can ask me:
 - **Why a project is at risk**: e.g., *"Why is Delhi-Amritsar-Katra Expressway at risk?"*
@@ -59,7 +59,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 - **Search by Project Code**: e.g., \`N04000092\`, \`180100221\`, \`612786\`, or \`N24001533\`
 - **Portfolio Analytics**: e.g., *"Which projects have highest delay in Railways?"* or *"Show divergence anomalies"*`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: 'PAIMANA Project Intelligence Engine',
+        source: 'NirmaanX Project Intelligence Engine',
       },
     ];
   });
@@ -78,7 +78,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         sender: 'assistant',
         text: 'Session history cleared. How can I assist you with MoSPI infrastructure monitoring today?',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: 'PAIMANA Project Intelligence Engine',
+        source: 'NirmaanX Project Intelligence Engine',
       }
     ]);
   };
@@ -146,7 +146,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         sender: 'assistant',
         text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: data.source || 'PAIMANA Project Intelligence Engine',
+        source: data.source || 'NirmaanX Project Intelligence Engine',
         matchedProject: data.matchedProject,
       };
 

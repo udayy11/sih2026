@@ -123,8 +123,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
               </div>
             </div>
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight">PAIMANA <span className="text-purple-400">InfraPredict</span></h1>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mt-0.5">MoSPI • DIID Access Control Gateway</p>
+              <h1 className="text-xl font-extrabold tracking-tight">Nirmaan<span className="text-purple-400">X</span></h1>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mt-0.5">Team InfraMinds • MoSPI Access Control Gateway</p>
             </div>
           </div>
           

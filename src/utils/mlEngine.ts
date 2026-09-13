@@ -449,7 +449,7 @@ from pydantic import BaseModel
 import lightgbm as lgb
 import numpy as np
 
-app = FastAPI(title="PAIMANA Early Warning API", version="2.0.0")
+app = FastAPI(title="NirmaanX Early Warning API", version="2.0.0")
 
 class ProjectFeatures(BaseModel):
     project_code: str

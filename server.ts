@@ -57,7 +57,7 @@ function getGeminiClient(): GoogleGenAI | null {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
-    system: 'PAIMANA InfraPredict Decision Support Engine',
+    system: 'NirmaanX Decision Support Engine | Team InfraMinds',
     timestamp: new Date().toISOString(),
     geminiEnabled: !!process.env.GEMINI_API_KEY,
   });
@@ -88,7 +88,7 @@ app.post('/api/ai/assistant', async (req, res) => {
         if (matchResult.bestMatch) {
           systemPrompt = buildProjectGeminiPrompt(matchResult.bestMatch, queryText);
         } else {
-          systemPrompt = `You are the PAIMANA AI Risk & Decision Assistant for the Ministry of Statistics and Programme Implementation (MoSPI) - PAIMANA Infrastructure Project Predictive Monitoring & Early Warning Platform.
+          systemPrompt = `You are the NirmaanX AI Risk & Decision Assistant for the Ministry of Statistics and Programme Implementation (MoSPI), engineered by Team InfraMinds for the NirmaanX Infrastructure Project Predictive Monitoring & Early Warning Platform.
 Total Monitored Projects in Database: ${activeProjects.length}.
 Provide authoritative, structured, and factual answers regarding infrastructure project monitoring, cost escalations, schedule delays, and root causes.
 Do not invent fictional project metrics; be truthful and accurate.`;
@@ -122,7 +122,7 @@ Do not invent fictional project metrics; be truthful and accurate.`;
           });
         }
       } catch (geminiError: any) {
-        console.warn('Gemini API call failed, activating PAIMANA Project Intelligence Engine:', geminiError.message);
+        console.warn('Gemini API call failed, activating NirmaanX Project Intelligence Engine:', geminiError.message);
       }
     }
 
@@ -178,7 +178,7 @@ Provide:
     // Heuristic fallback
     return res.json({
       explanation: `**Why is ${project?.name || 'this project'} at ${project?.riskLevel || 'HIGH'} risk?**\n\n- **Physical Progress Lag**: Executed physical progress (${project?.physicalProgress}%) is trailing planned schedule (${project?.plannedPhysicalProgress}%).\n- **Cost-Progress Burn Divergence**: Expenditure stands at ${project?.financialProgress}%, outpacing physical output delivery.\n- **Clearance Friction**: Land possession (${project?.landAcquiredPercent}%) and forest statutory approval status (${project?.forestClearance}) remain key bottlenecks.`,
-      source: 'PAIMANA Rule-Based Engine',
+      source: 'NirmaanX Rule-Based Engine',
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -353,7 +353,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`PAIMANA InfraPredict Server running at http://0.0.0.0:${PORT}`);
+    console.log(`NirmaanX Server running at http://0.0.0.0:${PORT} | Team InfraMinds`);
   });
 }
 

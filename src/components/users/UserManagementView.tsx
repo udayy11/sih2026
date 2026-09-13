@@ -18,10 +18,10 @@ interface UserManagementViewProps {
 }
 
 const INITIAL_USERS: User[] = [
-  { id: 'usr-001', name: 'Varshini', username: 'varshini', email: 'varshini@paimana.gov.in', role: 'Admin', department: 'Data Informatics & Innovation Division (DIID)', status: 'Active', lastLogin: '2026-09-04T09:30:00Z' },
-  { id: 'usr-002', name: 'Vicky', username: 'vicky', email: 'vicky@paimana.gov.in', role: 'MoSPI Officer', department: 'MoSPI Project Monitoring Group (PMG)', status: 'Active', lastLogin: '2026-09-04T09:15:00Z' },
-  { id: 'usr-003', name: 'Yuhaa', username: 'yuhaa', email: 'yuhaa@paimana.gov.in', role: 'Project Officer', department: 'Field Execution & Civil Engineering', status: 'Active', lastLogin: '2026-09-04T08:45:00Z' },
-  { id: 'usr-004', name: 'Vathsala', username: 'vathsala', email: 'vathsala@paimana.gov.in', role: 'Project Officer', department: 'Structural & Quality Control Engineering', status: 'Active', lastLogin: '2026-09-04T08:30:00Z' },
+  { id: 'usr-001', name: 'Varshini', username: 'varshini', email: 'varshini@nirmaanx.gov.in', role: 'Admin', department: 'Data Informatics & Innovation Division (DIID)', status: 'Active', lastLogin: '2026-09-04T09:30:00Z' },
+  { id: 'usr-002', name: 'Vicky', username: 'vicky', email: 'vicky@nirmaanx.gov.in', role: 'MoSPI Officer', department: 'MoSPI Project Monitoring Group (PMG)', status: 'Active', lastLogin: '2026-09-04T09:15:00Z' },
+  { id: 'usr-003', name: 'Yuhaa', username: 'yuhaa', email: 'yuhaa@nirmaanx.gov.in', role: 'Project Officer', department: 'Field Execution & Civil Engineering', status: 'Active', lastLogin: '2026-09-04T08:45:00Z' },
+  { id: 'usr-004', name: 'Vathsala', username: 'vathsala', email: 'vathsala@nirmaanx.gov.in', role: 'Project Officer', department: 'Structural & Quality Control Engineering', status: 'Active', lastLogin: '2026-09-04T08:30:00Z' },
 ];
 
 export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUser }) => {
@@ -94,7 +94,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
     if (!newName.trim() || !newUsername.trim() || !newPassword.trim()) return;
 
     const formattedUsername = newUsername.trim().toLowerCase();
-    const formattedEmail = newEmail.trim() || `${formattedUsername}@paimana.gov.in`;
+    const formattedEmail = newEmail.trim() || `${formattedUsername}@nirmaanx.gov.in`;
 
     // 1. Save and Persist Engineer Credentials into Backend Database
     try {
@@ -367,7 +367,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                 <label className="font-bold text-slate-700">Official Email</label>
                 <input
                   type="email"
-                  placeholder="e.g. ramesh@paimana.gov.in"
+                  placeholder="e.g. ramesh@nirmaanx.gov.in"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden"

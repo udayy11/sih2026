@@ -44,8 +44,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
     const reportContent = `=============================================================================
 GOVERNMENT OF INDIA
 MINISTRY OF STATISTICS AND PROGRAMME IMPLEMENTATION (MoSPI)
-PAIMANA INFRASTRUCTURE PROJECT PREDICTIVE MONITORING & EARLY WARNING REPORT
+NIRMAANX INFRASTRUCTURE PROJECT PREDICTIVE MONITORING & EARLY WARNING REPORT
 Generated Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+Team: InfraMinds
 =============================================================================
 
 1. PORTFOLIO EXECUTIVE SUMMARY
@@ -78,7 +79,7 @@ ${idx + 1}. [${p.projectCode}] ${p.name}
 - Empower State Level Empowered Committees (SLEC) for 14-day ROW dispute resolution.
 
 =============================================================================
-CONFIDENTIAL & OFFICIAL - PREPARED BY PAIMANA PREDICTIVE DECISION SYSTEM
+CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM INFRAMINDS)
 =============================================================================`;
 
     const element = document.createElement('a');
@@ -175,7 +176,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY PAIMANA PREDICTIVE DECISION SYSTEM
                 Ministry of Statistics and Programme Implementation (MoSPI)
               </h1>
               <div className="text-xs font-semibold text-slate-600">
-                Project Monitoring Division (PAIMANA Infrastructure Decision-Support Engine)
+                Project Monitoring Division (NirmaanX Infrastructure Decision-Support Engine | Team InfraMinds)
               </div>
               <div className="pt-2 text-[11px] font-mono text-slate-500">
                 Official Executive Infrastructure Risk Dossier • Ref: MoSPI/PMD/DIR/2026/08
@@ -252,7 +253,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY PAIMANA PREDICTIVE DECISION SYSTEM
 
             {/* Document Footer */}
             <div className="pt-6 border-t-2 border-slate-900 flex justify-between text-xs text-slate-500 font-mono">
-              <span>PAIMANA Decision Engine • Confidential</span>
+              <span>NirmaanX Decision Engine • Team InfraMinds</span>
               <span>Approved for MoSPI Infrastructure Oversight</span>
             </div>
           </div>

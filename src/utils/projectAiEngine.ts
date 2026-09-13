@@ -553,7 +553,7 @@ ${p.majorCostEscalationDrivers.map(d => `  - ${d}`).join('\n')}
     return {
       reply,
       matchedProject: p,
-      source: 'PAIMANA Project Intelligence Engine',
+      source: 'NirmaanX Project Intelligence Engine',
       intent
     };
   }
@@ -578,7 +578,7 @@ function generatePortfolioResponse(
       .sort((a, b) => b.overallRiskScore - a.overallRiskScore)
       .slice(0, 5);
 
-    const reply = `### 🔴 Top Critical Infrastructure Projects (MoSPI PAIMANA Monitoring)
+    const reply = `### 🔴 Top Critical Infrastructure Projects (MoSPI NirmaanX Monitoring)
 
 Based on our multi-factor predictive risk model, the top critical projects requiring immediate intervention are:
 
@@ -593,7 +593,7 @@ ${i + 1}. **${p.name}** (\`${p.projectCode}\`)
 
 *Ask me about any of these project codes (e.g., \`${criticalProjects[0]?.projectCode}\`) for deep root-cause analysis!*`;
 
-    return { reply, source: 'PAIMANA Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
+    return { reply, source: 'NirmaanX Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
   }
 
   // 2. Highest Delays
@@ -615,7 +615,7 @@ ${i + 1}. **${p.name}** (\`${p.projectCode}\`)
 
 *Type any project name or code to inspect its milestone S-curve and root causes.*`;
 
-    return { reply, source: 'PAIMANA Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
+    return { reply, source: 'NirmaanX Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
   }
 
   // 3. Highest Cost Overruns
@@ -638,7 +638,7 @@ ${i + 1}. **${p.name}** (\`${p.projectCode}\`)
 
 *Send any project code or name to see the complete financial audit brief!*`;
 
-    return { reply, source: 'PAIMANA Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
+    return { reply, source: 'NirmaanX Portfolio Intelligence', intent: 'PORTFOLIO_QUERY' };
   }
 
   // 4. Sector / Ministry queries (e.g. Railways, Highways, Power)
@@ -676,7 +676,7 @@ ${i + 1}. **${p.name}** (\`${p.projectCode}\`)
 
 *Ask me about any specific project (e.g., \`${sectorProjects[0]?.projectCode}\` or "${sectorProjects[0]?.name.substring(0, 30)}...") to get full details.*`;
 
-        return { reply, source: 'PAIMANA Sector Intelligence', intent: 'PORTFOLIO_QUERY' };
+        return { reply, source: 'NirmaanX Sector Intelligence', intent: 'PORTFOLIO_QUERY' };
       }
     }
   }
@@ -687,7 +687,7 @@ ${i + 1}. **${p.name}** (\`${p.projectCode}\`)
   const high = projects.filter(p => p.riskLevel === 'HIGH').length;
   const sample = projects.slice(0, 3);
 
-  const reply = `### 🏛️ PAIMANA Infrastructure Project Intelligence Assistant
+  const reply = `### 🏛️ NirmaanX Infrastructure Project Intelligence Assistant
 
 I am trained on the **Ministry of Statistics and Programme Implementation (MoSPI)** central sector infrastructure monitoring database (**${total} Monitored Projects**).
 
@@ -704,7 +704,7 @@ You can ask me questions about **any project** by sending its **Project ID**, **
 - *"Show execution status of ${sample[2]?.name.substring(0, 35)}..."*
 - Or simply type the project code like \`${sample[0]?.projectCode}\` or \`${sample[1]?.projectCode}\`!`;
 
-  return { reply, source: 'PAIMANA Decision Engine', intent: 'FULL_PROFILE' };
+  return { reply, source: 'NirmaanX Decision Engine', intent: 'FULL_PROFILE' };
 }
 
 /**
@@ -714,7 +714,7 @@ export function buildProjectGeminiPrompt(
   project: InfrastructureProject,
   userPrompt: string
 ): string {
-  return `You are the PAIMANA Infrastructure Project Intelligence Assistant for the Ministry of Statistics and Programme Implementation (MoSPI), Government of India.
+  return `You are the NirmaanX Infrastructure Project Intelligence Assistant for the Ministry of Statistics and Programme Implementation (MoSPI), Government of India.
 You must answer the officer's question using the exact, authoritative project ground truth provided below.
 
 GROUND TRUTH DATA FOR PROJECT:

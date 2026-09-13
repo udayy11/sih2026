@@ -24,8 +24,8 @@ export const FloatingChatbot: React.FC<FloatingChatbotProps> = ({ projects = [],
     {
       id: 'welcome-msg',
       sender: 'assistant',
-      text: `### Welcome to PAIMANA Project Intelligence Assistant
-I am your official decision-support assistant for the **Ministry of Statistics and Programme Implementation (MoSPI)**.
+      text: `### Welcome to NirmaanX Project Intelligence Assistant
+I am your official decision-support assistant for the **Ministry of Statistics and Programme Implementation (MoSPI)**, powered by **Team InfraMinds**.
 
 **You can ask me about any project!** Try:
 - Providing any **Project ID** or **Project Code** (e.g., \`N04000092\`, \`180100221\`, \`612786\`)
@@ -33,7 +33,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 - Asking *"When did [Project Name] start?"*
 - Checking cost overruns, delay months, or statutory clearances!`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      source: 'PAIMANA Project Intelligence Engine',
+      source: 'NirmaanX Project Intelligence Engine',
     },
   ]);
   const [inputQuery, setInputQuery] = useState('');
@@ -165,9 +165,9 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               <Bot className="w-6 h-6 text-amber-300" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">PAIMANA AI Assistant</h3>
+              <h3 className="font-bold text-sm">NirmaanX AI Assistant</h3>
               <p className="text-[10px] text-purple-200 flex items-center gap-1 mt-0.5">
-                <Sparkles className="w-3 h-3 text-amber-300" /> MoSPI Decision Support
+                <Sparkles className="w-3 h-3 text-amber-300" /> InfraMinds • MoSPI
               </p>
             </div>
           </div>

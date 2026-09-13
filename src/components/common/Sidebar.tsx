@@ -159,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[10px] uppercase tracking-wider">
                 <Zap className="w-3 h-3" />
-                <span>PAIMANA Sentinel</span>
+                <span>NirmaanX Sentinel</span>
               </div>
               <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-900/60 text-purple-200">
                 v2.6

@@ -2,7 +2,7 @@
   {
     "id": "usr-001",
     "username": "varshini",
-    "email": "varshini@paimana.gov.in",
+    "email": "varshini@nirmaanx.gov.in",
     "passwordHash": "$2b$10$6s7l7tOMcz4JK4Jdcvj/TekDMFrsSb5RfJTCX3zgS8k0coi788yk.",
     "role": "ADMIN",
     "name": "Varshini",
@@ -13,7 +13,7 @@
   {
     "id": "usr-002",
     "username": "vicky",
-    "email": "vicky@paimana.gov.in",
+    "email": "vicky@nirmaanx.gov.in",
     "passwordHash": "$2b$10$G1M18TFMIrDn8bZM9/cxEuKeb.019KON4Eksy7rB5BPK7lQXc3TMy",
     "role": "MOSPI_OFFICER",
     "name": "Vicky",
@@ -24,7 +24,7 @@
   {
     "id": "usr-003",
     "username": "yuhaa",
-    "email": "yuhaa@paimana.gov.in",
+    "email": "yuhaa@nirmaanx.gov.in",
     "passwordHash": "$2b$10$ECG9QSCZrMnmGUN0J9IvVOAGDo.3/TPbXJy3cTiVFNLSTRz5tRMO6",
     "role": "PROJECT_OFFICER",
     "name": "Yuhaa",
@@ -35,7 +35,7 @@
   {
     "id": "usr-004",
     "username": "vathsala",
-    "email": "vathsala@paimana.gov.in",
+    "email": "vathsala@nirmaanx.gov.in",
     "passwordHash": "$2b$10$wYprAu94bSdJy0.xHkQhnuZail8hhinBjeogfhzoHhlaPdpWV86RC",
     "role": "PROJECT_OFFICER",
     "name": "Vathsala",
@@ -47,7 +47,7 @@
     "id": "usr-1019",
     "name": "Vikram Sharma",
     "username": "vikram",
-    "email": "vikram@paimana.gov.in",
+    "email": "vikram@nirmaanx.gov.in",
     "passwordHash": "$2b$10$H28eg3PHhMt3ZdWz7attguw88JTem7MRESQlyLtelTVYH5NQ88l/G",
     "role": "PROJECT_OFFICER",
     "department": "Tunneling & Underground Structures",

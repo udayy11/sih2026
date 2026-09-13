@@ -1,31 +1,34 @@
-# 🏛️ PAIMANA INSIGHT — AI-Powered Integrated Project Monitoring & Early Warning Platform
+# 🏛️ NirmaanX — AI-Powered Integrated Project Monitoring & Early Warning Platform
 
 > **Ministry of Statistics and Programme Implementation (MoSPI)**  
 > **Department**: Data Informatics & Innovation Division (DIID)  
 > **Problem Statement 26103**: *Use case on web-based integrated project-monitoring platform*  
-> **Smart India Hackathon (SIH) 2026**
+> **Smart India Hackathon (SIH) 2026**  
+> **Team Name**: **InfraMinds**
 
 ---
 
-## 👤 Project & Developer Details
+## 👤 Project & Team Details
 
 | Attribute | Details |
 | :--- | :--- |
-| **Project Title** | **PAIMANA INSIGHT** (PAIMANA InfraPredict) |
-| **Lead Developer** | **Vignesh** ([vickydhanam2006@gmail.com](mailto:vickydhanam2006@gmail.com)) |
-| **Team Members** | **Tharrunika** ([Tharrunika.71382402162@sritcbe.ac.in](mailto:Tharrunika.71382402162@sritcbe.ac.in))<br/>**Sally** ([Sally.71382402124@sritcbe.ac.in](mailto:Sally.71382402124@sritcbe.ac.in))<br/>**Yuhaasri** ([yuhaasri.71382402179@sritcbe.ac.in](mailto:yuhaasri.71382402179@sritcbe.ac.in))<br/>**Vathsala** ([vathsala.71382402170@sritcbe.ac.in](mailto:vathsala.71382402170@sritcbe.ac.in))<br/>**Varshini** ([varshini.71382402168@sritcbe.ac.in](mailto:varshini.71382402168@sritcbe.ac.in)) |
+| **Project Title** | **NirmaanX** |
+| **Team Name** | **InfraMinds** |
+| **Team Leader** | **Uday** ([udayverma112006@gmail.com](mailto:udayverma112006@gmail.com) • +91 9354572705) |
+| **Team Members** | **Lavanya** ([lavanyagoyal1212@gmail.com](mailto:lavanyagoyal1212@gmail.com) • +91 9810572488)<br/>**Nikhil** ([nikhiltyagi8093@gmail.com](mailto:nikhiltyagi8093@gmail.com) • +91 8750925694)<br/>**Vrinda** ([gargvrinda11@gmail.com](mailto:gargvrinda11@gmail.com) • +91 9050558390)<br/>**Piyush** ([piyushkumarb2510@gmail.com](mailto:piyushkumarb2510@gmail.com) • +91 7982927100)<br/>**Ashika** ([ashikajain2401@gmail.com](mailto:ashikajain2401@gmail.com) • +91 9899129177) |
 | **Target Organization** | Ministry of Statistics and Programme Implementation (MoSPI), Govt. of India |
 | **Division** | Data Informatics & Innovation Division (DIID) / Infrastructure and Project Monitoring Division (IPMD) |
 | **Problem Statement ID** | SIH 26103 — Web-Based Integrated Project-Monitoring Platform |
-| **Core Architecture** | React 18 + Vite + TypeScript + Tailwind CSS + Express Node Server + Gemini 3.7 Flash RAG + LightGBM/XGBoost ML Pipeline |
+| **Core Architecture** | React 19 + Vite 6 + TypeScript + Tailwind CSS + Express Node Server + Gemini 3.7 Flash RAG + LightGBM/XGBoost ML Pipeline |
+| **Repository** | [https://github.com/udayy11/sih2026](https://github.com/udayy11/sih2026) |
 
 ---
 
 ## 🌟 Executive Summary & Full Description
 
-**PAIMANA INSIGHT** is an enterprise-grade, AI-powered predictive monitoring, early-warning, and decision-support platform engineered specifically for **MoSPI (Ministry of Statistics and Programme Implementation)**. 
+**NirmaanX** (engineered by **Team InfraMinds**) is an enterprise-grade, AI-powered predictive monitoring, early-warning, and decision-support platform engineered specifically for **MoSPI (Ministry of Statistics and Programme Implementation)**. 
 
-Conventional project monitoring tools suffer from **descriptive lag**—they merely report cost escalations and schedule delays *after* they occur. PAIMANA INSIGHT solves this by establishing a **predictive, early-warning ecosystem** that combines:
+Conventional project monitoring tools suffer from **descriptive lag**—they merely report cost escalations and schedule delays *after* they occur. NirmaanX solves this by establishing a **predictive, early-warning ecosystem** that combines:
 1. **Ensemble Machine Learning (LightGBM, XGBoost, CatBoost)** to predict cost escalation magnitudes ($\text{₹}$ Crores) and probability metrics ($P > 10\%$ or $20\%$).
 2. **Cox Proportional Hazards Survival Analysis** combined with Gradient Boosting to forecast schedule delay durations (+months) and revised completion dates 18–22 days earlier than traditional EVM/CPM baselines.
 3. **Explainable AI (SHAP & Partial Dependence Plots)** to pinpoint non-linear root cause drivers (e.g. land possession dropping below 75% causing a +54% delay risk spike).
@@ -49,7 +52,7 @@ graph TD
     
     D -->|Real-time Contextual Querying| H["RAG LLM Project Intelligence Assistant"]
     
-    F --> I["Interactive Web UI<br/>(React 18 + Vite + Tailwind CSS)"]
+    F --> I["Interactive Web UI<br/>(React 19 + Vite 6 + Tailwind CSS)"]
     G --> I
     H --> I
     E --> I
@@ -69,24 +72,31 @@ graph TD
 
 ## 🎛️ Comprehensive Module Breakdown
 
-The application features **14 specialized, interconnected modules** accessible via the sleek sidebar and top navigation:
+The application features specialized, interconnected modules accessible via the animated sidebar and top navigation:
 
 ### 1. 📊 Executive Dashboard (`DashboardView.tsx`)
 - High-level overview of central sector projects outlay ($\text{₹}$ Lakh Crores).
+- Interactive official Survey of India map covering all 36 States & Union Territories.
 - Dynamic risk distribution counters (Critical, High, Medium, Low).
 - Sector Risk Heatmap comparing total projects, budget allocation, and average delay.
 - S-Curve Progress Trajectory visualizing divergence between planned physical progress, actual physical execution, and capital expenditure burn rate.
 
-### 2. 📁 Projects Registry & Detail Inspection (`ProjectsTableView.tsx`, `ProjectDetailModal.tsx`)
-- Full searchable matrix of all 3,017 central sector infrastructure projects.
+### 2. 📁 Projects Registry & Roadblocks (`ProjectsTableView.tsx`, `ProjectDetailModal.tsx`)
+- Searchable matrix of all 3,017 central sector infrastructure projects.
+- Dedicated **Key Roadblocks & Issues** column for quick risk comprehension.
+- Sub-view navigation tabs:
+  - **All Projects Table**
+  - **Project Milestones Tracker**
+  - **Issues & Bottlenecks Matrix**
 - Multi-dimensional filters (Sector, State, Risk Level, Ministry, Budget Range).
-- Deep-dive modal drawer detailing physical/financial progress, SPI/CPI metrics, clearance status (Land, Environmental, Forest), and milestone history.
+- Deep-dive modal detailing physical/financial progress, SPI/CPI metrics, clearance status (Land, Environmental, Forest), and milestone history.
 
-### 3. 🔮 Predictive Analytics & Overrun Lab (`PredictiveAnalyticsView.tsx`)
+### 3. 🔮 Predictive Analytics & Escalation Drivers (`PredictiveAnalyticsView.tsx`)
+- **Live Similarity Search**: Real-time dropdown search matching project codes, names, agencies, and states.
 - **Overrun Prediction Engine**: LightGBM regressor predicting cost escalation ($\text{₹}$ Crores) and delay months.
 - **AI/ML vs Baseline Benchmarking**: Direct comparison against Linear/Logistic Regression, Holt-Winters, and standard CPM.
 - **Feature Ablation Study**: Tracks performance gains from Model A (Raw CUF) $\rightarrow$ Model B (+Derived CPI/SPI) $\rightarrow$ Model C (+Multimodal Inflation & Clearances).
-- **Explainable AI (PDP Curves)**: Interactive Partial Dependence Plots exploring non-linear risk drivers.
+- **Escalation Drivers & SHAP**: Macro and micro risk driver analysis with SHAP force plots and PDP curves.
 
 ### 4. 🚨 Early Warning Alert Inbox (`EarlyWarningsView.tsx`)
 - Rule + ML alert inbox categorizing active project risks (Critical, High, Medium, Low).
@@ -102,42 +112,31 @@ The application features **14 specialized, interconnected modules** accessible v
 - Sector and agency leaderboards ranking performance efficiency (Roads vs Railways vs Power).
 - Peer group comparisons matching projects of similar budget size and geographic complexity.
 
-### 7. 📉 Cost Escalation Drivers & SHAP Attributions (`EscalationDriversView.tsx`)
-- Macro and micro risk driver analysis utilizing SHAP force plots.
-- Ranks key causes of budget inflation (e.g., Raw material inflation, Regulatory latency, Scope revisions, Expenditure-progress divergence).
-
-### 8. 🏛️ PMG Interventions & Governance (`InterventionsView.tsx`)
+### 7. 🏛️ PMG Interventions & Governance (`InterventionsView.tsx`)
 - Tracks inter-ministerial issue escalation via the PMG (Project Monitoring Group) framework.
 - Log resolution progress, assign nodal officers, and set target resolution dates.
 
-### 9. 🤖 RAG LLM Project Intelligence Assistant (`AiAssistantView.tsx` & `FloatingChatbot.tsx`)
+### 8. 🤖 RAG LLM Project Intelligence Assistant (`AiAssistantView.tsx` & `FloatingChatbot.tsx`)
 - Conversational AI powered by **Gemini 3.7 Flash** (`@google/genai`).
-- Performs retrieval-augmented generation over 3,017 MoSPI project records and monthly flash report PDFs.
+- Multi-turn conversational memory preserved across page navigation until refresh or clear.
+- Grounded intelligence across all 3,017 MoSPI project records and monthly flash reports.
 - Responds with formatted insights, project status summaries, root cause explanations, and exact citations.
 
-### 10. 📑 Executive PDF Report Generator (`ReportsView.tsx`)
+### 9. 📑 Executive PDF Report Generator (`ReportsView.tsx`)
 - One-click official PDF report compiler for MoSPI executives and Cabinet Secretariat.
 - Automatically generates cover pages, executive summaries, high-risk project tables, SHAP driver charts, and intervention action briefs.
 
-### 11. 📅 Milestones & Gantt Tracker (`MilestonesView.tsx`)
-- Detailed milestone breakdown across project lifecycle stages (DPR Preparation, Tender Award, Foundation, Commissioning).
-- Visual status indicators tracking original target vs revised target vs predicted actual completion date.
-
-### 12. ⚠️ Issues & Bottlenecks Registry (`IssuesView.tsx`)
-- Centralized database of active project bottlenecks categorized by type (Land Acquisition, Environmental Clearance, Law & Order, Right of Way, Fund Allocation).
-- Tracks issue severity, impact score, and days pending resolution.
-
-### 13. 🧹 Data Quality & Completeness Audit (`DataQualityView.tsx`)
+### 10. 🧹 Data Quality & Completeness Audit (`DataQualityView.tsx`)
 - Diagnostic dashboard auditing raw MoSPI record completeness and field integrity.
 - Detects missing Common Upload Form (CUF) values, logical anomalies (e.g. expenditure > revised cost without revision tag), and data freshness.
 
-### 14. 📥 Data Import & Pipeline Engine (`DataImportView.tsx`)
-- Seamless ingestion interface for CSV and Excel project updates.
+### 11. 📥 Data Import & Pipeline Engine (`DataImportView.tsx`)
+- Ingestion interface for CSV and Excel project updates (Admin access).
 - Automated validation, schema checking, dynamic field mapping, and database merging.
 
-### 15. 👤 User & Role Access Management (`UserManagementView.tsx`)
-- Role-based access control (RBAC) supporting **MoSPI Super Admin**, **Ministry Nodal Officer**, **Project Director**, and **PMG Reviewer**.
-- Access permissions configuration, security audit logs, and session management.
+### 12. 👤 User & Role Access Management (`UserManagementView.tsx`)
+- Role-based access control (RBAC) supporting **Admin**, **Project Tracker**, and **Engineer**.
+- Interactive role editing with instant server persistence.
 
 ---
 
@@ -166,66 +165,13 @@ The application features **14 specialized, interconnected modules** accessible v
 
 | Layer | Technology & Libraries |
 | :--- | :--- |
-| **Frontend Core** | **React 18.3**, **Vite 6.2**, **TypeScript 5.8** |
-| **Styling & UI** | **Tailwind CSS v4**, Custom Dark/Light Purple Design System, **Lucide Icons**, **Framer Motion** |
-| **Data Visualization** | **Recharts 3.10** (S-Curves, Heatmaps, Area, Bar, Line), **Leaflet Maps** |
+| **Frontend Core** | **React 19**, **Vite 6**, **TypeScript 5.8**, **React Router v7** |
+| **Styling & UI** | **Tailwind CSS v4**, Custom Dark/Light Purple Design System, **Lucide Icons** |
+| **Data Visualization** | **Recharts 3.10** (S-Curves, Heatmaps, Area, Bar, Line), **React Simple Maps (Official Survey of India GeoJSON)** |
 | **Data Processing** | **PapaParse**, **SheetJS (XLSX)**, **D3 Scale & Geo** |
 | **Backend Server** | **Node.js**, **Express 4.21**, **TSX** (TypeScript Execution) |
 | **AI / LLM Engine** | **Google Gemini 3.7 Flash SDK** (`@google/genai`), **React Markdown** |
 | **Security & Auth** | **JWT (jsonwebtoken)**, **bcryptjs** |
-
----
-
-## 📁 Repository Directory Structure
-
-```
-sih2026/
-├── backend/
-│   └── auth.ts                 # JWT & session authentication REST endpoints
-├── dist/                       # Compiled production build assets
-├── projectdates/               # Raw converted MoSPI project dataset Excel files
-├── public/                     # Static media, favicons, and branding assets
-├── scripts/
-│   ├── ingestExcel.ts          # Excel dataset parsing and normalization script
-│   ├── ingestPdfs.ts           # MoSPI monthly PDF flash report parser pipeline
-│   ├── test.ts                 # Integration testing utility
-│   └── test2.ts                # Dataset verification script
-├── src/
-│   ├── App.tsx                 # Master layout, navigation router & global state
-│   ├── index.css               # Global Tailwind CSS tokens & UI styling rules
-│   ├── main.tsx                # React DOM root entry point
-│   ├── types.ts                # TypeScript interfaces (InfrastructureProject, EarlyWarningAlert, etc.)
-│   ├── components/
-│   │   ├── assistant/          # RAG LLM Assistant View (AiAssistantView.tsx)
-│   │   ├── auth/               # Authentication & Login View (LoginView.tsx)
-│   │   ├── benchmarking/       # Sector Leaderboards & Peer Analysis (BenchmarkingView.tsx)
-│   │   ├── common/             # Header, Sidebar, RiskBadge, RiskGauge, FloatingChatbot
-│   │   ├── dashboard/          # Executive Dashboard View (DashboardView.tsx)
-│   │   ├── drivers/            # Escalation Drivers & SHAP Force Plots (EscalationDriversView.tsx)
-│   │   ├── early-warnings/     # Early Warning Alert Engine Inbox (EarlyWarningsView.tsx)
-│   │   ├── import/             # CSV/Excel Data Ingestion Engine (DataImportView.tsx)
-│   │   ├── interventions/      # PMG Governance & Interventions (InterventionsView.tsx)
-│   │   ├── issues/             # Project Issues & Bottlenecks Registry (IssuesView.tsx)
-│   │   ├── milestones/         # Milestones & Gantt Timeline Tracker (MilestonesView.tsx)
-│   │   ├── predictive/         # Overrun Lab, AI vs Stats Matrix, Ablation, PDP (PredictiveAnalyticsView.tsx)
-│   │   ├── projects/           # Projects Matrix & Detail Inspection Modal (ProjectsTableView.tsx)
-│   │   ├── quality/            # MoSPI Data Quality & Completeness Audit (DataQualityView.tsx)
-│   │   ├── reports/            # Executive PDF Report Generation Engine (ReportsView.tsx)
-│   │   ├── scenario/           # Interactive What-If Simulator (ScenarioAnalysisView.tsx)
-│   │   ├── settings/           # Threshold Configurations & System Reset (SettingsView.tsx)
-│   │   └── users/              # User Access & Role Management (UserManagementView.tsx)
-│   ├── data/
-│   │   ├── extractedMospiRecords.json # 3,017 Extracted MoSPI Infrastructure Records
-│   │   ├── mockProjects.ts            # Derived risk scoring & early warning generators
-│   │   ├── mospiPdfRecords.ts         # Parsed monthly PDF flash report dataset
-│   │   └── projectParser.ts           # In-browser project dataset parser
-│   └── utils/
-│       └── mlEngine.ts         # LightGBM Overrun Predictor, Baselines, Ablation & PDP Engine
-├── server.ts                   # Express API server with Vite middleware & Gemini LLM proxy
-├── package.json                # Project dependencies and npm execution scripts
-├── tsconfig.json               # TypeScript compiler configuration
-└── README.md                   # Full system documentation
-```
 
 ---
 
@@ -237,35 +183,26 @@ sih2026/
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-org/paimana-insight.git
-cd sih2026/sih2026
-npm install
+git clone https://github.com/udayy11/sih2026.git
+cd sih2026
+npm install --legacy-peer-deps
 ```
 
 ### 2. Configure Environment Variables
-Create a `.env` file in `sih2026/sih2026/`:
+Create a `.env` file in the root folder:
 ```env
-PORT=3000
+PORT=3001
 GEMINI_API_KEY=your_google_gemini_api_key_here
 NODE_ENV=development
 ```
 
 ### 3. Launch Development Server
 ```bash
-npm start
+npm run dev
 ```
-Open **`http://localhost:3000`** in your web browser.
+Open **`http://localhost:3001`** in your web browser.
 
-### 4. Ingest Raw PDF / Excel Datasets (Optional)
-```bash
-# Ingest PDF flash reports
-npm run ingest
-
-# Ingest Excel project dates
-npm run ingest:excel
-```
-
-### 5. Production Build
+### 4. Production Build
 ```bash
 npm run build
 node dist/server.js
@@ -277,58 +214,14 @@ node dist/server.js
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/auth/login` | Authenticates MoSPI / PMG users with JWT token return |
+| `POST` | `/api/auth/login` | Authenticates MoSPI users with JWT token return |
+| `POST` | `/api/auth/update-role` | Updates user role (RBAC management) |
 | `GET` | `/api/health` | System health status and Gemini 3.7 Flash SDK check |
 | `POST` | `/api/ai/predict` | Executes ML overrun predictions (cost escalation %, delay months, risk score) |
 | `GET` | `/api/ai/baselines` | Returns AI/ML vs Statistical Baseline metrics (Linear, Logistic, Cox, LightGBM) |
 | `GET` | `/api/ai/ablation` | Returns Feature Ablation Study lift metrics (Model A $\rightarrow$ B $\rightarrow$ C) |
 | `POST` | `/api/ai/explain` | Generates project-specific SHAP driver attributions |
 | `POST` | `/api/ai/assistant` | RAG LLM query endpoint searching 3,017 MoSPI project records |
-
----
-
-## 🐳 Open-Source Microservice Deployment (Docker & FastAPI)
-
-### Dockerfile Setup
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 8000
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-### FastAPI Endpoint Example (`api/main.py`)
-```python
-from fastapi import FastAPI
-from pydantic import BaseModel
-import lightgbm as lgb
-
-app = FastAPI(title="PAIMANA Early Warning API", version="2.0.0")
-
-class ProjectFeatures(BaseModel):
-    project_code: str
-    original_cost: float
-    physical_progress: float
-    financial_progress: float
-    land_acquired_percent: float
-    delay_months: int
-
-@app.post("/api/v1/predict-overrun")
-def predict_overrun(features: ProjectFeatures):
-    cpi = features.physical_progress / max(1.0, features.financial_progress)
-    divergence = features.financial_progress - features.physical_progress
-    prob_cost_overrun = min(0.99, max(0.05, 0.2 + (divergence * 0.02) + (features.delay_months * 0.03)))
-    
-    return {
-        "project_code": features.project_code,
-        "cost_overrun_probability": round(prob_cost_overrun, 4),
-        "risk_score": int(prob_cost_overrun * 100),
-        "cpi": round(cpi, 2)
-    }
-```
 
 ---
 
@@ -342,20 +235,20 @@ def predict_overrun(features: ProjectFeatures):
 - ✅ **(f) Cost Escalation Driver Analysis**: Aggregated SHAP force plots and PDP non-linear policy curves.
 - ✅ **(g) AI-Powered Monitoring Dashboard**: S-Curves, sector risk heatmaps, milestone Gantt tracker, and What-If lab.
 - ✅ **(h) LLM-Enabled Project Intelligence Assistant**: Gemini 3.7 Flash RAG assistant operating over 3,017 MoSPI project records.
-- ✅ **(i) Documentation & Deployment**: Comprehensive API spec, Docker files, feature ablation study, and reproducible pipelines.
+- ✅ **(i) Documentation & Deployment**: Comprehensive API spec, feature ablation study, and reproducible pipelines.
 
 ---
 
-## 📄 License & Maintainer Contact
+## 📄 Team InfraMinds Contact Details
 
 Developed for **MoSPI (Ministry of Statistics and Programme Implementation)** — *Smart India Hackathon 2026*.  
 Released under the **MIT License**.
 
-- **Lead Developer**: **Vignesh** ([vickydhanam2006@gmail.com](mailto:vickydhanam2006@gmail.com))
+- **Team Leader**: **Uday** — [udayverma112006@gmail.com](mailto:udayverma112006@gmail.com) | +91 9354572705
 - **Team Members**:
-  - **Tharrunika**: [Tharrunika.71382402162@sritcbe.ac.in](mailto:Tharrunika.71382402162@sritcbe.ac.in)
-  - **Sally**: [Sally.71382402124@sritcbe.ac.in](mailto:Sally.71382402124@sritcbe.ac.in)
-  - **Yuhaasri**: [yuhaasri.71382402179@sritcbe.ac.in](mailto:yuhaasri.71382402179@sritcbe.ac.in)
-  - **Vathsala**: [vathsala.71382402170@sritcbe.ac.in](mailto:vathsala.71382402170@sritcbe.ac.in)
-  - **Varshini**: [varshini.71382402168@sritcbe.ac.in](mailto:varshini.71382402168@sritcbe.ac.in)
-- **Repository**: [PAIMANA INSIGHT on GitHub](https://github.com/your-org/paimana-insight)
+  - **Lavanya**: [lavanyagoyal1212@gmail.com](mailto:lavanyagoyal1212@gmail.com) | +91 9810572488
+  - **Nikhil**: [nikhiltyagi8093@gmail.com](mailto:nikhiltyagi8093@gmail.com) | +91 8750925694
+  - **Vrinda**: [gargvrinda11@gmail.com](mailto:gargvrinda11@gmail.com) | +91 9050558390
+  - **Piyush**: [piyushkumarb2510@gmail.com](mailto:piyushkumarb2510@gmail.com) | +91 7982927100
+  - **Ashika**: [ashikajain2401@gmail.com](mailto:ashikajain2401@gmail.com) | +91 9899129177
+- **Official GitHub Repository**: [https://github.com/udayy11/sih2026](https://github.com/udayy11/sih2026)

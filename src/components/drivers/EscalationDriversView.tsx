@@ -221,7 +221,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           <div>
             <h4 className="font-bold text-lg text-white tracking-tight">Prescriptive Data Strategy</h4>
             <p className="text-sm text-indigo-200 mt-1 max-w-3xl leading-relaxed">
-              To fully transition PAIMANA from descriptive to prescriptive intelligence, MoSPI must augment standard CUF reporting with integrated APIs for contractor financial health (MCA), supply chain price indices, and real-time geospatial environmental data.
+              To fully transition NirmaanX from descriptive to prescriptive intelligence, MoSPI must augment standard CUF reporting with integrated APIs for contractor financial health (MCA), supply chain price indices, and real-time geospatial environmental data.
             </p>
           </div>
         </div>

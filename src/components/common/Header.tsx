@@ -100,10 +100,10 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-slate-900 dark:text-white text-base tracking-tight">PAIMANA</span>
-              <span className="font-extrabold text-purple-700 dark:text-purple-400 text-base tracking-tight">InfraPredict</span>
+              <span className="font-bold text-slate-900 dark:text-white text-base tracking-tight">Nirmaan</span>
+              <span className="font-extrabold text-purple-700 dark:text-purple-400 text-base tracking-tight">X</span>
               <span className="ml-1 px-2 py-0.5 text-[10px] font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300 rounded-full border border-purple-200 dark:border-purple-700 hidden sm:inline-block">
-                MoSPI • SIH 2026
+                InfraMinds • MoSPI
               </span>
             </div>
           </div>

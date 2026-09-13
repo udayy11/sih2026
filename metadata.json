@@ -1,6 +1,6 @@
 {
-  "name": "PAIMANA InfraPredict",
-  "description": "AI-Powered Infrastructure Project Predictive Monitoring & Early Warning Platform for cost overruns, delay risks, ML benchmarking, scenario simulation, and prescriptive interventions.",
+  "name": "NirmaanX",
+  "description": "NirmaanX: AI-Powered Infrastructure Project Predictive Monitoring & Early Warning Platform by Team InfraMinds.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

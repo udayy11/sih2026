@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_FILE_PATH = path.join(__dirname, 'users_db.json');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_paimana_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_nirmaanx_key_2026';
 const JWT_EXPIRES_IN = '1d';
 
 // --- Types ---
@@ -59,7 +59,7 @@ const loadUsersFromDisk = () => {
     {
       id: 'usr-001',
       username: 'varshini',
-      email: 'varshini@paimana.gov.in',
+      email: 'varshini@nirmaanx.gov.in',
       passwordHash: hashPassword('varshini'),
       role: 'ADMIN',
       name: 'Varshini',
@@ -70,7 +70,7 @@ const loadUsersFromDisk = () => {
     {
       id: 'usr-002',
       username: 'vicky',
-      email: 'vicky@paimana.gov.in',
+      email: 'vicky@nirmaanx.gov.in',
       passwordHash: hashPassword('vicky'),
       role: 'MOSPI_OFFICER',
       name: 'Vicky',
@@ -81,7 +81,7 @@ const loadUsersFromDisk = () => {
     {
       id: 'usr-003',
       username: 'yuhaa',
-      email: 'yuhaa@paimana.gov.in',
+      email: 'yuhaa@nirmaanx.gov.in',
       passwordHash: hashPassword('1234'),
       role: 'PROJECT_OFFICER',
       name: 'Yuhaa',
@@ -92,7 +92,7 @@ const loadUsersFromDisk = () => {
     {
       id: 'usr-004',
       username: 'vathsala',
-      email: 'vathsala@paimana.gov.in',
+      email: 'vathsala@nirmaanx.gov.in',
       passwordHash: hashPassword('1234'),
       role: 'PROJECT_OFFICER',
       name: 'Vathsala',
@@ -221,7 +221,7 @@ authRouter.post('/add-engineer', (req, res) => {
     id: `usr-${Date.now().toString().slice(-4)}`,
     name,
     username: username.toLowerCase(),
-    email: email || `${username.toLowerCase()}@paimana.gov.in`,
+    email: email || `${username.toLowerCase()}@nirmaanx.gov.in`,
     passwordHash: hashPassword(password),
     role: (role === 'Admin' ? 'ADMIN' : role === 'MoSPI Officer' ? 'MOSPI_OFFICER' : 'PROJECT_OFFICER') as Role,
     department: department || 'Field Execution & Civil Engineering',
@@ -233,7 +233,7 @@ authRouter.post('/add-engineer', (req, res) => {
   saveUsersToDisk();
 
   res.status(201).json({
-    message: `Engineer account @${newEngineer.username} successfully registered and persisted in PAIMANA Database.`,
+    message: `Engineer account @${newEngineer.username} successfully registered and persisted in NirmaanX Database.`,
     user: {
       id: newEngineer.id,
       name: newEngineer.name,
@@ -291,7 +291,7 @@ authRouter.post('/register', (req, res) => {
   const newUser: User = {
     id: `usr-${users.length + 1}`,
     username: uname,
-    email: email || `${uname}@paimana.gov.in`,
+    email: email || `${uname}@nirmaanx.gov.in`,
     passwordHash: hashPassword(password),
     role: role || 'PROJECT_OFFICER',
     name,

@@ -14,7 +14,7 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('paimana-theme');
+    const saved = localStorage.getItem('nirmaanx-theme') || localStorage.getItem('paimana-theme');
     if (saved) return saved === 'dark';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
@@ -22,10 +22,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('paimana-theme', 'dark');
+      localStorage.setItem('nirmaanx-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('paimana-theme', 'light');
+      localStorage.setItem('nirmaanx-theme', 'light');
     }
   }, [isDarkMode]);
 

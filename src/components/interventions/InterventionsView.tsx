@@ -44,12 +44,12 @@ export const InterventionsView: React.FC<InterventionsViewProps> = ({
     const text = `=============================================================================
 GOVERNMENT OF INDIA
 MINISTRY OF STATISTICS AND PROGRAMME IMPLEMENTATION (MoSPI)
-PROJECT MONITORING DIVISION - PAIMANA INFRASTRUCTURE INTELLIGENCE
+PROJECT MONITORING DIVISION - NIRMAANX INFRASTRUCTURE INTELLIGENCE
 =============================================================================
 
 OFFICIAL DECISION-SUPPORT INTERVENTION MEMORANDUM
 Date of Issue: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-File Ref No: MoSPI/PMD/PAIMANA/${selectedProject.projectCode}/${new Date().getFullYear()}
+File Ref No: MoSPI/PMD/NIRMAANX/${selectedProject.projectCode}/${new Date().getFullYear()}
 
 PROJECT IDENTITY:
 -----------------
@@ -88,7 +88,7 @@ Target Action Window : Within 14 Calendar Days
 Follow-Up Review     : Next NIP / PMG Review Meeting
 
 =============================================================================
-CONFIDENTIAL & PRIVILEGED - FOR OFFICIAL USE ONLY (MoSPI PAIMANA PORTAL)
+CONFIDENTIAL & PRIVILEGED - FOR OFFICIAL USE ONLY (MoSPI NIRMAANX PORTAL)
 =============================================================================
 `;
 
@@ -300,7 +300,7 @@ CONFIDENTIAL & PRIVILEGED - FOR OFFICIAL USE ONLY (MoSPI PAIMANA PORTAL)
               <div className="text-center border-b border-slate-300 pb-3">
                 <div className="font-bold text-sm">GOVERNMENT OF INDIA</div>
                 <div className="text-slate-600">MINISTRY OF STATISTICS AND PROGRAMME IMPLEMENTATION</div>
-                <div className="text-slate-500 text-[11px]">PROJECT MONITORING DIVISION (PAIMANA INFRASTRUCTURE DECISION ENGINE)</div>
+                <div className="text-slate-500 text-[11px]">PROJECT MONITORING DIVISION (NIRMAANX INFRASTRUCTURE DECISION ENGINE)</div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[11px] border-b border-slate-200 pb-3">

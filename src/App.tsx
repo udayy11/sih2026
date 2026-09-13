@@ -303,7 +303,7 @@ function AppContent({
 export default function App() {
   const [currentUser, setCurrentUser] = useState<UserSession | null>(() => {
     try {
-      const stored = localStorage.getItem('paimana_auth_user');
+      const stored = localStorage.getItem('nirmaanx_auth_user') || localStorage.getItem('paimana_auth_user');
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -313,7 +313,7 @@ export default function App() {
   const handleLogin = (user: UserSession) => {
     setCurrentUser(user);
     try {
-      localStorage.setItem('paimana_auth_user', JSON.stringify(user));
+      localStorage.setItem('nirmaanx_auth_user', JSON.stringify(user));
     } catch (e) {
       console.warn('Failed to save session to localStorage', e);
     }
@@ -322,6 +322,7 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     try {
+      localStorage.removeItem('nirmaanx_auth_user');
       localStorage.removeItem('paimana_auth_user');
     } catch (e) {
       console.warn('Failed to clear session from localStorage', e);
