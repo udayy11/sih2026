@@ -141,8 +141,8 @@ I am your official decision-support assistant for the **Ministry of Statistics a
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle AI Chatbot"
-        className={`fixed bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-300 z-50 flex items-center justify-center ${
-          isOpen ? 'bg-rose-500 hover:bg-rose-600 rotate-90 scale-105' : 'bg-purple-700 hover:bg-purple-800 hover:scale-110 shadow-purple-900/40'
+        className={`fixed bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-200 z-50 flex items-center justify-center btn-press active:scale-95 ${
+          isOpen ? 'bg-rose-500 hover:bg-rose-600 rotate-90 scale-105' : 'bg-purple-700 hover:bg-purple-800 hover:scale-105 shadow-purple-900/40'
         }`}
       >
         {isOpen ? (
@@ -154,8 +154,8 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 
       {/* Chat Window Container */}
       <div
-        className={`fixed bottom-24 right-6 w-[390px] h-[580px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-300 transform origin-bottom-right ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
+        className={`fixed bottom-24 right-6 w-[390px] h-[580px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-200 ease-out transform origin-bottom-right ${
+          isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-3 pointer-events-none'
         }`}
       >
         {/* Header */}
@@ -175,7 +175,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
           <button
             onClick={() => setMessages([messages[0]])}
             title="Reset Chat"
-            className="p-1.5 rounded-lg hover:bg-white/10 text-purple-200 hover:text-white transition-all text-xs"
+            className="p-1.5 rounded-lg hover:bg-white/10 text-purple-200 hover:text-white transition-all text-xs btn-press"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
@@ -199,7 +199,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               key={idx}
               onClick={() => handleSendMessage(undefined, q)}
               disabled={isLoading}
-              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white hover:bg-purple-50 text-slate-700 hover:text-purple-900 border border-slate-200/90 hover:border-purple-300 transition-all text-left shadow-2xs disabled:opacity-50"
+              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white hover:bg-purple-50 text-slate-700 hover:text-purple-900 border border-slate-200/90 hover:border-purple-300 transition-all text-left shadow-2xs disabled:opacity-50 btn-press"
             >
               {q}
             </button>
@@ -270,7 +270,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
             <button
               type="submit"
               disabled={!inputQuery.trim() || isLoading}
-              className="w-9 h-9 rounded-xl bg-purple-700 hover:bg-purple-800 text-white flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0"
+              className="w-9 h-9 rounded-xl bg-purple-700 hover:bg-purple-800 text-white flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0 btn-press active:scale-95"
             >
               <Send className="w-4 h-4" />
             </button>

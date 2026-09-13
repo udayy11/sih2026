@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { InfrastructureProject, RiskLevel } from '../../types';
 import { RiskBadge } from '../common/RiskBadge';
+import { useAnimatedNumber } from '../../utils/useAnimatedNumber';
 import { 
   Building2, 
   TrendingUp, 
@@ -41,21 +42,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     });
   }, [projects, selectedState]);
 
-  // KPIs
-  const projectCount = activeProjects.length;
-  
-  const originalCost = activeProjects.reduce((sum, p) => sum + p.originalCost, 0);
-  const revisedCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
-  const expenditure = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
-  
-  const completedDuringMonth = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress >= 98).length;
-  const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length;
+  // Memoized KPIs and Risk Averages
+  const metrics = useMemo(() => {
+    const count = activeProjects.length;
+    const origCost = activeProjects.reduce((sum, p) => sum + p.originalCost, 0);
+    const revCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
+    const expend = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
+    const completed = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress >= 98).length;
+    const newly = activeProjects.filter(p => p.physicalProgress < 10).length;
 
-  // AI Risk Averages
-  const avgCostRisk = projectCount > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.costRiskScore, 0) / projectCount) : 0;
-  const avgScheduleRisk = projectCount > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.scheduleRiskScore, 0) / projectCount) : 0;
-  const avgProgressRisk = projectCount > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.progressRiskScore, 0) / projectCount) : 0;
-  const avgOverallRisk = projectCount > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.overallRiskScore, 0) / projectCount) : 0;
+    const avgCost = count > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.costRiskScore, 0) / count) : 0;
+    const avgSchedule = count > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.scheduleRiskScore, 0) / count) : 0;
+    const avgProgress = count > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.progressRiskScore, 0) / count) : 0;
+    const avgOverall = count > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.overallRiskScore, 0) / count) : 0;
+
+    return {
+      projectCount: count,
+      originalCost: origCost,
+      revisedCost: revCost,
+      expenditure: expend,
+      completedDuringMonth: completed,
+      newlyAdded: newly,
+      avgCostRisk: avgCost,
+      avgScheduleRisk: avgSchedule,
+      avgProgressRisk: avgProgress,
+      avgOverallRisk: avgOverall,
+    };
+  }, [activeProjects]);
+
+  // Animated KPIs for smooth number transitions
+  const animProjectCount = useAnimatedNumber(metrics.projectCount);
+  const animCompleted = useAnimatedNumber(metrics.completedDuringMonth);
+  const animOriginalCost = useAnimatedNumber(metrics.originalCost, 400, 2);
+  const animRevisedCost = useAnimatedNumber(metrics.revisedCost, 400, 2);
+  const animExpenditure = useAnimatedNumber(metrics.expenditure, 400, 2);
+  const animNewlyAdded = useAnimatedNumber(metrics.newlyAdded);
 
   const getRiskSeverityColor = (score: number) => {
     if (score >= 80) return 'text-rose-500 bg-rose-50 border-rose-200 stroke-rose-500';
@@ -73,9 +94,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   const CircularProgress = ({ value, label, subtitle }: { value: number, label: string, subtitle: string }) => {
+    const animVal = useAnimatedNumber(value);
     const radius = 28;
     const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (value / 100) * circumference;
+    const strokeDashoffset = circumference - (animVal / 100) * circumference;
     const colorClasses = getRiskSeverityColor(value);
 
     return (
@@ -91,7 +113,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               cy="32"
             />
             <circle
-              className={`${colorClasses.split(' ')[3]} transition-all duration-1000 ease-out`}
+              className={`${colorClasses.split(' ')[3]} transition-all duration-500 ease-out`}
               strokeWidth="4"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
@@ -103,7 +125,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             />
           </svg>
           <div className={`absolute inset-0 flex items-center justify-center font-mono font-bold text-[13px] ${colorClasses.split(' ')[0]}`}>
-            {value}%
+            {animVal}%
           </div>
         </div>
         <span className="text-[10px] font-bold text-slate-700 text-center uppercase tracking-wider">{label}</span>
@@ -152,63 +174,63 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 
                 {/* KPI 1: Project Count */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center card-interactive">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <Layers className="w-4 h-4" />
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Project Count</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{projectCount}</div>
+                  <div className="text-3xl font-bold font-mono text-slate-900">{animProjectCount}</div>
                 </div>
 
                 {/* KPI 2: Completed During Month */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center card-interactive">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Completed</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{completedDuringMonth}</div>
+                  <div className="text-3xl font-bold font-mono text-slate-900">{animCompleted}</div>
                 </div>
 
                 {/* KPI 3: Original Cost */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center card-interactive">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <DollarSign className="w-4 h-4 text-slate-400" />
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Original Cost</span>
                   </div>
                   <div className="text-lg font-bold font-mono text-slate-900">
-                    ₹{originalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
+                    ₹{animOriginalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
                   </div>
                 </div>
 
                 {/* KPI 4: Latest Revised Cost */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center card-interactive">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <TrendingUp className="w-4 h-4 text-rose-400" />
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Revised Cost</span>
                   </div>
                   <div className="text-lg font-bold font-mono text-slate-900">
-                    ₹{revisedCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
+                    ₹{animRevisedCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
                   </div>
                 </div>
 
                 {/* KPI 5: Cumulative Expenditure */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center card-interactive">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <Building2 className="w-4 h-4 text-blue-400" />
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Expenditure</span>
                   </div>
                   <div className="text-lg font-bold font-mono text-slate-900">
-                    ₹{expenditure.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
+                    ₹{animExpenditure.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
                   </div>
                 </div>
 
                 {/* KPI 6: Newly Added */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center card-interactive">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <Sparkles className="w-4 h-4 text-purple-400" />
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Newly Added</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{newlyAdded}</div>
+                  <div className="text-3xl font-bold font-mono text-slate-900">{animNewlyAdded}</div>
                 </div>
                 
               </div>
@@ -221,16 +243,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <ShieldAlert className="w-4 h-4 text-purple-600" />
                   AI Risk Overview
                 </h3>
-                <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getRiskSeverityColor(avgOverallRisk)}`}>
-                  Risk: {getOverallRiskLabel(avgOverallRisk)}
+                <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getRiskSeverityColor(metrics.avgOverallRisk)}`}>
+                  Risk: {getOverallRiskLabel(metrics.avgOverallRisk)}
                 </div>
               </div>
 
               <div className="grid grid-cols-4 gap-2 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                <CircularProgress value={avgCostRisk} label="Cost Overrun" subtitle="Risk Score" />
-                <CircularProgress value={avgScheduleRisk} label="Schedule Delay" subtitle="Risk Score" />
-                <CircularProgress value={avgProgressRisk} label="Implementation" subtitle="Risk Score" />
-                <CircularProgress value={avgOverallRisk} label="Overall Risk" subtitle="Aggregated" />
+                <CircularProgress value={metrics.avgCostRisk} label="Cost Overrun" subtitle="Risk Score" />
+                <CircularProgress value={metrics.avgScheduleRisk} label="Schedule Delay" subtitle="Risk Score" />
+                <CircularProgress value={metrics.avgProgressRisk} label="Implementation" subtitle="Risk Score" />
+                <CircularProgress value={metrics.avgOverallRisk} label="Overall Risk" subtitle="Aggregated" />
               </div>
             </div>
 
@@ -240,9 +262,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {selectedState && (
             <button 
               onClick={() => onNavigate('projects')}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3.5 px-4 font-bold text-sm shadow-sm transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3.5 px-4 font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 btn-press"
             >
-              View {projectCount} Priority Projects in {selectedState}
+              View {metrics.projectCount} Priority Projects in {selectedState}
               <ChevronRight className="w-4 h-4" />
             </button>
           )}

@@ -7,6 +7,9 @@
     color: #1e293b;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+  html {
+    scroll-behavior: smooth;
+  }
   .dark body {
     background-color: #0b0f19;
     color: #f1f5f9;
@@ -86,8 +89,113 @@
   animation: pulse-subtle 2.5s infinite ease-in-out;
 }
 
+/* Hardware-accelerated motion & micro-animations */
+@keyframes smoothFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.smooth-fade-in {
+  animation: smoothFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-enter {
+  animation: dropdownEnter 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes modalBackdropEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-backdrop-enter {
+  animation: modalBackdropEnter 0.2s ease-out forwards;
+}
+
+@keyframes modalCardEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-card-enter {
+  animation: modalCardEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-content-enter {
+  animation: tabFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle micro-press feedback for buttons */
+.btn-press {
+  transition: transform 0.1s ease, filter 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Subtle card elevation transition */
+.card-interactive {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-interactive:hover {
+  transform: translateY(-1px);
+}
+
 /* Dot matrix map pattern */
 .bg-dot-matrix {
   background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
   background-size: 16px 16px;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

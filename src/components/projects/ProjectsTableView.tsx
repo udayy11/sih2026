@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useDeferredValue } from 'react';
 import { InfrastructureProject, RiskLevel } from '../../types';
 import { RiskBadge } from '../common/RiskBadge';
 import { 
@@ -42,6 +42,9 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
   const [selectedDelayRisk, setSelectedDelayRisk] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
 
+  // Deferred search query for 60 FPS typing responsiveness
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
   // Sorting State
   const [sortField, setSortField] = useState<keyof InfrastructureProject>('overallRiskScore');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -59,8 +62,8 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
   const filteredProjects = useMemo(() => {
     return projects.filter(p => {
       // Search
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+      if (deferredSearchQuery.trim()) {
+        const q = deferredSearchQuery.toLowerCase();
         const matchesName = p.name.toLowerCase().includes(q);
         const matchesCode = p.projectCode.toLowerCase().includes(q);
         const matchesAgency = p.implementingAgency.toLowerCase().includes(q);
@@ -89,7 +92,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
     });
   }, [
     projects,
-    searchQuery,
+    deferredSearchQuery,
     selectedMinistry,
     selectedSector,
     selectedState,
@@ -127,16 +130,19 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
     currentPage * itemsPerPage
   );
 
-  const handleSort = (field: keyof InfrastructureProject) => {
-    if (sortField === field) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
+  const handleSort = useCallback((field: keyof InfrastructureProject) => {
+    setSortField(prevField => {
+      if (prevField === field) {
+        setSortDirection(prevDir => prevDir === 'asc' ? 'desc' : 'asc');
+        return prevField;
+      } else {
+        setSortDirection('desc');
+        return field;
+      }
+    });
+  }, []);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSearchQuery('');
     setSelectedMinistry('ALL');
     setSelectedSector('ALL');
@@ -146,7 +152,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
     setSelectedDelayRisk('ALL');
     setSelectedStatus('ALL');
     setCurrentPage(1);
-  };
+  }, []);
 
   const exportToCSV = () => {
     const headers = [
@@ -221,7 +227,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-300/80 transition-all shadow-2xs"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-300/80 transition-all shadow-2xs btn-press"
           >
             <Download className="w-4 h-4 text-slate-600" />
             <span>Export CSV</span>
@@ -229,7 +235,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
 
           <button
             onClick={handleResetFilters}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-600 hover:text-slate-900 text-xs font-medium hover:bg-slate-100 transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-600 hover:text-slate-900 text-xs font-medium hover:bg-slate-100 transition-all btn-press"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Filters</span>
@@ -241,7 +247,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
       <div className="flex flex-wrap items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit border border-slate-200 dark:border-slate-700 shadow-2xs">
         <button
           onClick={() => setProjectSubView('table')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 btn-press ${
             projectSubView === 'table'
               ? 'bg-[#451254] text-white shadow-md'
               : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
@@ -253,7 +259,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
 
         <button
           onClick={() => setProjectSubView('milestones')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 btn-press ${
             projectSubView === 'milestones'
               ? 'bg-[#451254] text-white shadow-md'
               : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
@@ -265,7 +271,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
 
         <button
           onClick={() => setProjectSubView('issues')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 btn-press ${
             projectSubView === 'issues'
               ? 'bg-[#451254] text-white shadow-md'
               : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
@@ -277,15 +283,19 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
       </div>
 
       {projectSubView === 'milestones' && (
-        <MilestonesView projects={projects} onSelectProject={onSelectProject} />
+        <div className="tab-content-enter">
+          <MilestonesView projects={projects} onSelectProject={onSelectProject} />
+        </div>
       )}
 
       {projectSubView === 'issues' && (
-        <IssuesView projects={projects} onSelectProject={onSelectProject} />
+        <div className="tab-content-enter">
+          <IssuesView projects={projects} onSelectProject={onSelectProject} />
+        </div>
       )}
 
       {projectSubView === 'table' && (
-        <>
+        <div className="tab-content-enter space-y-6">
           {/* Multi-Criteria Filter Strip */}
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
         {/* Search Bar */}
@@ -644,7 +654,7 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-medium hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none"
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-medium hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none btn-press active:scale-95 transition-all"
             >
               Previous
             </button>
@@ -654,14 +664,14 @@ export const ProjectsTableView: React.FC<ProjectsTableViewProps> = ({
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-medium hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none"
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-medium hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none btn-press active:scale-95 transition-all"
             >
               Next
             </button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )}
 </div>
 );

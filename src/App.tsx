@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Suspense, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { InfrastructureProject, EarlyWarningAlert } from './types';
 import { MOCK_PROJECTS, generateEarlyWarnings } from './data/mockProjects';
@@ -26,7 +26,7 @@ const SettingsView = React.lazy(() => import('./components/settings/SettingsView
 // Loading Spinner for Code-Split Modules
 function ModuleLoader() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 smooth-fade-in">
       <div className="w-10 h-10 border-3 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
       <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading module...</span>
     </div>
@@ -71,34 +71,39 @@ function AppContent({
     return path;
   }, [location.pathname]);
 
-  // Derived Alerts
-  const alerts = useMemo(() => generateEarlyWarnings(projects), [projects]);
-  const criticalCount = alerts.filter(a => a.riskLevel === 'CRITICAL').length;
-  const highRiskCount = alerts.filter(a => a.riskLevel === 'HIGH').length;
+  // Derived Alerts with memoized risk counts
+  const { alerts, criticalCount, highRiskCount } = useMemo(() => {
+    const generated = generateEarlyWarnings(projects);
+    const critical = generated.filter(a => a.riskLevel === 'CRITICAL').length;
+    const high = generated.filter(a => a.riskLevel === 'HIGH').length;
+    return { alerts: generated, criticalCount: critical, highRiskCount: high };
+  }, [projects]);
 
   // Handle Navigation by Route
-  const handleNavigate = (view: string) => {
+  const handleNavigate = useCallback((view: string) => {
     const route = view === 'dashboard' ? '/dashboard' : `/${view}`;
     navigate(route);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [navigate]);
 
   // Handle Project Selection for Detail Inspection Modal
-  const handleSelectProject = (project: InfrastructureProject) => {
+  const handleSelectProject = useCallback((project: InfrastructureProject) => {
     setSelectedProjectForDetail(project);
     setTargetModuleProjectId(project.id);
-  };
+  }, []);
 
   // Handle Direct Navigation to Specific Analytical Module for a Project
-  const handleNavigateToModule = (view: string, projectId: string) => {
+  const handleNavigateToModule = useCallback((view: string, projectId: string) => {
     setSelectedProjectForDetail(null);
     setTargetModuleProjectId(projectId);
-    handleNavigate(view);
-  };
+    const route = view === 'dashboard' ? '/dashboard' : `/${view}`;
+    navigate(route);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [navigate]);
 
-  const handleResetData = () => {
+  const handleResetData = useCallback(() => {
     setProjects(MOCK_PROJECTS);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f3f4f8] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased selection:bg-purple-600 selection:text-white transition-colors duration-200">
@@ -129,157 +134,159 @@ function AppContent({
         {/* Content Container */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full bg-[#f8f9fc] dark:bg-[#0b0f19] transition-colors duration-200">
           <Suspense fallback={<ModuleLoader />}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              
-              <Route
-                path="/dashboard"
-                element={
-                  <DashboardView
-                    projects={projects}
-                    onSelectProject={handleSelectProject}
-                    onNavigate={handleNavigate}
-                  />
-                }
-              />
+            <div key={activeView} className="smooth-fade-in w-full">
+              <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                
+                <Route
+                  path="/dashboard"
+                  element={
+                    <DashboardView
+                      projects={projects}
+                      onSelectProject={handleSelectProject}
+                      onNavigate={handleNavigate}
+                    />
+                  }
+                />
 
-              <Route
-                path="/projects"
-                element={
-                  <ProjectsTableView
-                    projects={projects}
-                    onSelectProject={handleSelectProject}
-                    onNavigate={handleNavigate}
-                  />
-                }
-              />
+                <Route
+                  path="/projects"
+                  element={
+                    <ProjectsTableView
+                      projects={projects}
+                      onSelectProject={handleSelectProject}
+                      onNavigate={handleNavigate}
+                    />
+                  }
+                />
 
-              <Route
-                path="/early-warnings"
-                element={
-                  <EarlyWarningsView
-                    alerts={alerts}
-                    projects={projects}
-                    onSelectProject={handleSelectProject}
-                    onNavigate={handleNavigate}
-                  />
-                }
-              />
+                <Route
+                  path="/early-warnings"
+                  element={
+                    <EarlyWarningsView
+                      alerts={alerts}
+                      projects={projects}
+                      onSelectProject={handleSelectProject}
+                      onNavigate={handleNavigate}
+                    />
+                  }
+                />
 
-              <Route
-                path="/predictive"
-                element={
-                  <PredictiveAnalyticsView
-                    projects={projects}
-                    selectedProjectId={targetModuleProjectId}
-                    onSelectProject={handleSelectProject}
-                    onNavigate={handleNavigate}
-                  />
-                }
-              />
-
-              <Route
-                path="/benchmarking"
-                element={
-                  <RoleGuard userRole={currentUser.role} allowedRoles={['Admin', 'Project Tracker']}>
-                    <BenchmarkingView
+                <Route
+                  path="/predictive"
+                  element={
+                    <PredictiveAnalyticsView
                       projects={projects}
                       selectedProjectId={targetModuleProjectId}
                       onSelectProject={handleSelectProject}
                       onNavigate={handleNavigate}
                     />
-                  </RoleGuard>
-                }
-              />
+                  }
+                />
 
-              <Route
-                path="/scenario"
-                element={
-                  <RoleGuard userRole={currentUser.role} allowedRoles={['Admin', 'Project Tracker']}>
-                    <ScenarioAnalysisView
+                <Route
+                  path="/benchmarking"
+                  element={
+                    <RoleGuard userRole={currentUser.role} allowedRoles={['Admin', 'Project Tracker']}>
+                      <BenchmarkingView
+                        projects={projects}
+                        selectedProjectId={targetModuleProjectId}
+                        onSelectProject={handleSelectProject}
+                        onNavigate={handleNavigate}
+                      />
+                    </RoleGuard>
+                  }
+                />
+
+                <Route
+                  path="/scenario"
+                  element={
+                    <RoleGuard userRole={currentUser.role} allowedRoles={['Admin', 'Project Tracker']}>
+                      <ScenarioAnalysisView
+                        projects={projects}
+                        selectedProjectId={targetModuleProjectId}
+                        onSelectProject={handleSelectProject}
+                        onNavigate={handleNavigate}
+                      />
+                    </RoleGuard>
+                  }
+                />
+
+                <Route
+                  path="/interventions"
+                  element={
+                    <RoleGuard userRole={currentUser.role} allowedRoles={['Admin', 'Project Tracker']}>
+                      <InterventionsView
+                        projects={projects}
+                        selectedProjectId={targetModuleProjectId}
+                        onSelectProject={handleSelectProject}
+                        onNavigate={handleNavigate}
+                      />
+                    </RoleGuard>
+                  }
+                />
+
+                <Route
+                  path="/data-quality"
+                  element={
+                    <DataQualityView
                       projects={projects}
-                      selectedProjectId={targetModuleProjectId}
+                      onSelectProject={handleSelectProject}
+                    />
+                  }
+                />
+
+                <Route
+                  path="/data-import"
+                  element={
+                    <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
+                      <DataImportView
+                        onImportSuccess={(newProjects) => setProjects(newProjects)}
+                        onNavigate={handleNavigate}
+                      />
+                    </RoleGuard>
+                  }
+                />
+
+                <Route
+                  path="/users"
+                  element={
+                    <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
+                      <UserManagementView currentUser={currentUser} />
+                    </RoleGuard>
+                  }
+                />
+
+                <Route
+                  path="/assistant"
+                  element={
+                    <AiAssistantView
+                      projects={projects}
                       onSelectProject={handleSelectProject}
                       onNavigate={handleNavigate}
                     />
-                  </RoleGuard>
-                }
-              />
+                  }
+                />
 
-              <Route
-                path="/interventions"
-                element={
-                  <RoleGuard userRole={currentUser.role} allowedRoles={['Admin', 'Project Tracker']}>
-                    <InterventionsView
-                      projects={projects}
-                      selectedProjectId={targetModuleProjectId}
-                      onSelectProject={handleSelectProject}
-                      onNavigate={handleNavigate}
-                    />
-                  </RoleGuard>
-                }
-              />
+                <Route
+                  path="/settings"
+                  element={
+                    <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
+                      <SettingsView onResetData={handleResetData} />
+                    </RoleGuard>
+                  }
+                />
 
-              <Route
-                path="/data-quality"
-                element={
-                  <DataQualityView
-                    projects={projects}
-                    onSelectProject={handleSelectProject}
-                  />
-                }
-              />
+                {/* Backward compatibility redirects for moved entities */}
+                <Route path="/milestones" element={<Navigate to="/projects" replace />} />
+                <Route path="/issues" element={<Navigate to="/projects" replace />} />
+                <Route path="/drivers" element={<Navigate to="/predictive" replace />} />
+                <Route path="/reports" element={<Navigate to="/dashboard" replace />} />
 
-              <Route
-                path="/data-import"
-                element={
-                  <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
-                    <DataImportView
-                      onImportSuccess={(newProjects) => setProjects(newProjects)}
-                      onNavigate={handleNavigate}
-                    />
-                  </RoleGuard>
-                }
-              />
-
-              <Route
-                path="/users"
-                element={
-                  <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
-                    <UserManagementView currentUser={currentUser} />
-                  </RoleGuard>
-                }
-              />
-
-              <Route
-                path="/assistant"
-                element={
-                  <AiAssistantView
-                    projects={projects}
-                    onSelectProject={handleSelectProject}
-                    onNavigate={handleNavigate}
-                  />
-                }
-              />
-
-              <Route
-                path="/settings"
-                element={
-                  <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
-                    <SettingsView onResetData={handleResetData} />
-                  </RoleGuard>
-                }
-              />
-
-              {/* Backward compatibility redirects for moved entities */}
-              <Route path="/milestones" element={<Navigate to="/projects" replace />} />
-              <Route path="/issues" element={<Navigate to="/projects" replace />} />
-              <Route path="/drivers" element={<Navigate to="/predictive" replace />} />
-              <Route path="/reports" element={<Navigate to="/dashboard" replace />} />
-
-              {/* Catch-all route */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
+                {/* Catch-all route */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </div>
           </Suspense>
         </main>
       </div>

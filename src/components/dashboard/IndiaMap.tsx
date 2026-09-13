@@ -36,16 +36,31 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
     .domain([0, maxProjects])
     .range(["#f8fafc", "#1e3a8a"]); // slate-50 to blue-900
 
+  const centroidCache = useRef<Map<string, [number, number]>>(new Map());
+
   // Standardize state names between GeoJSON and our data if needed
-  const normalizeStateName = (name: string) => {
-    if (!name) return '';
-    const n = name.trim();
-    if (n === 'Andaman and Nicobar' || n === 'Andaman and Nicobar Islands') return 'Andaman and Nicobar';
-    if (n === 'Orissa' || n === 'Odisha') return 'Odisha';
-    if (n === 'Uttaranchal' || n === 'Uttarakhand') return 'Uttarakhand';
-    if (n.includes('Delhi')) return 'Delhi';
-    if (n.includes('Jammu') && n.includes('Kashmir')) return 'Jammu and Kashmir';
-    return n;
+  const normalizeStateName = useMemo(() => {
+    const cache = new Map<string, string>();
+    return (name: string) => {
+      if (!name) return '';
+      if (cache.has(name)) return cache.get(name)!;
+      const n = name.trim();
+      let res = n;
+      if (n === 'Andaman and Nicobar' || n === 'Andaman and Nicobar Islands') res = 'Andaman and Nicobar';
+      else if (n === 'Orissa' || n === 'Odisha') res = 'Odisha';
+      else if (n === 'Uttaranchal' || n === 'Uttarakhand') res = 'Uttarakhand';
+      else if (n.includes('Delhi')) res = 'Delhi';
+      else if (n.includes('Jammu') && n.includes('Kashmir')) res = 'Jammu and Kashmir';
+      cache.set(name, res);
+      return res;
+    };
+  }, []);
+
+  const getCentroid = (geo: any): [number, number] => {
+    if (!centroidCache.current.has(geo.rsmKey)) {
+      centroidCache.current.set(geo.rsmKey, geoCentroid(geo));
+    }
+    return centroidCache.current.get(geo.rsmKey)!;
   };
 
   const handleZoomIn = () => {
@@ -130,7 +145,7 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
                           stroke: "#000000",
                           strokeWidth: isSelected ? 2 : 1,
                           outline: "none",
-                          transition: "all 0.3s ease"
+                          transition: "fill 0.2s ease, stroke-width 0.2s ease"
                         },
                         hover: {
                           fill: "#60a5fa",
@@ -138,7 +153,7 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
                           strokeWidth: 1.5,
                           outline: "none",
                           cursor: "pointer",
-                          transition: "all 0.3s ease"
+                          transition: "fill 0.2s ease, stroke-width 0.2s ease"
                         },
                         pressed: {
                           fill: "#2563eb",
@@ -149,8 +164,9 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
                   );
                 })}
                 {geographies.map((geo) => {
-                  const stateName = normalizeStateName(geo.properties.NAME_1);
-                  const centroid = geoCentroid(geo);
+                  const rawName = geo.properties.st_nm || geo.properties.NAME_1 || geo.properties.NAME || geo.properties.name || '';
+                  const stateName = normalizeStateName(rawName);
+                  const centroid = getCentroid(geo);
                   return (
                     <Marker key={`${geo.rsmKey}-label`} coordinates={centroid}>
                       <text
@@ -183,7 +199,7 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
           <span>{selectedState}</span>
           <button 
             onClick={(e) => { e.stopPropagation(); onStateSelect(null); }}
-            className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-blue-200 text-blue-900 transition-colors"
+            className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-blue-200 text-blue-900 transition-colors btn-press"
           >
             ×
           </button>
@@ -194,7 +210,7 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
       <div className="absolute left-4 bottom-4 z-20 flex flex-col gap-1 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
         <button
           onClick={handleZoomIn}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors btn-press"
           title="Zoom In"
         >
           <ZoomIn className="w-4 h-4" />
@@ -202,7 +218,7 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
         <div className="w-full h-px bg-slate-100" />
         <button
           onClick={handleResetZoom}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors btn-press"
           title="Reset Zoom"
         >
           <Maximize className="w-4 h-4" />
@@ -210,7 +226,7 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
         <div className="w-full h-px bg-slate-100" />
         <button
           onClick={handleZoomOut}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors btn-press"
           title="Zoom Out"
         >
           <ZoomOut className="w-4 h-4" />

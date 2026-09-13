@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { InfrastructureProject, BenchmarkComparison } from '../../types';
 import { MLEngine } from '../../utils/mlEngine';
 import { RiskBadge } from '../common/RiskBadge';
@@ -10,10 +10,10 @@ import {
   TrendingUp, 
   Clock, 
   DollarSign, 
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  AlertTriangle
+  ArrowRight, 
+  ShieldCheck, 
+  CheckCircle2, 
+  AlertTriangle 
 } from 'lucide-react';
 import {
   BarChart,
@@ -48,28 +48,38 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
     selectedProjectId || projects[0]?.id || 'PRJ-TRN-001'
   );
 
-  const selectedProject = projects.find(p => p.id === activeProjectId) || projects[0];
+  const selectedProject = useMemo(() => {
+    return projects.find(p => p.id === activeProjectId) || projects[0];
+  }, [projects, activeProjectId]);
 
-  // Perform cohort benchmarking
-  const benchmarkComparisons = MLEngine.benchmarkProject(selectedProject, projects);
+  // Memoized cohort benchmarking calculation
+  const benchmarkComparisons = useMemo(() => {
+    return MLEngine.benchmarkProject(selectedProject, projects);
+  }, [selectedProject, projects]);
 
-  // Calculate sector cohort averages
-  const sectorCohort = projects.filter(p => p.sector === selectedProject.sector);
-  const avgCostOverrun = sectorCohort.reduce((acc, p) => acc + p.costOverrunPercent, 0) / sectorCohort.length;
-  const avgDelayMonths = sectorCohort.reduce((acc, p) => acc + p.delayMonths, 0) / sectorCohort.length;
-  const avgRiskScore = sectorCohort.reduce((acc, p) => acc + p.overallRiskScore, 0) / sectorCohort.length;
+  // Memoized sector cohort averages
+  const { sectorCohort, avgCostOverrun, avgDelayMonths, avgRiskScore } = useMemo(() => {
+    const cohort = projects.filter(p => p.sector === selectedProject.sector);
+    const count = cohort.length || 1;
+    return {
+      sectorCohort: cohort,
+      avgCostOverrun: cohort.reduce((acc, p) => acc + p.costOverrunPercent, 0) / count,
+      avgDelayMonths: cohort.reduce((acc, p) => acc + p.delayMonths, 0) / count,
+      avgRiskScore: cohort.reduce((acc, p) => acc + p.overallRiskScore, 0) / count,
+    };
+  }, [projects, selectedProject.sector]);
 
   // Radar comparative data
-  const radarData = [
+  const radarData = useMemo(() => [
     { metric: 'Cost Overrun %', project: selectedProject.costOverrunPercent, cohortAvg: Math.round(avgCostOverrun) },
     { metric: 'Delay (Months)', project: selectedProject.delayMonths, cohortAvg: Math.round(avgDelayMonths) },
     { metric: 'Physical Progress %', project: selectedProject.physicalProgress, cohortAvg: 65 },
     { metric: 'Financial Burn %', project: selectedProject.financialProgress, cohortAvg: 60 },
     { metric: 'Risk Score / 100', project: selectedProject.overallRiskScore, cohortAvg: Math.round(avgRiskScore) },
-  ];
+  ], [selectedProject, avgCostOverrun, avgDelayMonths, avgRiskScore]);
 
   // Bar comparison data
-  const comparisonBarData = [
+  const comparisonBarData = useMemo(() => [
     {
       name: 'Cost Overrun %',
       Project: selectedProject.costOverrunPercent,
@@ -85,7 +95,7 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
       Project: selectedProject.overallRiskScore,
       'Sector Average': Number(avgRiskScore.toFixed(0)),
     },
-  ];
+  ], [selectedProject, avgCostOverrun, avgDelayMonths, avgRiskScore]);
 
   return (
     <div className="space-y-6 pb-12">

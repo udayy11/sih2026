@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { InfrastructureProject, ScenarioInput } from '../../types';
 import { MLEngine } from '../../utils/mlEngine';
 import { RiskBadge } from '../common/RiskBadge';
@@ -43,7 +43,9 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
     selectedProjectId || projects[0]?.id || 'PRJ-TRN-001'
   );
 
-  const selectedProject = projects.find(p => p.id === activeProjectId) || projects[0];
+  const selectedProject = useMemo(() => {
+    return projects.find(p => p.id === activeProjectId) || projects[0];
+  }, [projects, activeProjectId]);
 
   // Default scenario settings
   const defaultScenario: ScenarioInput = {
@@ -57,9 +59,12 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
 
   const [scenario, setScenario] = useState<ScenarioInput>(defaultScenario);
 
-  const simResult = MLEngine.runScenarioSimulation(selectedProject, scenario);
+  // Memoized scenario simulation
+  const simResult = useMemo(() => {
+    return MLEngine.runScenarioSimulation(selectedProject, scenario);
+  }, [selectedProject, scenario]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setScenario({
       monthlyExpenditureDeltaPercent: 0,
       physicalProgressPaceDeltaPercent: 0,
@@ -68,9 +73,9 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
       fastTrackClearance: false,
       contractorReallocation: false,
     });
-  };
+  }, []);
 
-  const comparisonData = [
+  const comparisonData = useMemo(() => [
     {
       metric: 'Cost Overrun Risk (%)',
       Current: selectedProject.costOverrunProbability,
@@ -86,7 +91,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
       Current: selectedProject.overallRiskScore,
       Simulated: simResult.simulatedOverallRisk,
     },
-  ];
+  ], [selectedProject, simResult]);
 
   return (
     <div className="space-y-6 pb-12">
