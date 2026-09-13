@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InfrastructureProject } from '../../types';
 import { RiskBadge } from '../common/RiskBadge';
 import { RiskGauge } from '../common/RiskGauge';
@@ -49,6 +49,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'xai' | 'milestones' | 's-curve'>('overview');
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!project) return null;
 
   const costDelta = project.revisedCost - project.originalCost;
@@ -62,8 +73,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   }));
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 modal-backdrop-enter"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl overflow-hidden flex flex-col max-h-[92vh] modal-card-enter">
         
         {/* Modal Header */}
         <div className="bg-slate-900 text-white p-6 border-b border-slate-800 flex items-start justify-between gap-4">
@@ -97,7 +113,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors shrink-0"
+            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors shrink-0 btn-press"
           >
             <X className="w-5 h-5" />
           </button>
@@ -107,7 +123,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         <div className="flex items-center gap-2 px-6 py-2.5 bg-slate-100/80 border-b border-slate-200 text-xs font-semibold overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 rounded-xl transition-all ${
+            className={`px-4 py-2 rounded-xl transition-all btn-press ${
               activeTab === 'overview'
                 ? 'bg-white text-blue-700 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -118,7 +134,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
           <button
             onClick={() => setActiveTab('xai')}
-            className={`px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all ${
+            className={`px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all btn-press ${
               activeTab === 'xai'
                 ? 'bg-white text-rose-700 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -130,7 +146,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
           <button
             onClick={() => setActiveTab('milestones')}
-            className={`px-4 py-2 rounded-xl transition-all ${
+            className={`px-4 py-2 rounded-xl transition-all btn-press ${
               activeTab === 'milestones'
                 ? 'bg-white text-indigo-700 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -141,7 +157,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
           <button
             onClick={() => setActiveTab('s-curve')}
-            className={`px-4 py-2 rounded-xl transition-all ${
+            className={`px-4 py-2 rounded-xl transition-all btn-press ${
               activeTab === 's-curve'
                 ? 'bg-white text-emerald-700 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -153,6 +169,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
         {/* Tab Content Area */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-800">
+          <div key={activeTab} className="tab-content-enter space-y-6">
           
           {/* TAB 1: OVERVIEW & AI GAUGES */}
           {activeTab === 'overview' && (
@@ -464,6 +481,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               </div>
             </div>
           )}
+          </div>
         </div>
 
         {/* Modal Footer Quick Action Bar */}
@@ -473,28 +491,28 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => onNavigateToModule?.('predictive', project.id)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs btn-press active:scale-95 transition-all"
             >
               Predict Overruns →
             </button>
 
             <button
               onClick={() => onNavigateToModule?.('benchmarking', project.id)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs btn-press active:scale-95 transition-all"
             >
               Benchmark Cohort →
             </button>
 
             <button
               onClick={() => onNavigateToModule?.('scenario', project.id)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs btn-press active:scale-95 transition-all"
             >
               What-If Simulation →
             </button>
 
             <button
               onClick={() => onNavigateToModule?.('interventions', project.id)}
-              className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs"
+              className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs btn-press active:scale-95 transition-all"
             >
               Prescribe Intervention →
             </button>

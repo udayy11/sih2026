@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <button
               onClick={() => setIsExpanded(false)}
-              className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-purple-200 hover:text-white transition-all focus:outline-hidden"
+              className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-purple-200 hover:text-white transition-all focus:outline-hidden btn-press"
               title="Collapse sidebar"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -91,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ) : (
           <button
             onClick={() => setIsExpanded(true)}
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-purple-200 hover:text-white transition-all mx-auto focus:outline-hidden"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-purple-200 hover:text-white transition-all mx-auto focus:outline-hidden btn-press"
             title="Expand sidebar"
           >
             <Menu className="w-5 h-5" />
@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onNavigate(item.id)}
               className={`w-full group relative flex items-center ${
                 isExpanded ? 'px-3.5 justify-between' : 'justify-center px-0'
-              } py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+              } py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ease-out btn-press ${
                 isActive
                   ? 'bg-purple-600/90 text-white shadow-md shadow-purple-950/40 ring-1 ring-white/20'
                   : 'text-purple-200/80 hover:bg-white/10 hover:text-white'
@@ -142,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Floating Tooltip for collapsed state */}
               {!isExpanded && (
-                <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all shadow-xl z-50 border border-slate-700">
+                <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 -translate-x-1 group-hover:translate-x-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 shadow-xl z-50 border border-slate-700">
                   {item.label}
                   {item.badge && <span className="ml-1.5 text-amber-300 font-bold">({item.badge})</span>}
                 </div>

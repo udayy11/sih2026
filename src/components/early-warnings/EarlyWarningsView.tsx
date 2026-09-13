@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { EarlyWarningAlert, InfrastructureProject } from '../../types';
 import { RiskBadge } from '../common/RiskBadge';
 import { 
@@ -33,19 +33,25 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Record<string, boolean>>({});
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
-  const filteredAlerts = alerts.filter(a => {
-    if (activeTab !== 'ALL' && a.riskLevel !== activeTab) return false;
-    if (selectedCategory !== 'ALL' && a.riskType !== selectedCategory) return false;
-    return true;
-  });
+  const filteredAlerts = useMemo(() => {
+    return alerts.filter(a => {
+      if (activeTab !== 'ALL' && a.riskLevel !== activeTab) return false;
+      if (selectedCategory !== 'ALL' && a.riskType !== selectedCategory) return false;
+      return true;
+    });
+  }, [alerts, activeTab, selectedCategory]);
 
-  const criticalCount = alerts.filter(a => a.riskLevel === 'CRITICAL').length;
-  const highCount = alerts.filter(a => a.riskLevel === 'HIGH').length;
-  const mediumCount = alerts.filter(a => a.riskLevel === 'MEDIUM').length;
+  const { criticalCount, highCount, mediumCount } = useMemo(() => {
+    return {
+      criticalCount: alerts.filter(a => a.riskLevel === 'CRITICAL').length,
+      highCount: alerts.filter(a => a.riskLevel === 'HIGH').length,
+      mediumCount: alerts.filter(a => a.riskLevel === 'MEDIUM').length,
+    };
+  }, [alerts]);
 
-  const handleAcknowledge = (id: string) => {
+  const handleAcknowledge = useCallback((id: string) => {
     setAcknowledgedAlerts(prev => ({ ...prev, [id]: true }));
-  };
+  }, []);
 
   return (
     <div className="space-y-6 pb-12">
@@ -89,7 +95,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
         {/* ALL */}
         <button
           onClick={() => setActiveTab('ALL')}
-          className={`p-4 rounded-2xl border text-left transition-all ${
+          className={`p-4 rounded-2xl border text-left transition-all btn-press ${
             activeTab === 'ALL'
               ? 'bg-slate-900 text-white border-slate-900 shadow-md'
               : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300'
@@ -108,7 +114,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
         {/* CRITICAL */}
         <button
           onClick={() => setActiveTab('CRITICAL')}
-          className={`p-4 rounded-2xl border text-left transition-all ${
+          className={`p-4 rounded-2xl border text-left transition-all btn-press ${
             activeTab === 'CRITICAL'
               ? 'bg-rose-900 text-white border-rose-900 shadow-md'
               : 'bg-rose-50/50 text-rose-900 border-rose-200 hover:border-rose-300'
@@ -127,7 +133,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
         {/* HIGH */}
         <button
           onClick={() => setActiveTab('HIGH')}
-          className={`p-4 rounded-2xl border text-left transition-all ${
+          className={`p-4 rounded-2xl border text-left transition-all btn-press ${
             activeTab === 'HIGH'
               ? 'bg-amber-900 text-white border-amber-900 shadow-md'
               : 'bg-amber-50/50 text-amber-900 border-amber-200 hover:border-amber-300'
@@ -146,7 +152,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
         {/* MEDIUM */}
         <button
           onClick={() => setActiveTab('MEDIUM')}
-          className={`p-4 rounded-2xl border text-left transition-all ${
+          className={`p-4 rounded-2xl border text-left transition-all btn-press ${
             activeTab === 'MEDIUM'
               ? 'bg-yellow-900 text-white border-yellow-900 shadow-md'
               : 'bg-yellow-50/50 text-yellow-900 border-yellow-200 hover:border-yellow-300'
@@ -181,7 +187,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           return (
             <div
               key={alert.id}
-              className={`bg-white rounded-2xl border-2 ${cardBorder} shadow-lg overflow-hidden transition-all hover:shadow-xl space-y-0`}
+              className={`bg-white rounded-2xl border-2 ${cardBorder} shadow-lg overflow-hidden transition-all hover:shadow-xl space-y-0 card-interactive`}
             >
               {/* Header */}
               <div className="bg-slate-900 px-5 py-3 flex items-center justify-between">
@@ -295,7 +301,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                   {!isAck ? (
                     <button
                       onClick={() => handleAcknowledge(alert.id)}
-                      className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-all"
+                      className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-all btn-press active:scale-95"
                     >
                       Acknowledge
                     </button>
@@ -309,7 +315,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                   {associatedProject && (
                     <button
                       onClick={() => onSelectProject(associatedProject)}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all shadow-md hover:shadow-lg flex items-center gap-2 btn-press active:scale-95"
                     >
                       <span>Diagnose Project</span>
                       <ArrowRight className="w-4 h-4" />
