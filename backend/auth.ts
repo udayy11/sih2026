@@ -58,44 +58,44 @@ const loadUsersFromDisk = () => {
   users = [
     {
       id: 'usr-001',
-      username: 'varshini',
-      email: 'varshini@nirmaanx.gov.in',
-      passwordHash: hashPassword('varshini'),
+      username: 'uday',
+      email: 'uday@nirmaanx.gov.in',
+      passwordHash: hashPassword('uday'),
       role: 'ADMIN',
-      name: 'Varshini',
+      name: 'uday',
       department: 'Data Informatics & Innovation Division (DIID)',
       status: 'Active',
       lastLogin: new Date().toISOString(),
     },
     {
       id: 'usr-002',
-      username: 'vicky',
-      email: 'vicky@nirmaanx.gov.in',
-      passwordHash: hashPassword('vicky'),
+      username: 'lavanya',
+      email: 'lavanya@nirmaanx.gov.in',
+      passwordHash: hashPassword('lavanya'),
       role: 'MOSPI_OFFICER',
-      name: 'Vicky',
+      name: 'lavanya',
       department: 'MoSPI Project Monitoring Group (PMG)',
       status: 'Active',
       lastLogin: new Date().toISOString(),
     },
     {
       id: 'usr-003',
-      username: 'yuhaa',
-      email: 'yuhaa@nirmaanx.gov.in',
-      passwordHash: hashPassword('1234'),
+      username: 'piyush',
+      email: 'piyush@nirmaanx.gov.in',
+      passwordHash: hashPassword('piyush'),
       role: 'PROJECT_OFFICER',
-      name: 'Yuhaa',
+      name: 'piyush',
       department: 'Field Execution & Civil Engineering',
       status: 'Active',
       lastLogin: new Date().toISOString(),
     },
     {
       id: 'usr-004',
-      username: 'vathsala',
-      email: 'vathsala@nirmaanx.gov.in',
-      passwordHash: hashPassword('1234'),
+      username: 'nikhil',
+      email: 'nikhil@nirmaanx.gov.in',
+      passwordHash: hashPassword('nikhil'),
       role: 'PROJECT_OFFICER',
-      name: 'Vathsala',
+      name: 'nikhil',
       department: 'Structural & Quality Control Engineering',
       status: 'Active',
       lastLogin: new Date().toISOString(),
@@ -193,15 +193,15 @@ authRouter.post('/login', (req, res) => {
   });
 });
 
-// ADD ENGINEER Endpoint (RBAC restricted to Varshini & Vicky)
+// ADD ENGINEER Endpoint (RBAC restricted to Uday & Piyush)
 authRouter.post('/add-engineer', (req, res) => {
   const { createdBy, name, email, username, password, role, department } = req.body;
   const creator = (createdBy || '').toLowerCase().trim();
 
   // Permission Verification
-  if (creator !== 'varshini' && creator !== 'vicky' && creator !== 'admin') {
+  if (creator !== 'uday' && creator !== 'piyush' && creator !== 'admin') {
     return res.status(403).json({
-      error: 'Permission Denied: Only Admin (Varshini) and Project Tracker (Vicky) can add new engineers to the database.',
+      error: 'Permission Denied: Only Admin (uday) and Project Tracker (p iyush) can add new engineers to the database.',
     });
   }
 

@@ -18,10 +18,10 @@ interface UserManagementViewProps {
 }
 
 const INITIAL_USERS: User[] = [
-  { id: 'usr-001', name: 'Varshini', username: 'varshini', email: 'varshini@nirmaanx.gov.in', role: 'Admin', department: 'Data Informatics & Innovation Division (DIID)', status: 'Active', lastLogin: '2026-09-04T09:30:00Z' },
-  { id: 'usr-002', name: 'Vicky', username: 'vicky', email: 'vicky@nirmaanx.gov.in', role: 'MoSPI Officer', department: 'MoSPI Project Monitoring Group (PMG)', status: 'Active', lastLogin: '2026-09-04T09:15:00Z' },
-  { id: 'usr-003', name: 'Yuhaa', username: 'yuhaa', email: 'yuhaa@nirmaanx.gov.in', role: 'Project Officer', department: 'Field Execution & Civil Engineering', status: 'Active', lastLogin: '2026-09-04T08:45:00Z' },
-  { id: 'usr-004', name: 'Vathsala', username: 'vathsala', email: 'vathsala@nirmaanx.gov.in', role: 'Project Officer', department: 'Structural & Quality Control Engineering', status: 'Active', lastLogin: '2026-09-04T08:30:00Z' },
+  { id: 'usr-001', name: 'Uday', username: 'uday', email: 'uday@nirmaanx.gov.in', role: 'Admin', department: 'Data Informatics & Innovation Division (DIID)', status: 'Active', lastLogin: '2026-09-04T09:30:00Z' },
+  { id: 'usr-002', name: 'piyush', username: 'piyush', email: 'piyush@nirmaanx.gov.in', role: 'MoSPI Officer', department: 'MoSPI Project Monitoring Group (PMG)', status: 'Active', lastLogin: '2026-09-04T09:15:00Z' },
+  { id: 'usr-003', name: 'nikhil', username: 'nikhil', email: 'nikhil@nirmaanx.gov.in', role: 'Project Officer', department: 'Field Execution & Civil Engineering', status: 'Active', lastLogin: '2026-09-04T08:45:00Z' },
+  { id: 'usr-004', name: 'lavanya', username: 'lavanya', email: 'lavanya@nirmaanx.gov.in', role: 'Project Officer', department: 'Structural & Quality Control Engineering', status: 'Active', lastLogin: '2026-09-04T08:30:00Z' },
 ];
 
 export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUser }) => {
@@ -39,10 +39,10 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
   const [newRole, setNewRole] = useState<'Project Officer' | 'Engineer' | 'Ministry Officer'>('Engineer');
   const [newDept, setNewDept] = useState('Geotechnical & Infrastructure Engineering');
 
-  // Permission Check: ONLY Admin (varshini) and Project Tracker / MoSPI Officer (vicky) can add engineers
+  // Permission Check: ONLY Admin (uday) and Project Tracker / MoSPI Officer (piyush) can add engineers
   const userRole = currentUser?.role?.toLowerCase() || '';
   const username = currentUser?.username?.toLowerCase() || '';
-  const canAddUser = username === 'varshini' || username === 'vicky' || userRole.includes('admin') || userRole.includes('tracker') || userRole.includes('mospi');
+  const canAddUser = username === 'uday' || username === 'piyush' || userRole.includes('admin') || userRole.includes('tracker') || userRole.includes('mospi');
 
   // Fetch users from database on load
   useEffect(() => {
@@ -81,7 +81,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
 
   const handleOpenAddModal = () => {
     if (!canAddUser) {
-      setPermissionError('Access Restricted: Only Admin (Varshini) and Project Tracker (Vicky) are authorized to add new engineers.');
+      setPermissionError('Access Restricted: Only Admin (uday) and Project Tracker (piyush) are authorized to add new engineers.');
       setTimeout(() => setPermissionError(''), 5000);
       return;
     }
@@ -102,7 +102,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          createdBy: username || 'varshini',
+          createdBy: username || 'uday',
           name: newName.trim(),
           email: formattedEmail,
           username: formattedUsername,
@@ -178,7 +178,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-900 border border-purple-200">
               Role-Based Access Control (RBAC)
             </span>
-            <span className="text-xs text-slate-500 font-mono">Authorized Creator: Varshini (Admin) & Vicky (Tracker)</span>
+            <span className="text-xs text-slate-500 font-mono">Authorized Creator: uday (Admin) & piyush (Tracker)</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <Shield className="w-6 h-6 text-purple-700" />
@@ -194,7 +194,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
               ? 'bg-purple-700 hover:bg-purple-800 text-white shadow-purple-900/20' 
               : 'bg-slate-200 text-slate-500 cursor-not-allowed border border-slate-300'
           }`}
-          title={canAddUser ? 'Add new engineer account' : 'Only Varshini (Admin) & Vicky (Tracker) can add new engineers'}
+          title={canAddUser ? 'Add new engineer account' : 'Only uday (Admin) & piyush (Tracker) can add new engineers'}
         >
           {canAddUser ? <UserPlus className="w-4 h-4" /> : <Lock className="w-4 h-4 text-slate-400" />}
           <span>Add New Engineer</span>
@@ -302,7 +302,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
         </div>
       </div>
 
-      {/* ADD NEW ENGINEER MODAL (Only for Admin: Varshini & Tracker: Vicky) */}
+      {/* ADD NEW ENGINEER MODAL (Only for Admin: uday & Tracker: piyush) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden">

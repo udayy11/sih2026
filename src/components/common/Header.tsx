@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
   warningCount,
   searchQuery = '',
   onSearchChange,
-  currentUser = { name: 'Varshini', role: 'Admin', department: 'Data Informatics & Innovation Division' },
+  currentUser = { name: 'Uday', role: 'Admin', department: 'Data Informatics & Innovation Division' },
   onLogout,
   projects = [],
   onSelectProject

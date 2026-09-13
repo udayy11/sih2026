@@ -14,27 +14,27 @@ interface LoginViewProps {
 }
 
 export const AUTHORIZED_USERS: Record<string, { pass: string; name: string; role: 'Admin' | 'Project Tracker' | 'Engineer'; department: string }> = {
-  varshini: {
-    pass: 'varshini',
-    name: 'Varshini',
+  uday: {
+    pass: 'uday',
+    name: 'uday',
     role: 'Admin',
     department: 'Data Informatics & Innovation Division (DIID)',
   },
-  vicky: {
-    pass: 'vicky',
-    name: 'Vicky',
+  piyush: {
+    pass: 'piyush',
+    name: 'piyush',
     role: 'Project Tracker',
     department: 'MoSPI Project Monitoring Group (PMG)',
   },
-  yuhaa: {
-    pass: '1234',
-    name: 'Yuhaa',
+  nikhil: {
+    pass: 'nikhil',
+    name: 'nikhil',
     role: 'Engineer',
     department: 'Field Execution & Civil Engineering',
   },
-  vathsala: {
-    pass: '1234',
-    name: 'Vathsala',
+  lavanya: {
+    pass: 'lavanya',
+    name: 'lavanya',
     role: 'Engineer',
     department: 'Structural & Quality Control Engineering',
   },
@@ -143,41 +143,41 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => handleSelectAccount('varshini')}
+                onClick={() => handleSelectAccount('uday')}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
-                  username === 'varshini' ? 'bg-purple-900 text-white border-purple-900 shadow-sm' : 'bg-purple-50 hover:bg-purple-100 text-purple-900 border-purple-200'
+                  username === 'uday' ? 'bg-purple-900 text-white border-purple-900 shadow-sm' : 'bg-purple-50 hover:bg-purple-100 text-purple-900 border-purple-200'
                 }`}
               >
                 <div className="text-xs font-bold flex items-center justify-between">
-                  <span>👑 Varshini</span>
+                  <span>👑 Uday</span>
                   <span className="text-[10px] font-mono opacity-80">Admin</span>
                 </div>
-                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: varshini</div>
+                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: uday</div>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSelectAccount('vicky')}
+                onClick={() => handleSelectAccount('piyush')}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
-                  username === 'vicky' ? 'bg-blue-900 text-white border-blue-900 shadow-sm' : 'bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200'
+                  username === 'piyush' ? 'bg-blue-900 text-white border-blue-900 shadow-sm' : 'bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200'
                 }`}
               >
                 <div className="text-xs font-bold flex items-center justify-between">
-                  <span>📊 Vicky</span>
+                  <span>📊 piyush</span>
                   <span className="text-[10px] font-mono opacity-80">Tracker</span>
                 </div>
-                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: vicky</div>
+                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: piyush</div>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSelectAccount('yuhaa')}
+                onClick={() => handleSelectAccount('nikhil')}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
-                  username === 'yuhaa' ? 'bg-emerald-900 text-white border-emerald-900 shadow-sm' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200'
+                  username === 'nikhil' ? 'bg-emerald-900 text-white border-emerald-900 shadow-sm' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200'
                 }`}
               >
                 <div className="text-xs font-bold flex items-center justify-between">
-                  <span>👷 Yuhaa</span>
+                  <span>👷 nikhil</span>
                   <span className="text-[10px] font-mono opacity-80">Engineer</span>
                 </div>
                 <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: 1234</div>
@@ -185,13 +185,13 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
 
               <button
                 type="button"
-                onClick={() => handleSelectAccount('vathsala')}
+                onClick={() => handleSelectAccount('lavanya')}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
-                  username === 'vathsala' ? 'bg-amber-900 text-white border-amber-900 shadow-sm' : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200'
+                  username === 'lavanya' ? 'bg-amber-900 text-white border-amber-900 shadow-sm' : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200'
                 }`}
               >
                 <div className="text-xs font-bold flex items-center justify-between">
-                  <span>👷‍♀️ Vathsala</span>
+                  <span>👷‍♀️ lavanya</span>
                   <span className="text-[10px] font-mono opacity-80">Engineer</span>
                 </div>
                 <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: 1234</div>
@@ -219,7 +219,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. varshini, vicky, yuhaa, vathsala"
+                  placeholder="e.g. uday, piyush, nikhil, lavanya"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-purple-600 focus:bg-white focus:ring-2 focus:ring-purple-100 rounded-xl text-xs text-slate-800 placeholder-slate-400 transition-all outline-hidden font-mono"
                 />
               </div>
