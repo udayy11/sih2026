@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { InfrastructureProject, ScenarioInput } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { InfrastructureProject, ScenarioInput, ScenarioOutput } from '../../types';
 import { MLEngine } from '../../utils/mlEngine';
 import { RiskBadge } from '../common/RiskBadge';
 import { 
@@ -56,8 +56,19 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
   };
 
   const [scenario, setScenario] = useState<ScenarioInput>(defaultScenario);
+  const [simResult, setSimResult] = useState<ScenarioOutput>(() => MLEngine.runScenarioSimulation(selectedProject, defaultScenario));
+  const [isPythonSimulation, setIsPythonSimulation] = useState(false);
 
-  const simResult = MLEngine.runScenarioSimulation(selectedProject, scenario);
+  useEffect(() => {
+    let active = true;
+    MLEngine.runScenarioSimulationAsync(selectedProject, scenario).then(res => {
+      if (active && res) {
+        setSimResult(res.result);
+        setIsPythonSimulation(res.isPython);
+      }
+    });
+    return () => { active = false; };
+  }, [selectedProject, scenario]);
 
   const handleReset = () => {
     setScenario({
@@ -133,6 +144,11 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
             <div className="flex items-center gap-2">
               <Sliders className="w-5 h-5 text-blue-600" />
               <h3 className="text-base font-bold text-slate-900">Policy Scenario Controls</h3>
+              {isPythonSimulation && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  Python Engine
+                </span>
+              )}
             </div>
             <button
               onClick={handleReset}

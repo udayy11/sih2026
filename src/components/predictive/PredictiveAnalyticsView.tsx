@@ -118,9 +118,26 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
       .map(r => r.project);
   }, [searchQuery, projects]);
 
-  // Run ML Predictions for Active Project
-  const costPrediction = MLEngine.predictCostOverrun(selectedProject);
-  const delayPrediction = MLEngine.predictDelayOverrun(selectedProject);
+  // Run ML Predictions for Active Project (Python FastAPI with local fallback)
+  const [costPrediction, setCostPrediction] = useState(() => MLEngine.predictCostOverrun(selectedProject));
+  const [delayPrediction, setDelayPrediction] = useState(() => MLEngine.predictDelayOverrun(selectedProject));
+  const [isPythonLive, setIsPythonLive] = useState(false);
+  const [modelTypeTitle, setModelTypeTitle] = useState('Gradient Boosted Ensembles + SHAP + Survival Analysis');
+
+  useEffect(() => {
+    let active = true;
+    MLEngine.predictProjectAsync(selectedProject).then(res => {
+      if (active && res) {
+        setCostPrediction(res.cost);
+        setDelayPrediction(res.delay);
+        setIsPythonLive(res.isPython);
+        if (res.isPython) {
+          setModelTypeTitle(`Python FastAPI (Scikit-Learn/XGBoost) • ${res.modelType}`);
+        }
+      }
+    });
+    return () => { active = false; };
+  }, [selectedProject]);
 
   // Benchmarks & Static Data from MLEngine
   const modelComparison = MLEngine.getModelComparisonMetrics();
@@ -143,16 +160,16 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-900 border border-purple-300">
-                MoSPI DIID Problem Statement 26103
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isPythonLive ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-purple-100 text-purple-900 border-purple-300'}`}>
+                {isPythonLive ? '🟢 Python FastAPI (Scikit-learn) Active' : 'MoSPI DIID Problem Statement 26103'}
               </span>
-              <span className="text-xs text-slate-500 font-mono">Gradient Boosted Ensembles + SHAP + Survival Analysis</span>
+              <span className="text-xs text-slate-500 font-mono">{modelTypeTitle}</span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
               Predictive Intelligence & ML Evaluation Lab
             </h2>
             <p className="text-sm text-slate-500 mt-0.5 max-w-3xl">
-              Comprehensive decision-support engine comparing conventional statistics vsensemble ML models, feature ablation lift, and explainable SHAP/PDP drivers.
+              Comprehensive decision-support engine comparing conventional statistics vs ensemble ML models, feature ablation lift, and explainable SHAP/PDP drivers.
             </p>
           </div>
 

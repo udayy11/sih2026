@@ -52,3 +52,28 @@ coverage/
 .stylelintcache
 .tsbuildinfo
 *.tmp
+
+# Python virtual environments & bytecode
+venv/
+.venv/
+env/
+ENV/
+backend_py/venv/
+backend_py/.venv/
+backend_py/env/
+**/venv/
+**/.venv/
+**/env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+
+# Local databases & uploads
+*.db
+*.sqlite
+*.sqlite3
+nirmaanx_local.db
+uploaded_documents/

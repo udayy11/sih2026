@@ -489,5 +489,145 @@ psycopg2-binary==2.9.9
 mlflow==2.11.1`
     };
   }
+
+  /**
+   * Python FastAPI Backend URL
+   */
+  static PYTHON_API_BASE = 'http://localhost:8000/api/ml';
+
+  /**
+   * Check if Python FastAPI service is available
+   */
+  static async checkPythonBackendHealth(): Promise<boolean> {
+    try {
+      const res = await fetch('http://localhost:8000/api/health', { method: 'GET', signal: AbortSignal.timeout(1500) });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Predict project cost & delay using Python FastAPI (Scikit-Learn/XGBoost)
+   */
+  static async predictProjectAsync(project: InfrastructureProject): Promise<{
+    cost: ReturnType<typeof MLEngine.predictCostOverrun>;
+    delay: ReturnType<typeof MLEngine.predictDelayOverrun>;
+    isPython: boolean;
+    modelType: string;
+  }> {
+    try {
+      const payload = {
+        project_code: project.projectCode,
+        name: project.name,
+        sector: project.sector,
+        ministry: project.ministry,
+        state: project.state,
+        original_cost: project.originalCost,
+        revised_cost: project.revisedCost,
+        physical_progress: project.physicalProgress,
+        financial_progress: project.financialProgress,
+        planned_physical_progress: project.plannedPhysicalProgress,
+        delay_months: project.delayMonths,
+        land_acquired_percent: project.landAcquiredPercent,
+        forest_clearance: project.forestClearance,
+        original_completion_date: project.originalCompletionDate
+      };
+
+      const res = await fetch(`${this.PYTHON_API_BASE}/predict-all`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(3000)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          cost: {
+            probability: data.cost.probability,
+            expectedOverrunPercent: data.cost.expected_overrun_percent,
+            expectedCostOverrunAmount: data.cost.expected_cost_overrun_amount,
+            expectedRevisedCost: data.cost.expected_revised_cost,
+            drivers: data.cost.drivers
+          },
+          delay: {
+            delayProbability: data.delay.delay_probability,
+            expectedDelayMonths: data.delay.expected_delay_months,
+            expectedCompletionDate: data.delay.expected_completion_date,
+            drivers: data.delay.drivers
+          },
+          isPython: true,
+          modelType: data.cost.model_type || 'Python Scikit-Learn Ensemble'
+        };
+      }
+    } catch {
+      // Fallback seamlessly to local computation
+    }
+
+    return {
+      cost: this.predictCostOverrun(project),
+      delay: this.predictDelayOverrun(project),
+      isPython: false,
+      modelType: 'Local TypeScript Engine'
+    };
+  }
+
+  /**
+   * Run scenario simulation asynchronously with Python FastAPI
+   */
+  static async runScenarioSimulationAsync(project: InfrastructureProject, scenario: ScenarioInput): Promise<{ result: ScenarioOutput; isPython: boolean }> {
+    try {
+      const res = await fetch(`${this.PYTHON_API_BASE}/scenario-simulation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          project: {
+            original_cost: project.originalCost,
+            revised_cost: project.revisedCost,
+            cost_overrun_probability: project.costOverrunProbability,
+            delay_probability: project.delayProbability,
+            overall_risk_score: project.overallRiskScore,
+            delay_months: project.delayMonths,
+            original_completion_date: project.originalCompletionDate
+          },
+          scenario: {
+            monthly_expenditure_delta_percent: scenario.monthlyExpenditureDeltaPercent,
+            physical_progress_pace_delta_percent: scenario.physicalProgressPaceDeltaPercent,
+            resource_availability_percent: scenario.resourceAvailabilityPercent,
+            fast_track_clearance: scenario.fastTrackClearance,
+            contractor_reallocation: scenario.contractorReallocation,
+            completion_extension_months: scenario.completionExtensionMonths
+          }
+        }),
+        signal: AbortSignal.timeout(3000)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          result: {
+            simulatedCostRisk: data.simulated_cost_risk,
+            simulatedDelayRisk: data.simulated_delay_risk,
+            simulatedOverallRisk: data.simulated_overall_risk,
+            simulatedRevisedCost: data.simulated_revised_cost,
+            simulatedCompletionDate: data.simulated_completion_date,
+            simulatedDelayMonths: data.simulated_delay_months,
+            costDeltaAmount: data.cost_delta_amount,
+            timeDeltaMonths: data.time_delta_months,
+            riskReductionSummary: data.risk_reduction_summary
+          },
+          isPython: true
+        };
+      }
+    } catch {
+      // Fallback to local
+    }
+
+    return {
+      result: this.runScenarioSimulation(project, scenario),
+      isPython: false
+    };
+  }
 }
 
