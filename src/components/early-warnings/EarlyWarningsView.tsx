@@ -32,6 +32,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
   const [activeTab, setActiveTab] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL');
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Record<string, boolean>>({});
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
 
   const filteredAlerts = alerts.filter(a => {
     if (activeTab !== 'ALL' && a.riskLevel !== activeTab) return false;
@@ -163,56 +164,94 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
         </button>
       </div>
 
-      {/* Alert Feed List */}
-      <div className="space-y-4">
-        {filteredAlerts.map((alert) => {
-          const associatedProject = projects.find(p => p.id === alert.projectId);
-          const isAck = acknowledgedAlerts[alert.id] || alert.status === 'Acknowledged' || alert.status === 'Action Initiated';
+      {/* Alert Feed Table */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Project</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Warning Type</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Risk Level</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Risk Score</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredAlerts.map((alert) => {
+                const associatedProject = projects.find(p => p.id === alert.projectId);
+                const isAck = acknowledgedAlerts[alert.id] || alert.status === 'Acknowledged' || alert.status === 'Action Initiated';
 
-          const isCritical = alert.riskLevel === 'CRITICAL';
-          const isHigh = alert.riskLevel === 'HIGH';
+                const isCritical = alert.riskLevel === 'CRITICAL';
+                const isHigh = alert.riskLevel === 'HIGH';
+                const isExpanded = expandedAlertId === alert.id;
 
-          const cardBorder = isCritical ? 'border-rose-300' : isHigh ? 'border-amber-300' : 'border-slate-200';
-          const badgeBg = isCritical ? 'bg-rose-100 text-rose-800' : isHigh ? 'bg-amber-100 text-amber-800' : 'bg-yellow-100 text-yellow-800';
+                const cardBorder = isCritical ? 'border-rose-300' : isHigh ? 'border-amber-300' : 'border-slate-200';
 
-          // Generate AI predictive text
-          const predictiveText = `This project has an ${alert.riskScore}% predicted risk of schedule delay because its physical progress (${associatedProject?.physicalProgress}%) is below expected progress (${associatedProject?.plannedPhysicalProgress}%) and its completion deadline is approaching.`;
+                // Generate AI predictive text
+                const predictiveText = `This project has an ${alert.riskScore}% predicted risk of schedule delay because its physical progress (${associatedProject?.physicalProgress}%) is below expected progress (${associatedProject?.plannedPhysicalProgress}%) and its completion deadline is approaching.`;
 
-          return (
-            <div
-              key={alert.id}
-              className={`bg-white rounded-2xl border-2 ${cardBorder} shadow-lg overflow-hidden transition-all hover:shadow-xl space-y-0`}
-            >
-              {/* Header */}
-              <div className="bg-slate-900 px-5 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-400" />
-                  <span className="text-white font-bold tracking-widest text-sm uppercase">AI Early Warning</span>
-                </div>
-                <span className="text-xs font-mono text-slate-400">
-                  ID: {alert.id}
-                </span>
-              </div>
+                return (
+                  <React.Fragment key={alert.id}>
+                    <tr 
+                      onClick={() => setExpandedAlertId(isExpanded ? null : alert.id)}
+                      className={`hover:bg-blue-50/50 cursor-pointer transition-colors duration-200 ${isExpanded ? 'bg-blue-50/30' : ''}`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-slate-900">{alert.projectName}</span>
+                          <span className="text-xs font-mono text-blue-600 mt-0.5">{associatedProject?.projectCode || alert.projectId}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className={`w-4 h-4 ${isCritical ? 'text-rose-500' : isHigh ? 'text-amber-500' : 'text-yellow-500'}`} />
+                          <span className="text-sm text-slate-700 font-medium">{alert.riskType}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${isCritical ? 'bg-rose-100 text-rose-800' : isHigh ? 'bg-amber-100 text-amber-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {isCritical ? '🔴 CRITICAL' : isHigh ? '🟠 HIGH' : '🟡 MEDIUM'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-bold font-mono text-slate-900">{alert.riskScore} / 100</span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {isAck ? (
+                          <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-bold">
+                            <CheckCheck className="w-3.5 h-3.5" /> Acknowledged
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-slate-400 text-xs font-semibold">
+                            Pending Review
+                          </span>
+                        )}
+                      </td>
+                    </tr>
 
-              {/* Body */}
-              <div className="p-6 space-y-6">
-                
-                {/* Project Info & Overall Risk */}
-                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 border-b border-slate-100 pb-5">
-                  <div>
-                    <div className="text-sm text-slate-500 font-semibold mb-1">Project: <span className="font-mono text-blue-600">{associatedProject?.projectCode || alert.projectId}</span></div>
-                    <h3 className="text-xl font-bold text-slate-900 leading-tight">
-                      {alert.projectName}
-                    </h3>
-                  </div>
-                  <div className="flex flex-col md:items-end gap-1">
-                    <div className="text-sm font-semibold text-slate-600">Overall Risk: <span className={`font-bold ${isCritical ? 'text-rose-600' : isHigh ? 'text-amber-600' : 'text-yellow-600'}`}>{isCritical ? '🔴 CRITICAL' : isHigh ? '🟠 HIGH' : '🟡 MEDIUM'}</span></div>
-                    <div className="text-sm font-semibold text-slate-600">Risk Score: <span className="font-bold text-slate-900 font-mono text-lg">{alert.riskScore} / 100</span></div>
-                  </div>
-                </div>
+                    {isExpanded && (
+                      <tr>
+                        <td colSpan={5} className="p-0 border-b border-slate-200">
+                          <div className={`bg-gradient-to-br from-white to-slate-50 border-l-4 ${isCritical ? 'border-l-rose-500 shadow-[inset_0_4px_15px_rgba(244,63,94,0.05)]' : isHigh ? 'border-l-amber-500 shadow-[inset_0_4px_15px_rgba(245,158,11,0.05)]' : 'border-l-yellow-500 shadow-[inset_0_4px_15px_rgba(234,179,8,0.05)]'} overflow-hidden transition-all shadow-inner`}>
+                            {/* Body */}
+                            <div className="p-6 space-y-6">
+                              {/* Project Info & Overall Risk */}
+                              <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 border-b border-slate-100 pb-5 pt-2">
+                              <div>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">
+                                  Diagnostic Detail
+                                </h3>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-mono text-slate-400">
+                                  Alert ID: {alert.id}
+                                </span>
+                              </div>
+                            </div>
 
                 {/* The Predictive Statement */}
-                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl">
+                <div className="bg-amber-50/80 backdrop-blur-sm border-l-4 border-amber-400 p-4 rounded-r-xl shadow-[0_2px_10px_rgba(245,158,11,0.05)]">
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                     <p className="text-sm text-amber-900 font-medium leading-relaxed">
@@ -275,7 +314,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                 </div>
 
                 {/* Recommended Action */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                <div className="bg-white/80 backdrop-blur-sm border border-blue-100 shadow-[0_4px_20px_rgba(59,130,246,0.03)] rounded-xl p-5">
                   <h4 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
                     Prescriptive Recommendation
@@ -317,10 +356,17 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                   )}
                 </div>
 
-              </div>
-            </div>
-          );
-        })}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
