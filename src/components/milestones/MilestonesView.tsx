@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { InfrastructureProject, Milestone } from '../../types';
-import { Calendar, Search, Filter, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Calendar, Search, Filter, Clock, CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface MilestonesViewProps {
   projects: InfrastructureProject[];
@@ -16,6 +16,8 @@ interface ProjectMilestone extends Milestone {
 export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSelectProject }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 15;
 
   // Flatten all milestones from all projects
   const allMilestones = useMemo(() => {
@@ -47,6 +49,11 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
       return matchesSearch && matchesStatus;
     });
   }, [allMilestones, searchTerm, statusFilter]);
+
+  const totalPages = Math.ceil(filteredMilestones.length / pageSize) || 1;
+  const paginatedMilestones = useMemo(() => {
+    return filteredMilestones.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [filteredMilestones, currentPage, pageSize]);
 
   const getStatusIcon = (status: string) => {
     switch(status) {
@@ -86,7 +93,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
             type="text"
             placeholder="Search milestones or projects..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           />
         </div>
@@ -94,7 +101,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
           <Filter className="w-4 h-4 text-slate-500" />
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
             className="py-2 pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
           >
             <option value="All">All Statuses</option>
@@ -113,7 +120,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
             <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
               <tr>
                 <th className="px-6 py-4 font-semibold">Milestone Name</th>
-                <th className="px-6 py-4 font-semibold">Project</th>
+                <th className="px-6 py-4 font-semibold">Associated Project</th>
                 <th className="px-6 py-4 font-semibold">Planned Date</th>
                 <th className="px-6 py-4 font-semibold">Actual Date</th>
                 <th className="px-6 py-4 font-semibold text-center">Weight</th>
@@ -121,14 +128,14 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredMilestones.length === 0 ? (
+              {paginatedMilestones.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                     No milestones found matching your criteria.
                   </td>
                 </tr>
               ) : (
-                filteredMilestones.map((milestone) => (
+                paginatedMilestones.map((milestone) => (
                   <tr key={`${milestone.projectId}-${milestone.id}`} className="hover:bg-slate-50/80 transition-colors group">
                     <td className="px-6 py-4 font-medium text-slate-900">
                       {milestone.name}
@@ -178,6 +185,40 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Footer */}
+        {filteredMilestones.length > pageSize && (
+          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div className="text-xs text-slate-500 font-medium">
+              Showing <span className="font-semibold text-slate-700">{(currentPage - 1) * pageSize + 1}</span> to{' '}
+              <span className="font-semibold text-slate-700">
+                {Math.min(currentPage * pageSize, filteredMilestones.length)}
+              </span> of{' '}
+              <span className="font-semibold text-slate-700">{filteredMilestones.length}</span> milestones
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Previous Page"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-semibold text-slate-700 px-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Next Page"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

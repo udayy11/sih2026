@@ -89,12 +89,67 @@ class ProjectRAGRetriever:
             f"You are the NirmaanX AI Decision Support Assistant for MoSPI, Government of India.\n"
             f"Relevant Retrived Ground-Truth Context:\n{ctx_str}\n\n"
             f"User Question: {query}\n"
-            f"Provide a structured, authoritative response with risk metrics (out of 100) and actionable interventions."
+            f"Provide a structured, human-readable executive response with risk metrics (strictly out of 100) and actionable interventions. "
+            f"DO NOT use markdown pipe tables. Format output as clean bulleted cards and readable sections."
         )
 
-        # 1. Try local Open-Source LLM (Ollama)
+        # 1. Try Groq first (Prioritizing openai/gpt-oss-120b)
+        if settings.GROQ_API_KEY:
+            groq_models = [
+                getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b"),
+                "openai/gpt-oss-120b",
+                "openai/gpt-oss-20b",
+                "qwen/qwen3.8-27b",
+                "qwen/qwen3.6-27b",
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
+            ]
+            # Deduplicate models preserving order
+            seen_models = set()
+            ordered_models = [m for m in groq_models if not (m in seen_models or seen_models.add(m))]
+
+            for model_cand in ordered_models:
+                try:
+                    async with httpx.AsyncClient(timeout=8.0) as client:
+                        res = await client.post(
+                            "https://api.groq.com/openai/v1/chat/completions",
+                            headers={
+                                "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+                                "User-Agent": "PAIMANA-AI/1.0"
+                            },
+                            json={
+                                "model": model_cand,
+                                "messages": [{"role": "user", "content": prompt}],
+                                "temperature": 0.2
+                            }
+                        )
+                        if res.status_code == 200:
+                            data = res.json()
+                            text = data["choices"][0]["message"]["content"]
+                            return text, f"Groq ({model_cand})"
+                except Exception:
+                    continue
+
+        # 2. Try Gemini second
+        if settings.GEMINI_API_KEY:
+            for gem_model in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+                try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{gem_model}:generateContent?key={settings.GEMINI_API_KEY}"
+                    async with httpx.AsyncClient(timeout=6.0) as client:
+                        res = await client.post(
+                            url,
+                            json={"contents": [{"parts": [{"text": prompt}]}]}
+                        )
+                        if res.status_code == 200:
+                            data = res.json()
+                            text = data["candidates"][0]["content"]["parts"][0]["text"]
+                            return text, f"Google Gemini ({gem_model})"
+                except Exception:
+                    continue
+
+        # 3. Try local Open-Source LLM (Ollama)
         try:
-            async with httpx.AsyncClient(timeout=4.0) as client:
+            async with httpx.AsyncClient(timeout=3.0) as client:
                 res = await client.post(
                     f"{settings.OLLAMA_BASE_URL}/api/generate",
                     json={"model": settings.OLLAMA_MODEL, "prompt": prompt, "stream": False}
@@ -104,26 +159,6 @@ class ProjectRAGRetriever:
                     return data.get("response", ""), f"Ollama ({settings.OLLAMA_MODEL})"
         except Exception:
             pass
-
-        # 2. Try Groq if configured
-        if settings.GROQ_API_KEY:
-            try:
-                async with httpx.AsyncClient(timeout=5.0) as client:
-                    res = await client.post(
-                        "https://api.groq.com/openai/v1/chat/completions",
-                        headers={"Authorization": f"Bearer {settings.GROQ_API_KEY}"},
-                        json={
-                            "model": "llama-3.3-70b-versatile",
-                            "messages": [{"role": "user", "content": prompt}],
-                            "temperature": 0.2
-                        }
-                    )
-                    if res.status_code == 200:
-                        data = res.json()
-                        text = data["choices"][0]["message"]["content"]
-                        return text, "Open-Source Llama 3.3 70B (via Groq Engine)"
-            except Exception:
-                pass
 
         # 3. High-precision rule-based synthesis fallback
         if context_docs:

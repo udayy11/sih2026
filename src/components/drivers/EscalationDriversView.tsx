@@ -28,31 +28,65 @@ interface EscalationDriversViewProps {
   projects: InfrastructureProject[];
   onSelectProject: (project: InfrastructureProject) => void;
   onNavigate: (view: string) => void;
+  selectedProjectId?: string;
 }
 
 export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
   projects,
   onSelectProject,
-  onNavigate
+  onNavigate,
+  selectedProjectId
 }) => {
-  const [activeProjectId, setActiveProjectId] = useState<string>(
-    projects[0]?.id || 'PRJ-TRN-001'
+  const [internalProjectId, setInternalProjectId] = useState<string>(
+    selectedProjectId || projects[0]?.id || 'PRJ-TRN-001'
   );
 
+  const activeProjectId = selectedProjectId || internalProjectId;
   const selectedProject = projects.find(p => p.id === activeProjectId) || projects[0];
 
-  // Mock Feature Importance Data representing the ML model's SHAP values
-  // Highlighting CUF (Common Upload Form) vs Non-CUF (External) variables
-  const featureData = [
-    { name: 'Physical Progress Deficit', importance: 0.28, type: 'CUF Field', color: '#3B82F6' },
-    { name: 'Land Acquired (%)', importance: 0.18, type: 'CUF Field', color: '#3B82F6' },
-    { name: 'Material Price Index (Steel/Cement)', importance: 0.15, type: 'Non-CUF Variable', color: '#8B5CF6' },
-    { name: 'Forest/Environment Clearance Status', importance: 0.12, type: 'CUF Field', color: '#3B82F6' },
-    { name: 'Contractor Liquidity Risk Score', importance: 0.11, type: 'Non-CUF Variable', color: '#8B5CF6' },
-    { name: 'Financial Burn Rate Divergence', importance: 0.08, type: 'CUF Field', color: '#3B82F6' },
-    { name: 'Weather Anomalies / Monsoon Intensity', importance: 0.05, type: 'Non-CUF Variable', color: '#8B5CF6' },
-    { name: 'Geo-Political / State Election Proximity', importance: 0.03, type: 'Non-CUF Variable', color: '#8B5CF6' },
-  ].map(f => ({ ...f, displayImportance: Math.round(f.importance * 100) }));
+  // Dynamically calculate feature importance and attribution weights for the selected project
+  const featureData = React.useMemo(() => {
+    if (!selectedProject) return [];
+
+    const progressLag = Math.max(0, (selectedProject.plannedPhysicalProgress || 0) - (selectedProject.physicalProgress || 0));
+    const landDeficit = Math.max(0, 100 - (selectedProject.landAcquiredPercent || 100));
+    const burnDivergence = Math.max(0, (selectedProject.financialProgress || 0) - (selectedProject.physicalProgress || 0));
+    const isForestBlocked = selectedProject.forestClearance === 'Pending' || selectedProject.forestClearance === 'Stage-2 Pending';
+    const isContractorRisky = selectedProject.contractorRiskRating === 'High Default Risk';
+    const isHeavySector = selectedProject.sector === 'Highways' || selectedProject.sector === 'Railways' || selectedProject.sector === 'Power';
+    const isMonsoonProne = ['Assam', 'Himachal Pradesh', 'Uttarakhand', 'Kerala', 'Odisha', 'West Bengal', 'Bihar'].includes(selectedProject.state);
+
+    // Dynamic raw importance points
+    const rawProgress = 12 + Math.min(32, progressLag * 1.1);
+    const rawLand = 8 + Math.min(28, landDeficit * 0.35);
+    const rawMaterial = isHeavySector ? 20 : 10;
+    const rawForest = isForestBlocked ? 26 : (selectedProject.forestClearance === 'Stage-1 Clear' ? 14 : 6);
+    const rawContractor = isContractorRisky ? 28 : (selectedProject.contractorRiskRating === 'Moderate' ? 16 : 8);
+    const rawBurn = 8 + Math.min(24, burnDivergence * 1.4);
+    const rawWeather = isMonsoonProne ? 18 : 6;
+    const rawGeo = selectedProject.delayMonths > 24 ? 14 : (selectedProject.delayMonths > 12 ? 9 : 4);
+
+    const totalRaw = rawProgress + rawLand + rawMaterial + rawForest + rawContractor + rawBurn + rawWeather + rawGeo;
+
+    const items = [
+      { name: 'Physical Progress Deficit', raw: rawProgress, type: 'CUF Field', color: '#3B82F6', valueDesc: `${progressLag.toFixed(1)}% deficit vs target` },
+      { name: 'Land Acquired (%)', raw: rawLand, type: 'CUF Field', color: '#3B82F6', valueDesc: `${selectedProject.landAcquiredPercent}% acquired (${landDeficit}% pending)` },
+      { name: 'Material Price Index (Steel/Cement)', raw: rawMaterial, type: 'Non-CUF Variable', color: '#8B5CF6', valueDesc: isHeavySector ? 'High commodity sensitivity' : 'Moderate sensitivity' },
+      { name: 'Forest/Environment Clearance Status', raw: rawForest, type: 'CUF Field', color: '#3B82F6', valueDesc: `Status: ${selectedProject.forestClearance}` },
+      { name: 'Contractor Liquidity Risk Score', raw: rawContractor, type: 'Non-CUF Variable', color: '#8B5CF6', valueDesc: `Rating: ${selectedProject.contractorRiskRating}` },
+      { name: 'Financial Burn Rate Divergence', raw: rawBurn, type: 'CUF Field', color: '#3B82F6', valueDesc: `Burn exceeds physical by +${burnDivergence.toFixed(1)}%` },
+      { name: 'Weather Anomalies / Monsoon Intensity', raw: rawWeather, type: 'Non-CUF Variable', color: '#8B5CF6', valueDesc: isMonsoonProne ? `Monsoon impact in ${selectedProject.state}` : `Normal seasonal variance` },
+      { name: 'State Administrative Approvals Proximity', raw: rawGeo, type: 'Non-CUF Variable', color: '#8B5CF6', valueDesc: `Cumulative delay: +${selectedProject.delayMonths} mos` },
+    ];
+
+    return items
+      .map(item => ({
+        ...item,
+        importance: +(item.raw / totalRaw).toFixed(3),
+        displayImportance: Math.round((item.raw / totalRaw) * 100)
+      }))
+      .sort((a, b) => b.displayImportance - a.displayImportance);
+  }, [selectedProject]);
 
   const cufImportance = featureData.filter(f => f.type === 'CUF Field').reduce((sum, f) => sum + f.displayImportance, 0);
   const nonCufImportance = featureData.filter(f => f.type === 'Non-CUF Variable').reduce((sum, f) => sum + f.displayImportance, 0);
@@ -81,7 +115,11 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
           <select
             value={activeProjectId}
-            onChange={(e) => setActiveProjectId(e.target.value)}
+            onChange={(e) => {
+              setInternalProjectId(e.target.value);
+              const p = projects.find(proj => proj.id === e.target.value);
+              if (p) onSelectProject(p);
+            }}
             className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
           >
             {projects.map(p => (

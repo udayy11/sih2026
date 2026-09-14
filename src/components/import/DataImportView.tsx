@@ -11,10 +11,11 @@ interface DataImportViewProps {
 }
 
 export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewProps) {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [isParsing, setIsParsing] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [importStats, setImportStats] = useState<{
+    totalFiles: number;
     totalRows: number;
     validProjects: number;
     missingDates: number;
@@ -25,10 +26,10 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      parseCSV(selectedFile);
+    const selectedFiles = e.target.files ? Array.from(e.target.files).filter(f => f.name.endsWith('.csv')) : [];
+    if (selectedFiles.length > 0) {
+      setFiles(selectedFiles);
+      parseMultipleCSVs(selectedFiles);
     }
   };
 
@@ -38,117 +39,170 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile && droppedFile.name.endsWith('.csv')) {
-      setFile(droppedFile);
-      parseCSV(droppedFile);
+    const droppedFiles = e.dataTransfer.files ? Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv')) : [];
+    if (droppedFiles.length > 0) {
+      setFiles(droppedFiles);
+      parseMultipleCSVs(droppedFiles);
     }
   };
 
-  const parseCSV = (file: File) => {
+  const parseMultipleCSVs = async (uploadedFiles: File[]) => {
     setIsParsing(true);
     setImportStats(null);
     setParsedRawData([]);
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const rows = results.data as any[];
-        let valid = 0;
-        let missingDatesCount = 0;
-        let invalidCount = 0;
-        
-        const rawProjects: RawMospiProject[] = [];
+    let totalRowsCount = 0;
+    let missingDatesCount = 0;
+    let invalidCount = 0;
+    const projectMap = new Map<string, RawMospiProject>();
 
-        rows.forEach((row, idx) => {
-          // Attempt to map typical CSV headers to RawMospiProject
-          // We support fuzzy column names to be flexible
-          const getId = () => row['Project ID'] || row['ProjectCode'] || row['projectCode'] || `PRJ-NEW-${idx}`;
-          const getName = () => row['Project Name'] || row['Name'] || row['name'] || 'Unnamed Project';
-          const getAgency = () => row['Agency'] || row['Implementing Agency'] || 'Unknown Agency';
-          const getSector = () => row['Sector'] || 'Infrastructure';
-          const getState = () => row['State'] || 'Multi State';
-          
-          const getDate = (keys: string[]) => {
-            for (const key of keys) {
-              if (row[key]) return row[key];
-            }
-            return undefined;
-          };
+    for (let fIdx = 0; fIdx < uploadedFiles.length; fIdx++) {
+      const currentFile = uploadedFiles[fIdx];
+      await new Promise<void>((resolve) => {
+        Papa.parse(currentFile, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            const rows = results.data as any[];
+            totalRowsCount += rows.length;
 
-          const approvalDate = getDate(['Start Date', 'Approval Date', 'Date of Approval']);
-          const origComp = getDate(['Original Completion Date', 'Original Completion']);
-          const revComp = getDate(['Revised Completion Date', 'Revised Completion', 'Anticipated Completion', 'Expected Completion']);
-          
-          if (!approvalDate || !origComp) {
-            missingDatesCount++;
-          }
-
-          const getNum = (keys: string[]) => {
-            for (const key of keys) {
-              if (row[key] !== undefined && row[key] !== '') {
-                const val = parseFloat(String(row[key]).replace(/,/g, ''));
-                if (!isNaN(val)) return val;
+            // Helper to find a value from row by checking normalized column keys
+            const getField = (rowObj: Record<string, any>, candidates: string[]): string | undefined => {
+              const keys = Object.keys(rowObj);
+              // 1. Exact match pass
+              for (const cand of candidates) {
+                if (rowObj[cand] !== undefined && rowObj[cand] !== null) {
+                  const val = String(rowObj[cand]).trim();
+                  if (val !== '' && val !== '-' && val !== 'N.A.') return val;
+                }
               }
-            }
-            return 0;
-          };
+              // 2. Normalized match pass (ignoring case, spaces, symbols)
+              for (const cand of candidates) {
+                const cleanCand = cand.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const foundKey = keys.find(k => {
+                  const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  return cleanK === cleanCand || cleanK.startsWith(cleanCand) || cleanK.includes(cleanCand);
+                });
+                if (foundKey && rowObj[foundKey] !== undefined && rowObj[foundKey] !== null) {
+                  const val = String(rowObj[foundKey]).trim();
+                  if (val !== '' && val !== '-' && val !== 'N.A.') return val;
+                }
+              }
+              return undefined;
+            };
 
-          const originalCost = getNum(['Original Cost', 'Cost Original', 'Approved Cost']);
-          const anticipatedCost = getNum(['Anticipated Cost', 'Revised Cost', 'Cost Anticipated']);
-          const expenditure = getNum(['Cumulative Expenditure', 'Expenditure']);
-          
-          // Try to handle % signs in progress
-          let physicalProgress = 0;
-          const progStr = row['Physical Progress'] || row['Progress'];
-          if (progStr) {
-            physicalProgress = parseFloat(String(progStr).replace('%', ''));
-            if (isNaN(physicalProgress)) physicalProgress = 0;
-          }
+            const parseNumber = (val: any): number => {
+              if (val === undefined || val === null || val === '' || val === '-') return 0;
+              const cleaned = String(val).replace(/,/g, '').replace(/%/g, '').replace(/[^\d.-]/g, '').trim();
+              const num = parseFloat(cleaned);
+              return isNaN(num) ? 0 : num;
+            };
 
-          if (getId() && getName()) {
-            valid++;
-            rawProjects.push({
-              slNo: idx + 1,
-              projectCode: getId(),
-              name: getName(),
-              agency: getAgency(),
-              state: getState(),
-              sector: getSector(),
-              dateOfApproval: approvalDate,
-              originalCompletionDate: origComp,
-              revisedCompletionDate: revComp,
-              costOriginal: originalCost,
-              costAnticipated: anticipatedCost,
-              cumulativeExpenditure: expenditure,
-              physicalProgress: physicalProgress,
-              tableSource: 'Table-7 Ongoing'
+            rows.forEach((row, idx) => {
+              const code = getField(row, [
+                'Project Code', 'Project Co', 'ProjectCode', 'Project ID', 'ProjectId', 'Code', 'Sr. No.', 'Sr No'
+              ]) || `PRJ-NEW-${fIdx + 1}-${idx + 1}`;
+
+              const name = getField(row, [
+                'Project Name', 'Project Na', 'ProjectName', 'Name', 'Title', 'Description'
+              ]) || 'Unnamed Project';
+
+              const agency = getField(row, [
+                'Implementing Agency', 'Implemen', 'Agency', 'ImplementingAgency', 'PSU', 'Organisation'
+              ]) || 'MoSPI Implementing Agency';
+
+              const sector = getField(row, [
+                'Sector Name', 'Sector Nai', 'Sector', 'SectorName', 'Industry'
+              ]) || 'Infrastructure';
+
+              const ministry = getField(row, [
+                'Line Ministry', 'Line Minis', 'Ministry', 'LineMinistry', 'Department'
+              ]);
+
+              const state = getField(row, [
+                'State', 'State/UT', 'Location', 'Region', 'State Name'
+              ]) || 'Multi State';
+
+              const approvalDate = getField(row, [
+                'Sanction Date', 'SanctionDate', 'Date of Sanction', 'Date of Approval', 'Approval Date', 'Start Date', 'DoA', 'ApprovalDate'
+              ]);
+
+              const origComp = getField(row, [
+                'Original Date of Commissioning', 'Original Date', 'Original Completion Date', 'Original Completion', 'Original DoC', 'Date of Commissioning (Original)', 'OriginalDate'
+              ]);
+
+              const revComp = getField(row, [
+                'Revised Date of Commissioning', 'Revised Date', 'Revised Completion Date', 'Revised Completion', 'Anticipated Date of Commissioning', 'Anticipated Completion', 'Revised DoC', 'Anticipated DoC', 'RevisedDate'
+              ]);
+
+              const hasCompletionDate = Boolean(origComp || revComp);
+              if (!hasCompletionDate) {
+                missingDatesCount++;
+              }
+
+              const originalCost = parseNumber(getField(row, [
+                'Original Cost (in cr.)', 'Original Cost (in cr)', 'Original Cost', 'Cost Original', 'Approved Cost', 'Sanctioned Cost', 'OriginalCost'
+              ]));
+
+              const anticipatedCost = parseNumber(getField(row, [
+                'Revised Cost (in cr.)', 'Revised Cost (in cr)', 'Revised Cost', 'Anticipated Cost (in cr.)', 'Anticipated Cost', 'Cost Anticipated', 'RevisedCost', 'AnticipatedCost'
+              ]));
+
+              const expenditure = parseNumber(getField(row, [
+                'Expenditure (in cr.)', 'Expenditure (in cr)', 'Expenditure', 'Cumulative Expenditure', 'Cumulative Expenditure (in cr.)', 'CumulativeExpenditure', 'Exp'
+              ]));
+
+              const physicalProgress = parseNumber(getField(row, [
+                'Physical Progress (in %)', 'Physical Progress (in %)', 'Physical Progress', 'Progress (in %)', 'Progress (%)', 'Progress', 'PhysicalProgress'
+              ]));
+
+              if (code && name) {
+                projectMap.set(code, {
+                  slNo: projectMap.size + 1,
+                  projectCode: code,
+                  name: name,
+                  agency: agency,
+                  ministry: ministry,
+                  state: state,
+                  sector: sector,
+                  dateOfApproval: approvalDate,
+                  originalCompletionDate: origComp,
+                  revisedCompletionDate: revComp,
+                  costOriginal: originalCost,
+                  costAnticipated: anticipatedCost,
+                  costRevised: anticipatedCost,
+                  cumulativeExpenditure: expenditure,
+                  physicalProgress: physicalProgress,
+                  tableSource: 'Table-7 Ongoing'
+                });
+              } else {
+                invalidCount++;
+              }
             });
-          } else {
-            invalidCount++;
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error parsing CSV:', err);
+            resolve();
           }
         });
+      });
+    }
 
-        setImportStats({
-          totalRows: rows.length,
-          validProjects: valid,
-          missingDates: missingDatesCount,
-          invalidIds: invalidCount
-        });
-        setParsedRawData(rawProjects);
-        setIsParsing(false);
-      },
-      error: (error) => {
-        console.error('Error parsing CSV:', error);
-        setIsParsing(false);
-      }
+    const aggregatedProjects = Array.from(projectMap.values());
+    setImportStats({
+      totalFiles: uploadedFiles.length,
+      totalRows: totalRowsCount,
+      validProjects: aggregatedProjects.length,
+      missingDates: missingDatesCount,
+      invalidIds: invalidCount
     });
+    setParsedRawData(aggregatedProjects);
+    setIsParsing(false);
   };
 
   const handleProcessData = () => {
     setIsProcessing(true);
-    // Add a small artificial delay for UX to show processing state
     setTimeout(() => {
       const generatedProjects = parsedRawData.map((raw, idx) => transformMospiRecord(raw, idx));
       onImportSuccess(generatedProjects);
@@ -165,13 +219,13 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
           <h1 className="text-2xl font-bold text-slate-800">Project Data Import</h1>
         </div>
         <p className="text-slate-500 mb-8">
-          Upload your NirmaanX monthly monitoring report in CSV format to automatically generate AI risk scores, compute schedule delays, and update dashboard analytics.
+          Upload one or more MoSPI monitoring report CSV files simultaneously. New records are merged and upserted by Project Code without deleting existing database records.
         </p>
 
         {/* Upload Dropzone */}
         <div 
           className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-            ${file ? 'border-purple-300 bg-purple-50' : 'border-slate-300 hover:border-purple-400 hover:bg-slate-50'}`}
+            ${files.length > 0 ? 'border-purple-300 bg-purple-50' : 'border-slate-300 hover:border-purple-400 hover:bg-slate-50'}`}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
@@ -179,6 +233,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
           <input 
             type="file" 
             accept=".csv" 
+            multiple
             className="hidden" 
             ref={fileInputRef} 
             onChange={handleFileChange}
@@ -187,16 +242,24 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
           {isParsing ? (
             <div className="flex flex-col items-center space-y-3">
               <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
-              <p className="text-slate-600 font-medium">Parsing CSV Data...</p>
+              <p className="text-slate-600 font-medium">Parsing {files.length} CSV File{files.length > 1 ? 's' : ''}...</p>
             </div>
-          ) : file ? (
+          ) : files.length > 0 ? (
             <div className="flex flex-col items-center space-y-2">
               <div className="h-12 w-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-2">
                 <FileSpreadsheet className="h-6 w-6" />
               </div>
-              <p className="text-lg font-semibold text-slate-700">{file.name}</p>
-              <p className="text-sm text-slate-500">{(file.size / 1024).toFixed(2)} KB</p>
-              <p className="text-sm text-purple-600 mt-2 hover:underline">Click or drag to replace file</p>
+              <p className="text-lg font-semibold text-slate-700">
+                {files.length} CSV File{files.length > 1 ? 's' : ''} Selected
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 max-w-md my-1">
+                {files.map((f, i) => (
+                  <span key={i} className="text-xs bg-purple-100 text-purple-800 font-mono px-2 py-0.5 rounded border border-purple-200">
+                    {f.name} ({(f.size / 1024).toFixed(1)} KB)
+                  </span>
+                ))}
+              </div>
+              <p className="text-sm text-purple-600 mt-2 hover:underline">Click or drag to add or replace files</p>
             </div>
           ) : (
             <div className="flex flex-col items-center space-y-4">
@@ -204,8 +267,8 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
                 <Upload className="h-7 w-7" />
               </div>
               <div>
-                <p className="text-lg font-medium text-slate-700">Drag & drop your CSV file here</p>
-                <p className="text-sm text-slate-500 mt-1">or click to browse from your computer</p>
+                <p className="text-lg font-medium text-slate-700">Drag & drop your CSV file(s) here</p>
+                <p className="text-sm text-slate-500 mt-1">Supports multi-file select and upload</p>
               </div>
             </div>
           )}
@@ -220,9 +283,11 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-emerald-500" />
-                  <span className="text-slate-700 font-medium">{importStats.validProjects} projects detected</span>
+                  <span className="text-slate-700 font-medium">
+                    {importStats.validProjects} unique projects detected across {importStats.totalFiles} file{importStats.totalFiles > 1 ? 's' : ''} ({importStats.totalRows} raw rows)
+                  </span>
                 </div>
-                <span className="text-sm font-semibold bg-emerald-100 text-emerald-700 py-1 px-2.5 rounded-full">Valid</span>
+                <span className="text-sm font-semibold bg-emerald-100 text-emerald-700 py-1 px-2.5 rounded-full">Ready to Merge</span>
               </div>
               
               <div className="flex items-center justify-between">
@@ -241,11 +306,18 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
                 </div>
               )}
 
-              {importStats.missingDates > 0 && (
+              {importStats.missingDates > 0 ? (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    <span className="text-slate-700 font-medium">{importStats.missingDates} projects missing exact completion dates (defaults applied)</span>
+                    <span className="text-slate-700 font-medium">{importStats.missingDates} projects missing commissioning dates (fallback estimated)</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                    <span className="text-slate-700 font-medium">All projects have verified commissioning & sanction dates mapped</span>
                   </div>
                 </div>
               )}

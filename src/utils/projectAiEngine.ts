@@ -753,7 +753,8 @@ GROUND TRUTH DATA FOR PROJECT:
 
 INSTRUCTIONS:
 1. Answer the user's specific query directly (e.g. if they ask when it started, state the start and sanction dates; if they ask why at risk, detail the root causes, delay drivers, cost overruns, and clearances; if they ask about cost, provide the exact rupee amounts).
-2. Use clear markdown headers, bold figures, and emojis (🔴 for Critical, 🟠 for High, 🟡 for Medium, 🟢 for Low).
-3. Do NOT reply generally. Focus strictly on this specific project using the real data provided above.
-4. Conclude with the actionable prescription and the responsible authority.`;
+2. DO NOT use markdown pipe tables. Always format metrics as structured bulleted lists and clean executive cards.
+3. Use clear markdown headers, bold figures, and emojis (🔴 for Critical, 🟠 for High, 🟡 for Medium, 🟢 for Low).
+4. Do NOT reply generally. Focus strictly on this specific project using the real data provided above.
+5. Conclude with the actionable prescription and the responsible authority.`;
 }

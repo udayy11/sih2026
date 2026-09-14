@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { InfrastructureProject } from '../../types';
-import { AlertTriangle, Search, Filter, AlertOctagon, ShieldAlert, FileWarning } from 'lucide-react';
+import { AlertTriangle, Search, Filter, AlertOctagon, ShieldAlert, FileWarning, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface IssuesViewProps {
   projects: InfrastructureProject[];
@@ -21,6 +21,8 @@ interface ProjectIssue {
 export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProject }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState<string>('All');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 15;
 
   // Synthesize issues from project data (delay drivers, cost drivers, clearance issues)
   const allIssues = useMemo(() => {
@@ -115,6 +117,11 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
     });
   }, [allIssues, searchTerm, severityFilter]);
 
+  const totalPages = Math.ceil(filteredIssues.length / pageSize) || 1;
+  const paginatedIssues = useMemo(() => {
+    return filteredIssues.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [filteredIssues, currentPage, pageSize]);
+
   const getSeverityIcon = (severity: string) => {
     switch(severity) {
       case 'Critical': return <AlertOctagon className="w-4 h-4 text-rose-500" />;
@@ -151,7 +158,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
             type="text"
             placeholder="Search issues, projects, or bottleneck types..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           />
         </div>
@@ -159,7 +166,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
           <Filter className="w-4 h-4 text-slate-500" />
           <select
             value={severityFilter}
-            onChange={(e) => setSeverityFilter(e.target.value)}
+            onChange={(e) => { setSeverityFilter(e.target.value); setCurrentPage(1); }}
             className="py-2 pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
           >
             <option value="All">All Severities</option>
@@ -184,14 +191,14 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredIssues.length === 0 ? (
+              {paginatedIssues.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                     No issues found matching your criteria.
                   </td>
                 </tr>
               ) : (
-                filteredIssues.map((issue) => (
+                paginatedIssues.map((issue) => (
                   <tr key={issue.id} className="hover:bg-slate-50/80 transition-colors group">
                     <td className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">
                       {issue.type}
@@ -230,6 +237,40 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Footer */}
+        {filteredIssues.length > pageSize && (
+          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div className="text-xs text-slate-500 font-medium">
+              Showing <span className="font-semibold text-slate-700">{(currentPage - 1) * pageSize + 1}</span> to{' '}
+              <span className="font-semibold text-slate-700">
+                {Math.min(currentPage * pageSize, filteredIssues.length)}
+              </span> of{' '}
+              <span className="font-semibold text-slate-700">{filteredIssues.length}</span> issues
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Previous Page"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-semibold text-slate-700 px-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Next Page"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

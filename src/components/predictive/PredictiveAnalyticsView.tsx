@@ -789,6 +789,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
           projects={projects}
           onSelectProject={onSelectProject}
           onNavigate={onNavigate}
+          selectedProjectId={selectedProject.id}
         />
       )}
     </div>

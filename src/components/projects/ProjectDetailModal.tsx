@@ -33,7 +33,9 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
-  Legend
+  Legend,
+  ComposedChart,
+  Area
 } from 'recharts';
 
 interface ProjectDetailModalProps {
@@ -439,31 +441,111 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           )}
 
           {/* TAB 4: S-CURVE */}
-          {activeTab === 's-curve' && (
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-bold text-slate-900">Historical S-Curve Progress Velocity</h4>
-                <p className="text-xs text-slate-500">
-                  Planned vs Actual Physical Execution (%) vs Financial Expenditure (%)
-                </p>
-              </div>
+          {activeTab === 's-curve' && (() => {
+            const history = project.monthlyProgressHistory || [];
+            const velocityData = history.map((item, idx, arr) => {
+              const prev = idx > 0 ? arr[idx - 1] : null;
+              const plannedVel = prev ? Math.max(0, +(item.plannedPhysical - prev.plannedPhysical).toFixed(1)) : item.plannedPhysical;
+              const actualVel = prev ? Math.max(0, +(item.actualPhysical - prev.actualPhysical).toFixed(1)) : item.actualPhysical;
+              return {
+                ...item,
+                plannedVel,
+                actualVel,
+                burnGap: +(item.actualFinancial - item.actualPhysical).toFixed(1)
+              };
+            });
+            const latest = history[history.length - 1];
+            const prevLatest = history.length > 1 ? history[history.length - 2] : null;
+            const currentVelocity = (latest && prevLatest) ? +(latest.actualPhysical - prevLatest.actualPhysical).toFixed(1) : (latest ? latest.actualPhysical : 0);
+            const targetGap = latest ? +(latest.actualPhysical - latest.plannedPhysical).toFixed(1) : 0;
+            const expenditureGap = latest ? +(latest.actualFinancial - latest.actualPhysical).toFixed(1) : 0;
 
-              <div className="h-72 w-full bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={project.monthlyProgressHistory} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis dataKey="month" tick={{ fontSize: 10 }} angle={-20} textAnchor="end" />
-                    <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
-                    <Tooltip />
-                    <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Line type="monotone" dataKey="plannedPhysical" name="Planned Physical Target" stroke="#3B82F6" strokeDasharray="4 4" strokeWidth={2} />
-                    <Line type="monotone" dataKey="actualPhysical" name="Actual Physical Executed" stroke="#10B981" strokeWidth={3} />
-                    <Line type="monotone" dataKey="actualFinancial" name="Financial Expenditure Burn" stroke="#E11D48" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+            return (
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">Historical S-Curve Progress & Execution Velocity</h4>
+                  <p className="text-xs text-slate-500">
+                    Cumulative physical vs financial trajectory alongside monthly execution velocity (Δ%/month)
+                  </p>
+                </div>
+
+                {/* Velocity KPI Badges */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
+                    <span className="text-xs text-slate-500 font-medium">Current Monthly Velocity</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="text-xl font-bold text-slate-800">+{currentVelocity}%</span>
+                      <span className="text-xs text-slate-500">/ month</span>
+                    </div>
+                    <span className="text-[11px] text-slate-400">Physical progress rate</span>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
+                    <span className="text-xs text-slate-500 font-medium">Physical Target Deficit</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className={`text-xl font-bold ${targetGap < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {targetGap > 0 ? `+${targetGap}%` : `${targetGap}%`}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-400">{targetGap < 0 ? 'Lagging behind planned schedule' : 'Ahead of target schedule'}</span>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
+                    <span className="text-xs text-slate-500 font-medium">Expenditure Burn Divergence</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className={`text-xl font-bold ${expenditureGap > 5 ? 'text-amber-600' : 'text-slate-800'}`}>
+                        {expenditureGap > 0 ? `+${expenditureGap}%` : `${expenditureGap}%`}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-400">{expenditureGap > 5 ? 'Cost burning faster than physical execution' : 'Expenditure pacing with physical works'}</span>
+                  </div>
+                </div>
+
+                {/* Cumulative S-Curve */}
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                  <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Cumulative S-Curve Execution Trajectory (%)</h5>
+                  <div className="h-64 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={velocityData} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
+                        <defs>
+                          <linearGradient id="actualPhysicalGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10B981" stopOpacity={0.2}/>
+                            <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} angle={-20} textAnchor="end" />
+                        <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Legend wrapperStyle={{ fontSize: 11 }} />
+                        <Line type="monotone" dataKey="plannedPhysical" name="Planned Target %" stroke="#3B82F6" strokeDasharray="4 4" strokeWidth={2} dot={false} />
+                        <Area type="monotone" dataKey="actualPhysical" name="Actual Physical %" stroke="#10B981" fillOpacity={1} fill="url(#actualPhysicalGrad)" strokeWidth={3} />
+                        <Line type="monotone" dataKey="actualFinancial" name="Expenditure Burn %" stroke="#E11D48" strokeWidth={2} dot={false} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Monthly Velocity Bar Chart */}
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                  <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Monthly Progress Velocity (Δ% Progress / Month)</h5>
+                  <div className="h-52 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={velocityData} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} angle={-20} textAnchor="end" />
+                        <YAxis unit="%" tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Legend wrapperStyle={{ fontSize: 11 }} />
+                        <Bar dataKey="plannedVel" name="Planned Target Rate" fill="#93C5FD" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="actualVel" name="Actual Velocity" fill="#10B981" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Modal Footer Quick Action Bar */}
