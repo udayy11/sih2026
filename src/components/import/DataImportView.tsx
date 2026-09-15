@@ -225,7 +225,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
         {/* Upload Dropzone */}
         <div 
           className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-            ${file ? 'border-blue-300 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'}`}
+            ${files.length > 0 ? 'border-blue-300 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'}`}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
@@ -249,9 +249,13 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
               <div className="h-12 w-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2">
                 <FileSpreadsheet className="h-6 w-6" />
               </div>
-              <p className="text-lg font-semibold text-slate-700">{file.name}</p>
-              <p className="text-sm text-slate-500">{(file.size / 1024).toFixed(2)} KB</p>
-              <p className="text-sm text-blue-600 mt-2 hover:underline">Click or drag to replace file</p>
+              <p className="text-lg font-semibold text-slate-700">
+                {files.length === 1 ? files[0].name : `${files.length} CSV files selected`}
+              </p>
+              <p className="text-sm text-slate-500">
+                {(files.reduce((acc, f) => acc + f.size, 0) / 1024).toFixed(2)} KB total
+              </p>
+              <p className="text-sm text-blue-600 mt-2 hover:underline">Click or drag to replace file(s)</p>
             </div>
           ) : (
             <div className="flex flex-col items-center space-y-4">

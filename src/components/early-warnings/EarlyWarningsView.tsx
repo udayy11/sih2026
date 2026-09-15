@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState } from 'react';
 import { EarlyWarningAlert, InfrastructureProject } from '../../types';
+import { RiskBadge } from '../common/RiskBadge';
 import { 
   AlertTriangle, 
   ShieldAlert, 
@@ -7,14 +8,12 @@ import {
   CheckCircle, 
   Clock, 
   Filter, 
+  Send, 
   Building2, 
+  Layers, 
   ArrowRight,
   Sparkles,
-  CheckCheck,
-  X,
-  ChevronRight,
-  ChevronLeft,
-  Search
+  CheckCheck
 } from 'lucide-react';
 
 interface EarlyWarningsViewProps {
@@ -35,70 +34,22 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
 
-  const filteredAlerts = useMemo(() => {
-    return alerts.filter(a => {
-      if (activeTab !== 'ALL' && a.riskLevel !== activeTab) return false;
-      if (selectedCategory !== 'ALL' && a.riskType !== selectedCategory) return false;
-      if (searchTerm) {
-        const q = searchTerm.toLowerCase();
-        const matches = 
-          a.projectName.toLowerCase().includes(q) ||
-          a.id.toLowerCase().includes(q) ||
-          a.riskType.toLowerCase().includes(q) ||
-          a.reason.toLowerCase().includes(q);
-        if (!matches) return false;
-      }
-      return true;
-    });
-  }, [alerts, activeTab, selectedCategory, searchTerm]);
-
-  const totalPages = Math.ceil(filteredAlerts.length / pageSize) || 1;
-  const paginatedAlerts = useMemo(() => {
-    return filteredAlerts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  }, [filteredAlerts, currentPage, pageSize]);
+  const filteredAlerts = alerts.filter(a => {
+    if (activeTab !== 'ALL' && a.riskLevel !== activeTab) return false;
+    if (selectedCategory !== 'ALL' && a.riskType !== selectedCategory) return false;
+    return true;
+  });
 
   const criticalCount = alerts.filter(a => a.riskLevel === 'CRITICAL').length;
   const highCount = alerts.filter(a => a.riskLevel === 'HIGH').length;
   const mediumCount = alerts.filter(a => a.riskLevel === 'MEDIUM').length;
 
-  const handleAcknowledge = (id: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+  const handleAcknowledge = (id: string) => {
     setAcknowledgedAlerts(prev => ({ ...prev, [id]: true }));
   };
 
-  const getRiskBadge = (level: string) => {
-    switch (level) {
-      case 'CRITICAL':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
-      case 'HIGH':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default:
-        return 'bg-slate-100 text-slate-800 border-slate-200';
-    }
-  };
-
-  const getTypeBadge = (type: string) => {
-    switch (type) {
-      case 'Cost Escalation Alert':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
-      case 'Schedule Delay Alert':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'Progress-Expenditure Divergence':
-        return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'Regulatory Stagnation':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
-      default:
-        return 'bg-slate-50 text-slate-700 border-slate-200';
-    }
-  };
-
-  const activeProject = selectedAlert ? projects.find(p => p.id === selectedAlert.projectId) : null;
-  const isSelectedAck = selectedAlert ? (acknowledgedAlerts[selectedAlert.id] || selectedAlert.status === 'Acknowledged' || selectedAlert.status === 'Action Initiated') : false;
-
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-6 pb-12">
       {/* Title Header */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -114,15 +65,15 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
             AI Early Warning System
           </h2>
           <p className="text-sm text-slate-500 mt-0.5">
-            Automated predictive warning triggers identifying cost surges, schedule slippages, and clearance impasses from official dataset indicators.
+            Automated predictive warning triggers identifying cost surges, critical schedule slippages, and clearance impasses before crisis escalation.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs font-semibold">
-          <span className="text-slate-500">Warning Category:</span>
+          <span className="text-slate-500">Filter Category:</span>
           <select
             value={selectedCategory}
-            onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => setSelectedCategory(e.target.value)}
             className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-slate-800 focus:outline-hidden"
           >
             <option value="ALL">All Warning Types</option>
@@ -130,15 +81,15 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
             <option value="Schedule Delay Alert">Schedule Delay</option>
             <option value="Progress-Expenditure Divergence">Progress-Expenditure Divergence</option>
             <option value="Regulatory Stagnation">Regulatory Stagnation</option>
-            <option value="Contractor Anomaly">Contractor Execution Risk</option>
           </select>
         </div>
       </div>
 
-      {/* Severity Filter Tabs */}
+      {/* Warning Severity Tabs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* ALL */}
         <button
-          onClick={() => { setActiveTab('ALL'); setCurrentPage(1); }}
+          onClick={() => setActiveTab('ALL')}
           className={`p-4 rounded-2xl border text-left transition-all ${
             activeTab === 'ALL'
               ? 'bg-slate-900 text-white border-slate-900 shadow-md'
@@ -151,12 +102,13 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           </div>
           <div className="text-2xl font-bold font-mono mt-2">{alerts.length}</div>
           <p className={`text-[11px] mt-1 ${activeTab === 'ALL' ? 'text-slate-300' : 'text-slate-500'}`}>
-            Cross-portfolio anomalies
+            Comprehensive trigger log
           </p>
         </button>
 
+        {/* CRITICAL */}
         <button
-          onClick={() => { setActiveTab('CRITICAL'); setCurrentPage(1); }}
+          onClick={() => setActiveTab('CRITICAL')}
           className={`p-4 rounded-2xl border text-left transition-all ${
             activeTab === 'CRITICAL'
               ? 'bg-rose-900 text-white border-rose-900 shadow-md'
@@ -164,17 +116,18 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider">Critical Alerts 🔴</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Critical Alerts ≡ƒö┤</span>
             <ShieldAlert className="w-4 h-4 text-rose-500" />
           </div>
           <div className="text-2xl font-bold font-mono text-rose-600 mt-2">{criticalCount}</div>
           <p className={`text-[11px] mt-1 ${activeTab === 'CRITICAL' ? 'text-rose-200' : 'text-rose-700'}`}>
-            Requires immediate executive intervention
+            Requires immediate PMG escalation
           </p>
         </button>
 
+        {/* HIGH */}
         <button
-          onClick={() => { setActiveTab('HIGH'); setCurrentPage(1); }}
+          onClick={() => setActiveTab('HIGH')}
           className={`p-4 rounded-2xl border text-left transition-all ${
             activeTab === 'HIGH'
               ? 'bg-amber-900 text-white border-amber-900 shadow-md'
@@ -182,7 +135,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider">High Alerts 🟠</span>
+            <span className="text-xs font-bold uppercase tracking-wider">High Alerts ≡ƒƒá</span>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
           <div className="text-2xl font-bold font-mono text-amber-600 mt-2">{highCount}</div>
@@ -191,8 +144,9 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           </p>
         </button>
 
+        {/* MEDIUM */}
         <button
-          onClick={() => { setActiveTab('MEDIUM'); setCurrentPage(1); }}
+          onClick={() => setActiveTab('MEDIUM')}
           className={`p-4 rounded-2xl border text-left transition-all ${
             activeTab === 'MEDIUM'
               ? 'bg-yellow-900 text-white border-yellow-900 shadow-md'
@@ -200,7 +154,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider">Medium Alerts 🟡</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Medium Alerts ≡ƒƒí</span>
             <AlertCircle className="w-4 h-4 text-yellow-600" />
           </div>
           <div className="text-2xl font-bold font-mono text-yellow-700 mt-2">{mediumCount}</div>
@@ -257,7 +211,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${isCritical ? 'bg-rose-100 text-rose-800' : isHigh ? 'bg-amber-100 text-amber-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                          {isCritical ? '🔴 CRITICAL' : isHigh ? '🟠 HIGH' : '🟡 MEDIUM'}
+                          {isCritical ? '≡ƒö┤ CRITICAL' : isHigh ? '≡ƒƒá HIGH' : '≡ƒƒí MEDIUM'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -305,37 +259,56 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                     </p>
                   </div>
                 </div>
-              </div>
 
-              {/* Trigger / Evidence Metric */}
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                  Dataset Trigger Metric
-                </h5>
-                <p className="text-sm font-semibold text-slate-800 font-mono">
-                  {selectedAlert.evidenceMetric}
-                </p>
-              </div>
+                {/* Analytics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Left Column: Risk Scores */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">Risk Factor Breakdown</h4>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-medium">Schedule Risk:</span>
+                        <span className="font-bold font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-700">{associatedProject?.scheduleRiskScore || 0}%</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-medium">Cost Risk:</span>
+                        <span className="font-bold font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-700">{associatedProject?.costRiskScore || 0}%</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-medium">Progress Risk:</span>
+                        <span className="font-bold font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-700">{associatedProject?.progressRiskScore || 0}%</span>
+                      </div>
+                    </div>
 
-              {/* Risk Factor Breakdown */}
-              {activeProject && (
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
-                    <span className="text-[11px] text-slate-500 font-medium">Schedule Risk</span>
-                    <div className="text-base font-bold font-mono text-slate-800 mt-0.5">
-                      {activeProject.scheduleRiskScore}%
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-bold text-slate-700">Expected Delay:</span>
+                        <span className="text-sm font-bold text-rose-600 font-mono bg-rose-50 px-2 py-0.5 rounded">
+                          {associatedProject?.delayMonths ? `${Math.max(1, associatedProject.delayMonths - 2)}ΓÇô${associatedProject.delayMonths + 2} months` : 'On Schedule'}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
-                    <span className="text-[11px] text-slate-500 font-medium">Cost Risk</span>
-                    <div className="text-base font-bold font-mono text-slate-800 mt-0.5">
-                      {activeProject.costRiskScore}%
-                    </div>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
-                    <span className="text-[11px] text-slate-500 font-medium">Delay Months</span>
-                    <div className="text-base font-bold font-mono text-rose-600 mt-0.5">
-                      +{activeProject.delayMonths} mos
+
+                  {/* Right Column: Factors & Actions */}
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">Main Warning Factors</h4>
+                      <ul className="space-y-2 mt-3">
+                        {associatedProject?.topContributingFactors?.slice(0, 3).map((f, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                            <span className="text-rose-500 mt-0.5">ΓÇó</span>
+                            <span>{f.factor}</span>
+                          </li>
+                        )) || (
+                          <>
+                            <li className="flex items-start gap-2 text-sm text-slate-700"><span className="text-rose-500 mt-0.5">ΓÇó</span><span>Completion date approaching</span></li>
+                            <li className="flex items-start gap-2 text-sm text-slate-700"><span className="text-rose-500 mt-0.5">ΓÇó</span><span>Physical progress is lower than expected</span></li>
+                            <li className="flex items-start gap-2 text-sm text-slate-700"><span className="text-rose-500 mt-0.5">ΓÇó</span><span>Progress velocity has plateaued</span></li>
+                          </>
+                        )}
+                      </ul>
                     </div>
                   </div>
                 </div>

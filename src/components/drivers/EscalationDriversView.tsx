@@ -115,7 +115,11 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
           <select
             value={activeProjectId}
-            onChange={(e) => setActiveProjectId(e.target.value)}
+            onChange={(e) => {
+              setInternalProjectId(e.target.value);
+              const found = projects.find(p => p.id === e.target.value);
+              if (found) onSelectProject(found);
+            }}
             className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
           >
             {projects.map(p => (

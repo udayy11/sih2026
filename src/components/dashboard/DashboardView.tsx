@@ -61,7 +61,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const revisedCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
   const expenditure = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
   
-  const completedDuringMonth = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress >= 98).length;
+  const completedDuringMonth = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress === 100).length;
   const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length;
 
   // Portfolio S-Curve Aggregation across all active projects
@@ -216,9 +216,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* KPI 2: Completed During Month */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+                  <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
+                    <div className="p-1 rounded bg-emerald-100/50 text-emerald-500 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Completed</span>
                   </div>
                   <div className="text-3xl font-bold font-mono text-slate-900">{completedProjects}</div>
