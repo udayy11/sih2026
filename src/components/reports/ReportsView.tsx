@@ -96,7 +96,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
       {/* Top Header Mode Selector */}
       <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-900 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-900 flex items-center justify-center font-bold">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
@@ -115,7 +115,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
             onClick={() => setActiveTab('MOSPI_DOCUMENT')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'MOSPI_DOCUMENT'
-                ? 'bg-purple-900 text-white shadow-xs'
+                ? 'bg-blue-900 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
@@ -127,7 +127,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
             onClick={() => setActiveTab('EXECUTIVE_DOSSIER')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'EXECUTIVE_DOSSIER'
-                ? 'bg-purple-900 text-white shadow-xs'
+                ? 'bg-blue-900 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
@@ -160,7 +160,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
 
             <button
               onClick={handleDownloadReport}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-900 hover:bg-purple-800 text-white text-xs font-bold transition-all shadow-xs"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold transition-all shadow-xs"
             >
               <Download className="w-4 h-4" />
               <span>Download Dossier (.txt)</span>
@@ -223,7 +223,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
                         <span className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center font-mono text-xs font-bold">
                           {idx + 1}
                         </span>
-                        <span className="font-mono text-xs font-bold text-purple-900">{p.projectCode}</span>
+                        <span className="font-mono text-xs font-bold text-blue-900">{p.projectCode}</span>
                         <span className="font-bold text-slate-900 text-xs">{p.name}</span>
                       </div>
                       <RiskBadge level={p.riskLevel} size="sm" />
@@ -242,7 +242,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
                         {p.detectedIssue}
                       </div>
                       <div className="text-slate-800 font-medium">
-                        <span className="text-purple-900 font-bold">Action Directive: </span>
+                        <span className="text-blue-900 font-bold">Action Directive: </span>
                         {p.recommendedIntervention}
                       </div>
                     </div>

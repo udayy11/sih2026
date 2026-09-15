@@ -161,7 +161,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
       <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex items-center space-x-3 mb-2">
-          <FileSpreadsheet className="h-7 w-7 text-purple-600" />
+          <FileSpreadsheet className="h-7 w-7 text-blue-600" />
           <h1 className="text-2xl font-bold text-slate-800">Project Data Import</h1>
         </div>
         <p className="text-slate-500 mb-8">
@@ -171,7 +171,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
         {/* Upload Dropzone */}
         <div 
           className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-            ${file ? 'border-purple-300 bg-purple-50' : 'border-slate-300 hover:border-purple-400 hover:bg-slate-50'}`}
+            ${file ? 'border-blue-300 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'}`}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
@@ -186,17 +186,17 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
           
           {isParsing ? (
             <div className="flex flex-col items-center space-y-3">
-              <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
+              <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
               <p className="text-slate-600 font-medium">Parsing CSV Data...</p>
             </div>
           ) : file ? (
             <div className="flex flex-col items-center space-y-2">
-              <div className="h-12 w-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-2">
+              <div className="h-12 w-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2">
                 <FileSpreadsheet className="h-6 w-6" />
               </div>
               <p className="text-lg font-semibold text-slate-700">{file.name}</p>
               <p className="text-sm text-slate-500">{(file.size / 1024).toFixed(2)} KB</p>
-              <p className="text-sm text-purple-600 mt-2 hover:underline">Click or drag to replace file</p>
+              <p className="text-sm text-blue-600 mt-2 hover:underline">Click or drag to replace file</p>
             </div>
           ) : (
             <div className="flex flex-col items-center space-y-4">
@@ -255,7 +255,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
               <button 
                 onClick={handleProcessData}
                 disabled={isProcessing || importStats.validProjects === 0}
-                className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all hover:shadow"
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all hover:shadow"
               >
                 {isProcessing ? (
                   <>

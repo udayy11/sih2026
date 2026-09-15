@@ -63,7 +63,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-800 border border-purple-200">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
               CUF Feature Attribution Analysis
             </span>
             <span className="text-xs text-slate-400 font-mono">SIH 2026 Problem Statement C</span>
@@ -82,7 +82,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           <select
             value={activeProjectId}
             onChange={(e) => setActiveProjectId(e.target.value)}
-            className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
+            className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
           >
             {projects.map(p => (
               <option key={p.id} value={p.id}>
@@ -132,7 +132,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
 
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
             <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-purple-600" />
+              <FileText className="w-4 h-4 text-blue-600" />
               Weight Distribution
             </h3>
             
@@ -141,9 +141,9 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
                 <span className="text-[10px] uppercase font-bold text-blue-600 block mb-1">CUF Importance</span>
                 <span className="text-2xl font-bold font-mono text-blue-800">{cufImportance}%</span>
               </div>
-              <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
-                <span className="text-[10px] uppercase font-bold text-purple-600 block mb-1">Non-CUF Importance</span>
-                <span className="text-2xl font-bold font-mono text-purple-800">{nonCufImportance}%</span>
+              <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <span className="text-[10px] uppercase font-bold text-blue-600 block mb-1">Non-CUF Importance</span>
+                <span className="text-2xl font-bold font-mono text-blue-800">{nonCufImportance}%</span>
               </div>
             </div>
             <p className="text-[10px] text-slate-500 mt-3 leading-relaxed">
@@ -169,8 +169,8 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
               <span className="flex items-center gap-1.5 text-blue-700 bg-blue-50 px-2 py-1 rounded">
                 <span className="w-2 h-2 rounded-full bg-blue-500"></span> CUF Field
               </span>
-              <span className="flex items-center gap-1.5 text-purple-700 bg-purple-50 px-2 py-1 rounded">
-                <span className="w-2 h-2 rounded-full bg-purple-500"></span> External (Non-CUF)
+              <span className="flex items-center gap-1.5 text-blue-700 bg-blue-50 px-2 py-1 rounded">
+                <span className="w-2 h-2 rounded-full bg-blue-500"></span> External (Non-CUF)
               </span>
             </div>
           </div>
@@ -191,7 +191,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
                           <div className="font-bold mb-1">{data.name}</div>
                           <div className="text-slate-300 font-mono mb-2">Impact Weight: {data.displayImportance}%</div>
                           <div className={`px-2 py-1 inline-block rounded font-bold text-[10px] ${
-                            data.type === 'CUF Field' ? 'bg-blue-900/50 text-blue-300' : 'bg-purple-900/50 text-purple-300'
+                            data.type === 'CUF Field' ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-900/50 text-blue-300'
                           }`}>
                             {data.type}
                           </div>
@@ -213,7 +213,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
       </div>
 
       {/* Strategic Insight Bottom Banner */}
-      <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-2xl p-6 shadow-md text-white flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 shadow-md text-white flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-amber-300" />

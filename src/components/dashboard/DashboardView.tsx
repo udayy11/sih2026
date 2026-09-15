@@ -215,7 +215,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 {/* KPI 6: Newly Added */}
                 <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
-                    <div className="p-1 rounded bg-purple-100/50 text-purple-400 group-hover:bg-purple-100 group-hover:text-purple-600 transition-colors">
+                    <div className="p-1 rounded bg-blue-100/50 text-blue-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
                       <Sparkles className="w-4 h-4 text-blue-400" />
                     </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Newly Added</span>
