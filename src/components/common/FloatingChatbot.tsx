@@ -100,8 +100,9 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         }),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+      const contentType = res.headers.get('content-type') || '';
+      if (!res.ok || !contentType.includes('application/json')) {
+        throw new Error(`Invalid response format or status ${res.status}`);
       }
 
       const data = await res.json();

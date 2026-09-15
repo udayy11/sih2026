@@ -44,6 +44,18 @@ export const AUTHORIZED_USERS: Record<string, { pass: string; name: string; role
     role: 'Engineer',
     department: 'Structural & Quality Control Engineering',
   },
+  ashika: {
+    pass: 'ashika',
+    name: 'Ashika',
+    role: 'Citizen',
+    department: 'Resident Welfare Association / Citizen Representative',
+  },
+  vrinda: {
+    pass: 'vrinda',
+    name: 'Vrinda',
+    role: 'Project Tracker',
+    department: 'MoSPI Project Monitoring Group (PMG)',
+  },
 };
 
 export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
@@ -78,8 +90,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
 
       if (res.ok && data.user) {
         setIsLoading(false);
-        const mappedRole: 'Admin' | 'Project Tracker' | 'Engineer' = 
+        const mappedRole: 'Admin' | 'Project Tracker' | 'Engineer' | 'Citizen' = 
           data.user.role === 'Admin' ? 'Admin' : 
+          data.user.role === 'Citizen' ? 'Citizen' :
           data.user.role === 'MoSPI Officer' || data.user.role === 'Project Tracker' ? 'Project Tracker' : 'Engineer';
 
         onLogin({
@@ -211,6 +224,34 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                 </div>
                 <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: 1234</div>
               </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectAccount('ashika')}
+                className={`p-2.5 rounded-xl border text-left transition-all ${
+                  username === 'ashika' ? 'bg-amber-900 text-white border-amber-900 shadow-sm' : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200'
+                }`}
+              >
+                <div className="text-xs font-bold flex items-center justify-between">
+                  <span>🏘️ ashika</span>
+                  <span className="text-[10px] font-mono opacity-80">Citizen</span>
+                </div>
+                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: ashika</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectAccount('vrinda')}
+                className={`p-2.5 rounded-xl border text-left transition-all ${
+                  username === 'vrinda' ? 'bg-blue-900 text-white border-blue-900 shadow-sm' : 'bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200'
+                }`}
+              >
+                <div className="text-xs font-bold flex items-center justify-between">
+                  <span>📊 vrinda</span>
+                  <span className="text-[10px] font-mono opacity-80">Tracker</span>
+                </div>
+                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: vrinda</div>
+              </button>
             </div>
           </div>
 
@@ -234,7 +275,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. uday, piyush, nikhil, lavanya"
+                  placeholder="e.g. uday, piyush, nikhil, lavanya, ashika, vrinda"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-100 rounded-xl text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 transition-all outline-hidden font-mono"
                 />
               </div>
