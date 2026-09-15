@@ -160,8 +160,8 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isPythonLive ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-purple-100 text-purple-900 border-purple-300'}`}>
-                {isPythonLive ? '🟢 Python FastAPI (Scikit-learn) Active' : 'MoSPI DIID Problem Statement 26103'}
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-300">
+                MoSPI DIID Problem Statement 26103
               </span>
               <span className="text-xs text-slate-500 font-mono">{modelTypeTitle}</span>
             </div>
@@ -176,7 +176,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
           {/* Similarity Search Bar with Dropdown Matches */}
           <div className="relative w-full lg:w-96" ref={searchContainerRef}>
             <div className="relative">
-              <Search className="w-4 h-4 text-purple-600 dark:text-purple-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-blue-600 dark:text-blue-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search project code, name, sector, agency..."
@@ -186,7 +186,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                className="w-full pl-10 pr-8 py-2.5 text-xs font-medium bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white dark:focus:bg-slate-800 transition-all outline-hidden shadow-2xs"
+                className="w-full pl-10 pr-8 py-2.5 text-xs font-medium bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all outline-hidden shadow-2xs"
               />
               {searchQuery && (
                 <button
@@ -206,7 +206,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
               <div className="absolute top-full left-0 mt-2 w-full max-h-80 overflow-y-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl z-50 divide-y divide-slate-100 dark:divide-slate-700">
                 <div className="p-2 bg-slate-50 dark:bg-slate-900/60 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
                   <span>{searchQuery ? 'Top Similarity Matches' : 'Monitored Projects'}</span>
-                  <span className="font-mono text-[10px] text-purple-600 dark:text-purple-400">{displayedProjects.length} found</span>
+                  <span className="font-mono text-[10px] text-blue-600 dark:text-blue-400">{displayedProjects.length} found</span>
                 </div>
                 {displayedProjects.map((p) => (
                   <div
@@ -216,8 +216,8 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                       setSearchQuery(`[${p.projectCode}] ${p.name.substring(0, 30)}`);
                       setShowDropdown(false);
                     }}
-                    className={`p-3 hover:bg-purple-50/80 dark:hover:bg-purple-950/40 cursor-pointer transition-colors ${
-                      p.id === activeProjectId ? 'bg-purple-50 dark:bg-purple-950/60 border-l-4 border-purple-600' : ''
+                    className={`p-3 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 cursor-pointer transition-colors ${
+                      p.id === activeProjectId ? 'bg-blue-50 dark:bg-blue-950/60 border-l-4 border-blue-600' : ''
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -245,7 +245,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             onClick={() => setActiveTab('models')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'models'
-                ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20'
+                ? 'bg-blue-900 text-white shadow-md shadow-blue-950/20'
                 : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
             }`}
           >
@@ -257,7 +257,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             onClick={() => setActiveTab('baselines')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'baselines'
-                ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20'
+                ? 'bg-blue-900 text-white shadow-md shadow-blue-950/20'
                 : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
             }`}
           >
@@ -269,7 +269,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             onClick={() => setActiveTab('ablation')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'ablation'
-                ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20'
+                ? 'bg-blue-900 text-white shadow-md shadow-blue-950/20'
                 : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
             }`}
           >
@@ -281,7 +281,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             onClick={() => setActiveTab('pdp')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'pdp'
-                ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20'
+                ? 'bg-blue-900 text-white shadow-md shadow-blue-950/20'
                 : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
             }`}
           >
@@ -293,7 +293,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             onClick={() => setActiveTab('drivers')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'drivers'
-                ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20'
+                ? 'bg-blue-900 text-white shadow-md shadow-blue-950/20'
                 : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
             }`}
           >
@@ -331,7 +331,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
               </div>
               <button
                 onClick={() => onSelectProject(selectedProject)}
-                className="px-4 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
               >
                 <span>Full Diagnosis</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -399,13 +399,13 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
               {/* Model Feature Explanations / Drivers */}
               <div className="space-y-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                   <span>Key Cost Inflation Drivers (SHAP Attribution):</span>
                 </span>
                 <div className="space-y-1.5">
                   {costPrediction.drivers.map((driver, idx) => (
                     <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs text-slate-700 border border-slate-100">
-                      <span className="w-4 h-4 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center text-[10px] font-bold font-mono">
+                      <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[10px] font-bold font-mono">
                         {idx + 1}
                       </span>
                       <span>{driver}</span>
@@ -507,8 +507,8 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                 <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
                   <span className="w-3 h-0.5 bg-emerald-500 inline-block" /> Actual Physical
                 </span>
-                <span className="flex items-center gap-1.5 text-purple-600 font-bold">
-                  <span className="w-3 h-0.5 bg-purple-600 inline-block" /> Financial Burn
+                <span className="flex items-center gap-1.5 text-blue-600 font-bold">
+                  <span className="w-3 h-0.5 bg-blue-600 inline-block" /> Financial Burn
                 </span>
               </div>
             </div>
@@ -575,14 +575,14 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Scale className="w-5 h-5 text-purple-700" />
+                  <Scale className="w-5 h-5 text-blue-700" />
                   Model Performance Benchmark Matrix
                 </h3>
                 <p className="text-xs text-slate-500">
                   Calculated across continuous overrun magnitude (RMSE/MAE) and binary &gt;10% overrun classification (ROC-AUC/F1)
                 </p>
               </div>
-              <span className="text-xs font-mono font-bold bg-purple-50 text-purple-900 px-3 py-1 rounded-full border border-purple-200">
+              <span className="text-xs font-mono font-bold bg-blue-50 text-blue-900 px-3 py-1 rounded-full border border-blue-200">
                 9 Model Architectures Evaluated
               </span>
             </div>
@@ -606,14 +606,14 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                   {modelComparison.map((m, idx) => {
                     const isChampion = m.status.includes('Champion') || m.status.includes('Deep');
                     return (
-                      <tr key={idx} className={`hover:bg-slate-50 transition-colors ${isChampion ? 'bg-purple-50/40 font-semibold' : ''}`}>
+                      <tr key={idx} className={`hover:bg-slate-50 transition-colors ${isChampion ? 'bg-blue-50/40 font-semibold' : ''}`}>
                         <td className="p-3.5 text-slate-900 font-sans font-bold flex items-center gap-2">
-                          {isChampion && <Award className="w-4 h-4 text-purple-700 shrink-0" />}
+                          {isChampion && <Award className="w-4 h-4 text-blue-700 shrink-0" />}
                           <span>{m.model}</span>
                         </td>
                         <td className="p-3.5 font-sans">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            m.category.includes('Baselines') ? 'bg-slate-100 text-slate-700' : 'bg-purple-100 text-purple-900'
+                            m.category.includes('Baselines') ? 'bg-slate-100 text-slate-700' : 'bg-blue-100 text-blue-900'
                           }`}>
                             {m.type}
                           </span>
@@ -622,7 +622,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                         <td className="p-3.5 text-right text-rose-600">{m.mae}</td>
                         <td className="p-3.5 text-right font-bold text-slate-900">{m.accuracy}</td>
                         <td className="p-3.5 text-right text-slate-800">{m.f1Score}</td>
-                        <td className="p-3.5 text-right font-bold text-purple-800">{m.rocAuc}</td>
+                        <td className="p-3.5 text-right font-bold text-blue-800">{m.rocAuc}</td>
                         <td className="p-3.5 text-right text-emerald-700">{m.brierScore}</td>
                         <td className="p-3.5 text-right text-emerald-800 font-bold font-sans">{m.earlyWarningLeadDays}</td>
                       </tr>
@@ -699,7 +699,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                     <th className="p-3 text-right">Model B (CUF + Derived)</th>
                     <th className="p-3 text-right text-blue-700">Lift (A→B)</th>
                     <th className="p-3 text-right">Model C (Full Multimodal)</th>
-                    <th className="p-3 text-right text-purple-700 font-bold">Total Lift (A→C)</th>
+                    <th className="p-3 text-right text-blue-700 font-bold">Total Lift (A→C)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-mono">
@@ -709,8 +709,8 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                       <td className="p-3 text-right text-slate-600">{row.ModelA}</td>
                       <td className="p-3 text-right text-slate-800">{row.ModelB}</td>
                       <td className="p-3 text-right text-blue-700 font-bold">{row.liftB}</td>
-                      <td className="p-3 text-right text-purple-900 font-bold">{row.ModelC}</td>
-                      <td className="p-3 text-right text-purple-700 font-bold bg-purple-50">{row.liftC}</td>
+                      <td className="p-3 text-right text-blue-900 font-bold">{row.ModelC}</td>
+                      <td className="p-3 text-right text-blue-700 font-bold bg-blue-50">{row.liftC}</td>
                     </tr>
                   ))}
                 </tbody>

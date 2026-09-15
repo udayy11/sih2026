@@ -159,7 +159,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
 
   const getRoleBadge = (role: string) => {
     switch(role) {
-      case 'Admin': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'Admin': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'MoSPI Officer':
       case 'Project Tracker': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'Ministry Officer': return 'bg-amber-100 text-amber-800 border-amber-200';
@@ -175,13 +175,13 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-900 border border-purple-200">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-200">
               Role-Based Access Control (RBAC)
             </span>
             <span className="text-xs text-slate-500 font-mono">Authorized Creator: uday (Admin) & piyush (Tracker)</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Shield className="w-6 h-6 text-purple-700" />
+            <Shield className="w-6 h-6 text-blue-700" />
             User Management & Authorized Engineers
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">Manage government monitoring accounts, civil engineers, and platform roles</p>
@@ -191,7 +191,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
           onClick={handleOpenAddModal}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs ${
             canAddUser 
-              ? 'bg-purple-700 hover:bg-purple-800 text-white shadow-purple-900/20' 
+              ? 'bg-blue-700 hover:bg-blue-800 text-white shadow-blue-900/20' 
               : 'bg-slate-200 text-slate-500 cursor-not-allowed border border-slate-300'
           }`}
           title={canAddUser ? 'Add new engineer account' : 'Only uday (Admin) & piyush (Tracker) can add new engineers'}
@@ -226,12 +226,12 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
             placeholder="Search users by name, email, or department..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-600 focus:bg-white transition-all"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all"
           />
         </div>
         <div className="flex gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-600">
-            <Users className="w-4 h-4 text-purple-600" />
+            <Users className="w-4 h-4 text-blue-600" />
             <span className="font-bold text-slate-900">{users.length}</span> Total Registered Accounts
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600">
@@ -261,7 +261,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                   <td className="px-6 py-4">
                     <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                       <span>{user.name}</span>
-                      <span className="text-[10px] font-mono text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/50 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-700">
+                      <span className="text-[10px] font-mono text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/50 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-700">
                         @{user.username || user.id}
                       </span>
                     </div>
@@ -288,7 +288,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                       value={user.role}
                       onChange={(e) => handleUpdateRole(user, e.target.value)}
                       disabled={!canAddUser}
-                      className="text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-purple-600 focus:outline-hidden disabled:opacity-50 cursor-pointer shadow-2xs"
+                      className="text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-blue-600 focus:outline-hidden disabled:opacity-50 cursor-pointer shadow-2xs"
                     >
                       <option value="Admin">Admin 🛡️</option>
                       <option value="Project Tracker">Project Tracker 📋</option>
@@ -308,7 +308,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
           <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden">
             <div className="bg-slate-900 text-white p-6 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-700 text-white flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-blue-700 text-white flex items-center justify-center">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -333,7 +333,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                   placeholder="e.g. Ramesh Chandra"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden"
                 />
               </div>
 
@@ -346,7 +346,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                     placeholder="e.g. ramesh"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden font-mono"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden font-mono"
                   />
                 </div>
 
@@ -358,7 +358,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                     placeholder="e.g. 1234"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden font-mono"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
@@ -370,7 +370,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                   placeholder="e.g. ramesh@nirmaanx.gov.in"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden"
                 />
               </div>
 
@@ -379,7 +379,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden font-bold"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden font-bold"
                 >
                   <option value="Engineer">Engineer / Project Officer</option>
                   <option value="Ministry Officer">Ministry Liaison Officer</option>
@@ -393,7 +393,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                   placeholder="e.g. Geotechnical & Infrastructure Engineering"
                   value={newDept}
                   onChange={(e) => setNewDept(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:bg-white focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden"
                 />
               </div>
 
@@ -407,7 +407,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold transition-all shadow-md"
+                  className="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition-all shadow-md"
                 >
                   Create & Register Engineer
                 </button>

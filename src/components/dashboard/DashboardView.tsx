@@ -61,12 +61,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const revisedCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
   const expenditure = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
   
-  const completedProjects = activeProjects.filter(p => 
-    p.status === 'Completed' ||
-    p.status === 'Commissioned' ||
-    p.physicalProgress >= 100 ||
-    (p.status === 'Near Completion' && p.physicalProgress >= 95)
-  ).length;
+  const completedDuringMonth = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress >= 98).length;
   const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length;
 
   // Portfolio S-Curve Aggregation across all active projects
@@ -171,16 +166,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="h-[calc(100vh-100px)] flex flex-col space-y-4">
       
       {/* Title Bar */}
-      <div className="flex items-end justify-between border-b border-slate-200 pb-4">
+      <div className="flex items-end justify-between border-b border-slate-200 pb-2 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">State-wise Infrastructure Projects</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">State-wise Infrastructure Projects</h1>
           <p className="text-sm text-slate-500 mt-1">As of July 2026</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
             AI-Powered Predictive Monitoring
           </span>
@@ -190,12 +185,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
         
         {/* LEFT: Statistics Card (5 columns) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex flex-col gap-4 overflow-y-auto pr-1 custom-scrollbar">
           
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col shrink-0 transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             
             <div className="bg-slate-900 px-6 py-5 flex flex-col justify-center border-b border-slate-800">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Selected Region</span>
@@ -205,20 +200,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-4">
               {/* 2x3 KPI Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 
                 {/* KPI 1: Project Count */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <Layers className="w-4 h-4" />
+                <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+                  <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
+                    <div className="p-1 rounded bg-slate-200/50 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                      <Layers className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Project Count</span>
                   </div>
                   <div className="text-3xl font-bold font-mono text-slate-900">{projectCount}</div>
                 </div>
 
-                {/* KPI 2: Completed Projects */}
+                {/* KPI 2: Completed During Month */}
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
                   <div className="flex items-center gap-1.5 mb-2 text-slate-500">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -228,9 +225,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* KPI 3: Original Cost */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <DollarSign className="w-4 h-4 text-slate-400" />
+                <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+                  <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
+                    <div className="p-1 rounded bg-slate-200/50 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-600 transition-colors">
+                      <DollarSign className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Original Cost</span>
                   </div>
                   <div className="text-lg font-bold font-mono text-slate-900">
@@ -239,9 +238,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* KPI 4: Latest Revised Cost */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <TrendingUp className="w-4 h-4 text-rose-400" />
+                <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+                  <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
+                    <div className="p-1 rounded bg-rose-100/50 text-rose-400 group-hover:bg-rose-100 group-hover:text-rose-600 transition-colors">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Revised Cost</span>
                   </div>
                   <div className="text-lg font-bold font-mono text-slate-900">
@@ -250,9 +251,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* KPI 5: Cumulative Expenditure */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <Building2 className="w-4 h-4 text-blue-400" />
+                <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+                  <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
+                    <div className="p-1 rounded bg-blue-100/50 text-blue-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                      <Building2 className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Expenditure</span>
                   </div>
                   <div className="text-lg font-bold font-mono text-slate-900">
@@ -261,9 +264,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* KPI 6: Newly Added */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <Sparkles className="w-4 h-4 text-purple-400" />
+                <div className="bg-slate-50/80 hover:bg-white rounded-xl p-4 border border-slate-100 flex flex-col justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group">
+                  <div className="flex items-center gap-1.5 mb-2 text-slate-500 group-hover:text-slate-700 transition-colors">
+                    <div className="p-1 rounded bg-blue-100/50 text-blue-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                      <Sparkles className="w-4 h-4 text-blue-400" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Newly Added</span>
                   </div>
                   <div className="text-3xl font-bold font-mono text-slate-900">{newlyAdded}</div>
@@ -273,10 +278,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* AI Risk Overview (4 Progress Rings) */}
-            <div className="border-t border-slate-200 bg-slate-50/50 p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="border-t border-slate-200 bg-slate-50/50 p-4 rounded-b-2xl">
+              <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-purple-600" />
+                  <ShieldAlert className="w-4 h-4 text-blue-600" />
                   AI Risk Overview
                 </h3>
                 <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getRiskSeverityColor(avgOverallRisk)}`}>
@@ -284,7 +289,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-2 bg-white rounded-xl border border-slate-200 shadow-2xs">
+              <div className="grid grid-cols-4 gap-2 bg-white rounded-xl border border-slate-200 shadow-[0_0_15px_rgba(59,130,246,0.05)]">
                 <CircularProgress value={avgCostRisk} label="Cost Overrun" subtitle="Risk Score" />
                 <CircularProgress value={avgScheduleRisk} label="Schedule Delay" subtitle="Risk Score" />
                 <CircularProgress value={avgProgressRisk} label="Implementation" subtitle="Risk Score" />
@@ -308,7 +313,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* RIGHT: Interactive India Map (7 columns) */}
-        <div className="lg:col-span-7 flex flex-col">
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[400px] overflow-hidden">
           <IndiaMap 
             projects={projects} 
             selectedState={selectedState} 

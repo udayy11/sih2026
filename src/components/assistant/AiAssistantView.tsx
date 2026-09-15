@@ -215,7 +215,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               key={idx}
               onClick={() => handleSendMessage(q)}
               disabled={isLoading}
-              className="text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl bg-white hover:bg-purple-50 text-slate-800 hover:text-purple-900 border border-slate-200 shadow-2xs hover:border-purple-300 transition-all text-left disabled:opacity-50"
+              className="text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-900 border border-slate-200 shadow-2xs hover:border-blue-300 transition-all text-left disabled:opacity-50"
             >
               {q}
             </button>
@@ -234,7 +234,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               key={idx}
               onClick={() => handleSendMessage(item.query)}
               disabled={isLoading}
-              className="text-xs px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 transition-all font-medium disabled:opacity-50"
+              className="text-xs px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 transition-all font-medium disabled:opacity-50"
             >
               {item.label}
             </button>
@@ -263,7 +263,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                 <div
                   className={`max-w-3xl rounded-2xl p-5 text-sm sm:text-base leading-relaxed shadow-xs ${
                     isUser
-                      ? 'bg-purple-700 text-white rounded-tr-xs font-medium'
+                      ? 'bg-blue-700 text-white rounded-tr-xs font-medium'
                       : 'bg-white text-slate-900 rounded-tl-xs border border-slate-200'
                   }`}
                 >
@@ -277,7 +277,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 
                   <div
                     className={`mt-3 flex items-center justify-between text-xs ${
-                      isUser ? 'text-purple-200' : 'text-slate-500'
+                      isUser ? 'text-blue-200' : 'text-slate-500'
                     }`}
                   >
                     <span>{msg.timestamp}</span>
@@ -286,7 +286,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                 </div>
 
                 {isUser && (
-                  <div className="w-10 h-10 rounded-xl bg-purple-800 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                  <div className="w-10 h-10 rounded-xl bg-blue-800 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
                     <User className="w-5 h-5" />
                   </div>
                 )}
@@ -300,9 +300,9 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                 <Bot className="w-5 h-5 animate-spin" />
               </div>
               <div className="bg-white rounded-2xl p-4 text-sm text-slate-600 border border-slate-200 flex items-center gap-2.5 shadow-xs">
-                <div className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-bounce" />
-                <div className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-bounce" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-bounce" style={{ animationDelay: '0.4s' }} />
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" />
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0.4s' }} />
                 <span className="font-semibold text-slate-800 ml-1.5 text-sm sm:text-base">
                   Analyzing infrastructure telemetry & formulating prescriptive brief...
                 </span>
@@ -328,12 +328,12 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               disabled={isLoading}
-              className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-5 py-3 text-sm sm:text-base focus:outline-hidden focus:ring-2 focus:ring-purple-600 focus:bg-white transition-all font-medium disabled:opacity-50"
+              className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-5 py-3 text-sm sm:text-base focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all font-medium disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!inputQuery.trim() || isLoading}
-              className="px-6 py-3 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-sm sm:text-base font-bold transition-all shadow-sm flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none shrink-0"
+              className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-sm sm:text-base font-bold transition-all shadow-sm flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none shrink-0"
             >
               <span>Send</span>
               <Send className="w-4 h-4" />

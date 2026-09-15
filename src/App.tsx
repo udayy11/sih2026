@@ -27,7 +27,7 @@ const SettingsView = React.lazy(() => import('./components/settings/SettingsView
 function ModuleLoader() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-      <div className="w-10 h-10 border-3 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
+      <div className="w-10 h-10 border-3 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
       <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading module...</span>
     </div>
   );
@@ -101,7 +101,7 @@ function AppContent({
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f4f8] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased selection:bg-purple-600 selection:text-white transition-colors duration-200">
+    <div className="h-screen overflow-hidden bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-slate-100 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
       {/* Sleek Top Navigation Header */}
       <Header
         activeView={activeView}
@@ -127,7 +127,7 @@ function AppContent({
         />
 
         {/* Content Container */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full bg-[#f8f9fc] dark:bg-[#0b0f19] transition-colors duration-200">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full bg-transparent transition-colors duration-200 custom-scrollbar">
           <Suspense fallback={<ModuleLoader />}>
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />

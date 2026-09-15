@@ -142,7 +142,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle AI Chatbot"
         className={`fixed bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-300 z-50 flex items-center justify-center ${
-          isOpen ? 'bg-rose-500 hover:bg-rose-600 rotate-90 scale-105' : 'bg-purple-700 hover:bg-purple-800 hover:scale-110 shadow-purple-900/40'
+          isOpen ? 'bg-rose-500 hover:bg-rose-600 rotate-90 scale-105' : 'bg-blue-700 hover:bg-blue-800 hover:scale-110 shadow-blue-900/40'
         }`}
       >
         {isOpen ? (
@@ -159,14 +159,14 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         }`}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 p-4 text-white flex items-center justify-between shadow-xs">
+        <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-4 text-white flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-xs">
               <Bot className="w-6 h-6 text-amber-300" />
             </div>
             <div>
               <h3 className="font-bold text-sm">NirmaanX AI Assistant</h3>
-              <p className="text-[10px] text-purple-200 flex items-center gap-1 mt-0.5">
+              <p className="text-[10px] text-blue-200 flex items-center gap-1 mt-0.5">
                 <Sparkles className="w-3 h-3 text-amber-300" /> InfraMinds • MoSPI
               </p>
             </div>
@@ -175,7 +175,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
           <button
             onClick={() => setMessages([messages[0]])}
             title="Reset Chat"
-            className="p-1.5 rounded-lg hover:bg-white/10 text-purple-200 hover:text-white transition-all text-xs"
+            className="p-1.5 rounded-lg hover:bg-white/10 text-blue-200 hover:text-white transition-all text-xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
@@ -183,7 +183,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 
         {/* Active Project Banner */}
         {activeProject && (
-          <div className="bg-purple-950 text-white px-3.5 py-2 text-xs flex items-center justify-between border-b border-purple-800 shrink-0">
+          <div className="bg-blue-950 text-white px-3.5 py-2 text-xs flex items-center justify-between border-b border-blue-800 shrink-0">
             <div className="truncate flex items-center gap-1.5 flex-1 min-w-0">
               <span className="font-bold text-amber-300 text-[10px] uppercase tracking-wider shrink-0">Inspecting:</span>
               <span className="truncate font-medium text-slate-100">{activeProject.name}</span>
@@ -199,7 +199,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               key={idx}
               onClick={() => handleSendMessage(undefined, q)}
               disabled={isLoading}
-              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white hover:bg-purple-50 text-slate-700 hover:text-purple-900 border border-slate-200/90 hover:border-purple-300 transition-all text-left shadow-2xs disabled:opacity-50"
+              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-900 border border-slate-200/90 hover:border-blue-300 transition-all text-left shadow-2xs disabled:opacity-50"
             >
               {q}
             </button>
@@ -220,7 +220,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                 <div
                   className={`max-w-[82%] rounded-2xl p-3 text-xs shadow-xs leading-relaxed ${
                     isUser
-                      ? 'bg-purple-700 text-white rounded-tr-none font-medium'
+                      ? 'bg-blue-700 text-white rounded-tr-none font-medium'
                       : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80'
                   }`}
                 >
@@ -231,7 +231,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
                     </div>
                   )}
-                  <div className={`text-[9px] mt-1.5 flex items-center justify-between ${isUser ? 'text-purple-200' : 'text-slate-400'}`}>
+                  <div className={`text-[9px] mt-1.5 flex items-center justify-between ${isUser ? 'text-blue-200' : 'text-slate-400'}`}>
                     <span>{msg.timestamp}</span>
                     {!isUser && msg.source && <span className="font-mono text-[9px] text-slate-400">({msg.source})</span>}
                   </div>
@@ -246,9 +246,9 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                 <Bot className="w-4 h-4 animate-spin" />
               </div>
               <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-3 shadow-xs flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                 <span className="text-[10px] text-slate-600 font-semibold ml-1">Analyzing MoSPI telemetry...</span>
               </div>
             </div>
@@ -265,12 +265,12 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               disabled={isLoading}
-              className="flex-1 bg-slate-100 border-none rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-600 focus:bg-white transition-all disabled:opacity-50"
+              className="flex-1 bg-slate-100 border-none rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!inputQuery.trim() || isLoading}
-              className="w-9 h-9 rounded-xl bg-purple-700 hover:bg-purple-800 text-white flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0"
+              className="w-9 h-9 rounded-xl bg-blue-700 hover:bg-blue-800 text-white flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>

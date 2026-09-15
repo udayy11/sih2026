@@ -143,7 +143,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <AlertTriangle className="w-6 h-6 text-purple-600" />
+            <AlertTriangle className="w-6 h-6 text-blue-600" />
             Issues & Bottlenecks
           </h1>
           <p className="text-sm text-slate-500 mt-1">Track unresolved project issues, regulatory bottlenecks, and delay drivers</p>
@@ -158,16 +158,16 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
             type="text"
             placeholder="Search issues, projects, or bottleneck types..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
         <div className="flex gap-2 items-center">
           <Filter className="w-4 h-4 text-slate-500" />
           <select
             value={severityFilter}
-            onChange={(e) => { setSeverityFilter(e.target.value); setCurrentPage(1); }}
-            className="py-2 pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
+            onChange={(e) => setSeverityFilter(e.target.value)}
+            className="py-2 pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           >
             <option value="All">All Severities</option>
             <option value="Critical">Critical</option>
@@ -209,7 +209,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ projects, onSelectProjec
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span 
-                          className="font-medium text-purple-600 hover:text-purple-700 cursor-pointer"
+                          className="font-medium text-blue-600 hover:text-blue-700 cursor-pointer"
                           onClick={() => {
                             const p = projects.find(proj => proj.id === issue.projectId);
                             if (p) onSelectProject(p);

@@ -59,7 +59,7 @@ export const DataQualityView: React.FC<DataQualityViewProps> = ({ projects, onSe
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Database className="w-6 h-6 text-purple-600" />
+            <Database className="w-6 h-6 text-blue-600" />
             Data Quality & Hygiene
           </h1>
           <p className="text-sm text-slate-500 mt-1">Identify missing values, duplicates, stale records, and anomalies</p>
@@ -136,7 +136,7 @@ export const DataQualityView: React.FC<DataQualityViewProps> = ({ projects, onSe
                   missingDataProjects.map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/80">
                       <td className="px-4 py-3">
-                        <span className="font-medium text-purple-600 cursor-pointer" onClick={() => onSelectProject(item.project)}>
+                        <span className="font-medium text-blue-600 cursor-pointer" onClick={() => onSelectProject(item.project)}>
                           {item.project.projectCode}
                         </span>
                       </td>
@@ -175,7 +175,7 @@ export const DataQualityView: React.FC<DataQualityViewProps> = ({ projects, onSe
                   staleProjects.map((project, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/80">
                       <td className="px-4 py-3">
-                        <span className="font-medium text-purple-600 cursor-pointer" onClick={() => onSelectProject(project)}>
+                        <span className="font-medium text-blue-600 cursor-pointer" onClick={() => onSelectProject(project)}>
                           {project.projectCode}
                         </span>
                       </td>
