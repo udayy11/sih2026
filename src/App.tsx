@@ -10,6 +10,7 @@ import { ProjectDetailModal } from './components/projects/ProjectDetailModal';
 import { LoginView, UserSession } from './components/auth/LoginView';
 
 // Lazy-loaded analytical views for ultra-responsive performance
+const OverviewLandingPage = React.lazy(() => import('./components/overview/OverviewLandingPage').then(m => ({ default: m.OverviewLandingPage })));
 const DashboardView = React.lazy(() => import('./components/dashboard/DashboardView').then(m => ({ default: m.DashboardView })));
 const ProjectsTableView = React.lazy(() => import('./components/projects/ProjectsTableView').then(m => ({ default: m.ProjectsTableView })));
 const EarlyWarningsView = React.lazy(() => import('./components/early-warnings/EarlyWarningsView').then(m => ({ default: m.EarlyWarningsView })));
@@ -22,12 +23,14 @@ const DataImportView = React.lazy(() => import('./components/import/DataImportVi
 const UserManagementView = React.lazy(() => import('./components/users/UserManagementView').then(m => ({ default: m.UserManagementView })));
 const AiAssistantView = React.lazy(() => import('./components/assistant/AiAssistantView').then(m => ({ default: m.AiAssistantView })));
 const SettingsView = React.lazy(() => import('./components/settings/SettingsView').then(m => ({ default: m.SettingsView })));
+const EscalationDriversView = React.lazy(() => import('./components/drivers/EscalationDriversView').then(m => ({ default: m.EscalationDriversView })));
+const FeedbackView = React.lazy(() => import('./components/feedback/FeedbackView').then(m => ({ default: m.FeedbackView })));
 
 // Loading Spinner for Code-Split Modules
 function ModuleLoader() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-      <div className="w-10 h-10 border-3 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
+      <div className="w-10 h-10 border-3 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
       <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading module...</span>
     </div>
   );
@@ -60,27 +63,32 @@ function AppContent({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Application Data State - Persisted across reloads
+  // Application Data State with LocalStorage Persistence
   const [projects, setProjects] = useState<InfrastructureProject[]>(() => {
     try {
-      const cached = localStorage.getItem('nirmaanx_imported_projects');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
+      const stored = localStorage.getItem('nirmaanx_projects_data');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
-    } catch (err) {
-      console.warn('Failed to read cached projects from localStorage:', err);
-    }
+    } catch {}
     return MOCK_PROJECTS;
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('nirmaanx_projects_data', JSON.stringify(projects));
+    } catch (e) {
+      console.warn('Storage limit reached or failed saving projects', e);
+    }
+  }, [projects]);
+
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<InfrastructureProject | null>(null);
   const [targetModuleProjectId, setTargetModuleProjectId] = useState<string>(MOCK_PROJECTS[0]?.id || '');
 
   // Current active view derived from pathname
   const activeView = useMemo(() => {
-    const path = location.pathname.replace(/^\//, '') || 'dashboard';
+    const path = location.pathname.replace(/^\//, '') || 'overview';
     return path;
   }, [location.pathname]);
 
@@ -91,7 +99,8 @@ function AppContent({
 
   // Handle Navigation by Route
   const handleNavigate = (view: string) => {
-    const route = view === 'dashboard' ? '/dashboard' : `/${view}`;
+    let route = `/${view}`;
+    if (view === 'overview') route = '/';
     navigate(route);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -111,13 +120,13 @@ function AppContent({
 
   const handleResetData = () => {
     try {
-      localStorage.removeItem('nirmaanx_imported_projects');
-    } catch (e) {}
+      localStorage.removeItem('nirmaanx_projects_data');
+    } catch {}
     setProjects(MOCK_PROJECTS);
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f4f8] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased selection:bg-purple-600 selection:text-white transition-colors duration-200">
+    <div className="h-screen overflow-hidden bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-slate-100 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
       {/* Sleek Top Navigation Header */}
       <Header
         activeView={activeView}
@@ -143,10 +152,25 @@ function AppContent({
         />
 
         {/* Content Container */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full bg-[#f8f9fc] dark:bg-[#0b0f19] transition-colors duration-200">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full bg-transparent transition-colors duration-200 custom-scrollbar">
           <Suspense fallback={<ModuleLoader />}>
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route
+                path="/"
+                element={
+                  <OverviewLandingPage
+                    projects={projects}
+                    alerts={alerts}
+                    onNavigate={handleNavigate}
+                    currentUserRole={currentUser.role}
+                  />
+                }
+              />
+              
+              <Route
+                path="/overview"
+                element={<Navigate to="/" replace />}
+              />
               
               <Route
                 path="/dashboard"
@@ -190,6 +214,20 @@ function AppContent({
                     selectedProjectId={targetModuleProjectId}
                     onSelectProject={handleSelectProject}
                     onNavigate={handleNavigate}
+                  />
+                }
+              />
+
+              <Route path="/drivers" element={<Navigate to="/predictive?tab=drivers" replace />} />
+              <Route path="/cost-escalation" element={<Navigate to="/predictive?tab=drivers" replace />} />
+
+              <Route
+                path="/feedback"
+                element={
+                  <FeedbackView
+                    projects={projects}
+                    currentUser={currentUser}
+                    onSelectProject={handleSelectProject}
                   />
                 }
               />
@@ -251,18 +289,15 @@ function AppContent({
                 element={
                   <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
                     <DataImportView
-                      onImportSuccess={(newProjects) => {
+                      onImportSuccess={(newProjects, mode = 'append') => {
                         setProjects(prevProjects => {
-                          const map = new Map<string, InfrastructureProject>();
-                          prevProjects.forEach(p => map.set(p.id, p));
-                          newProjects.forEach(p => map.set(p.id, p));
-                          const merged = Array.from(map.values());
-                          try {
-                            localStorage.setItem('nirmaanx_imported_projects', JSON.stringify(merged));
-                          } catch (e) {
-                            console.warn('LocalStorage limit reached for projects:', e);
+                          if (mode === 'replace') {
+                            return newProjects;
                           }
-                          return merged;
+                          const projectMap = new Map<string, InfrastructureProject>();
+                          prevProjects.forEach(p => projectMap.set(p.projectCode || p.id, p));
+                          newProjects.forEach(p => projectMap.set(p.projectCode || p.id, p));
+                          return Array.from(projectMap.values());
                         });
                       }}
                       onNavigate={handleNavigate}
@@ -307,7 +342,7 @@ function AppContent({
               <Route path="/reports" element={<Navigate to="/dashboard" replace />} />
 
               {/* Catch-all route */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </main>

@@ -1,4 +1,3 @@
-import fs from 'fs';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,6 +5,7 @@ import { GoogleGenAI } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import { authRouter } from './backend/auth.ts';
+import { feedbackRouter } from './backend/feedback.ts';
 import { getAllMospiProjects } from './src/data/projectParser.ts';
 import {
   findMatchingProjects,
@@ -19,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Initialize server-side database of MoSPI projects
-let SERVER_PROJECTS = getAllMospiProjects();
+const SERVER_PROJECTS = getAllMospiProjects();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -29,6 +29,9 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Auth Routes
 app.use('/api/auth', authRouter);
+
+// Citizen Feedback & Issue Resolution Routes
+app.use('/api/feedback', feedbackRouter);
 
 // Initialize Gemini Client safely
 if (process.env.GEMINI_API_KEY) {
@@ -55,14 +58,22 @@ function getGeminiClient(): GoogleGenAI | null {
 }
 
 // Candidate models with automatic fallbacks for Groq and Gemini
-const GROQ_CANDIDATE_MODELS = [
-  'openai/gpt-oss-120b',
-  'llama-3.3-70b-versatile',
-  'llama-3.1-8b-instant',
-  'llama3-70b-8192',
-  'llama3-8b-8192',
-  'deepseek-r1-distill-llama-70b',
-];
+function getGroqCandidateModels(): string[] {
+  const preferred = process.env.GROQ_MODEL || process.env.AI_MODEL || 'openai/gpt-oss-120b';
+  const candidates = [
+    preferred,
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3.8-27b',
+    'qwen/qwen3.6-27b',
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'llama3-70b-8192',
+    'llama3-8b-8192',
+    'deepseek-r1-distill-llama-70b',
+  ];
+  return Array.from(new Set(candidates));
+}
 
 const GEMINI_CANDIDATE_MODELS = [
   'gemini-2.5-flash',
@@ -76,32 +87,42 @@ async function callGroq(messages: { role: string; content: string }[], temperatu
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error('GROQ_API_KEY is not configured in .env');
 
+  const models = getGroqCandidateModels();
   let lastError: any = null;
-  for (const model of GROQ_CANDIDATE_MODELS) {
+
+  for (const model of models) {
     try {
+      console.log(`[Groq AI] Sending prompt to model: ${model}...`);
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
+          'User-Agent': 'PAIMANA-AI/1.0',
         },
         body: JSON.stringify({
           model,
           messages,
           temperature,
         }),
+        signal: AbortSignal.timeout(15000),
       });
 
       if (res.ok) {
         const data: any = await res.json();
         const text = data?.choices?.[0]?.message?.content || '';
-        if (text) return { text, model };
+        if (text) {
+          console.log(`[Groq AI] Successfully received response from ${model}`);
+          return { text, model };
+        }
       } else {
         const errText = await res.text();
+        console.warn(`[Groq AI] Model ${model} returned ${res.status}: ${errText}`);
         lastError = new Error(`Groq ${model} error ${res.status}: ${errText}`);
         continue;
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.warn(`[Groq AI] Error calling ${model}:`, err.message);
       lastError = err;
     }
   }
@@ -138,22 +159,86 @@ app.get('/api/health', (req, res) => {
     geminiEnabled: !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
     groqEnabled: !!process.env.GROQ_API_KEY,
     availableProviders: [
-      ...(process.env.GROQ_API_KEY ? ['Groq (Llama 3.1 8B / 3.3 70B)'] : []),
+      ...(process.env.GROQ_API_KEY ? [`Groq (${process.env.GROQ_MODEL || 'openai/gpt-oss-120b'})`] : []),
       ...(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY ? ['Gemini Flash (2.5 / 2.0 / 1.5)'] : []),
       'NirmaanX Offline Rule Engine',
     ],
   });
 });
 
+function convertPipeTablesToCards(content: string): string {
+  // Normalize double-pipe table boundaries and rows
+  let normalized = content.replace(/\|\s*\|/g, '|\n|');
+  normalized = normalized.replace(/(\|\s*[-:]+[-| :]*\|)\s*(\|)/g, '$1\n$2');
+
+  const lines = normalized.split('\n');
+  const newLines: string[] = [];
+  let tableLines: string[] = [];
+
+  const flushTable = (tbl: string[]) => {
+    if (tbl.length === 0) return [];
+    // Filter out separator lines (|---|---|)
+    const contentRows = tbl.filter((r) => !/^\s*\|[-:\s|]+\|\s*$/.test(r));
+    if (contentRows.length < 2) return tbl;
+
+    const parseRow = (r: string) => {
+      let parts = r.trim().split('|').map((c) => c.trim());
+      if (parts.length > 0 && parts[0] === '') parts = parts.slice(1);
+      if (parts.length > 0 && parts[parts.length - 1] === '') parts = parts.slice(0, -1);
+      return parts;
+    };
+
+    const headers = parseRow(contentRows[0]);
+    const cards: string[] = [];
+
+    for (let i = 1; i < contentRows.length; i++) {
+      const cells = parseRow(contentRows[i]);
+      const cardParts: string[] = [];
+      for (let idx = 0; idx < headers.length; idx++) {
+        const val = cells[idx] || '';
+        if (val) {
+          cardParts.push(`- **${headers[idx]}**: ${val}`);
+        }
+      }
+      if (cardParts.length > 0) {
+        cards.push(cardParts.join('\n'));
+      }
+    }
+
+    if (cards.length > 0) {
+      return ['\n' + cards.join('\n\n---\n\n') + '\n'];
+    }
+    return tbl;
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+      tableLines.push(trimmed);
+    } else {
+      if (tableLines.length > 0) {
+        newLines.push(...flushTable(tableLines));
+        tableLines = [];
+      }
+      newLines.push(line);
+    }
+  }
+
+  if (tableLines.length > 0) {
+    newLines.push(...flushTable(tableLines));
+  }
+
+  return newLines.join('\n');
+}
+
 function sanitizeAssistantResponse(raw: string): string {
   if (!raw) return '';
   let text = raw;
 
-  // 1. Fix single-line markdown table rows: | col | |---| -> | col |\n|---|
-  text = text.replace(/\|\s*\|/g, '|\n|');
-  text = text.replace(/(\|\s*[-:]+[-| :]*\|)\s*(\|)/g, '$1\n$2');
+  // Convert raw markdown pipe tables into human-readable executive cards
+  text = convertPipeTablesToCards(text);
 
-  // 2. Strictly enforce risk scores out of 100 instead of /10
+  // Strictly enforce risk scores out of 100 instead of /10
   text = text.replace(/(\b[0-9](\.[0-9]+)?)\s*\/\s*10\b/g, (_m, score) => {
     const val = Math.min(100, Math.max(0, Math.round(parseFloat(score) * 10)));
     return `${val}/100`;
@@ -162,27 +247,22 @@ function sanitizeAssistantResponse(raw: string): string {
   text = text.replace(/\(0\s*=\s*no risk,\s*10\s*=\s*maximum risk\)/gi, '(0 = low risk, 100 = critical risk)');
   text = text.replace(/\b0\s*to\s*10\s*scale\b/gi, '0 to 100 scale');
   text = text.replace(/\b0-10\s*scale\b/gi, '0-100 scale');
-
-  // 3. Remove hallucinated fake API calls like GET /projects/...
   text = text.replace(/GET\s+\/projects\/[^\s\n]+/gi, '');
-
   return text.trim();
 }
 
-// 1. LLM Assistant API Endpoint (Trained with Project-Specific Intelligence, Multi-Provider)
+// 1. LLM Assistant API Endpoint (Priority: Groq > Gemini > Offline)
 app.post('/api/ai/assistant', async (req, res) => {
   try {
-    const { prompt, history, projectContext, activeProjectId, activeProject: clientActiveProject, provider = 'auto' } = req.body;
+    const { prompt, history, projectContext, activeProjectId, activeProject: clientActiveProject } = req.body;
     const geminiClient = getGeminiClient();
     const hasGroq = !!process.env.GROQ_API_KEY;
     const hasGemini = !!geminiClient;
 
-    // Use active projects from context if provided by frontend, or fallback to server database
     const activeProjects = (projectContext && Array.isArray(projectContext.projects) && projectContext.projects.length > 0)
       ? projectContext.projects
       : SERVER_PROJECTS;
 
-    // Resolve active project if provided
     const activeProject = clientActiveProject ||
       (activeProjectId ? activeProjects.find((p: any) => p.id === activeProjectId || p.projectCode === activeProjectId) : null);
 
@@ -214,89 +294,96 @@ Total Monitored Projects in Database: ${activeProjects.length}.
 GROUND TRUTH - TOP 5 HIGHEST-RISK INFRASTRUCTURE PROJECTS:
 ${topProjectsList}
 
-CRITICAL FORMATTING & CONTENT RULES:
-1. RISK SCORE MUST ALWAYS BE OUT OF 100: State all risk scores strictly as "X/100" (e.g. 92/100, 88/100). NEVER use a scale of 10 (never write 9.2/10 or anything /10). All official MoSPI indices are on a 0-100 scale.
-2. ONLY REAL PROJECTS: Cite exclusively the real project names, codes, and numbers from the official ground truth above. Do not invent fictional project names or codes.
-3. CONCISE & STRUCTURED: Keep outputs clean and concise. Use bold figures, bullet points, and risk badges (🔴 Critical, 🟠 High, 🟡 Medium, 🟢 Low).
-4. CLEAN MARKDOWN TABLES: When formatting a markdown table, EVERY row MUST be on its own line with valid Markdown table syntax:
-| Rank | Project Code | Project Name | Sector | Risk Score | Risk Category | Primary Delay & Cost Drivers |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | ... | ... | ... | .../100 | Critical 🔴 | ... |
-Do NOT put multiple rows on the same line.
-5. NO FAKE APIS: Do not fabricate imaginary URL endpoints or commands like "GET /projects/...". Focus strictly on real delay root causes, statutory land/clearance issues, and actionable MoSPI interventions.`;
+CRITICAL RULES FOR HUMAN-READABLE OUTPUT:
+1. NEVER USE MARKDOWN PIPE TABLES: Do NOT output pipe tables (| col1 | col2 |). They are unreadable in chat windows.
+2. ELEGANT EXECUTIVE BRIEFING FORMAT: Format every project evaluation as a clean, human-readable card with clear headings and bulleted metrics:
+   ### 🚨 Highest-Risk Project (Rank X): [Project Name]
+   - **Project Code**: [Code]
+   - **Sector & Ministry**: [Sector] | [Ministry]
+   - **Overall Risk Score**: 🔴 **[Score]/100 ([Level])**
+   - **Schedule Delay**: **+[Months] months** behind schedule
+   - **Cost Overrun**: **₹[Amount] Cr** (+[Percent]%)
+   - **Physical Progress**: **[Progress]%** executed vs **₹[Expenditure] Cr** spent ([FinancialProgress]%)
+
+   #### 🔍 Why it is at Risk:
+   - Specific bullet points explaining delay and cost drivers.
+
+   #### ⚠️ Primary Roadblocks:
+   - Hand-over delays, contractor issues, clearances.
+
+   #### 💡 Recommended MoSPI Action:
+   - Direct prescriptive intervention and responsible authority.
+3. RISK SCORE MUST ALWAYS BE OUT OF 100: State all risk scores strictly as "X/100" (e.g. 94/100). NEVER use a scale of 10.
+4. ONLY REAL PROJECTS: Cite exclusively real project names, codes, and numbers from ground truth.`;
     }
 
-    // Determine provider execution order
-    // provider can be: 'groq' | 'gemini' | 'offline' | 'auto'
-    if (provider !== 'offline') {
-      // 1. Try Groq if requested or in auto mode with Groq configured
-      if ((provider === 'groq' || (provider === 'auto' && hasGroq)) && hasGroq) {
-        try {
-          const messages: { role: string; content: string }[] = [
-            { role: 'system', content: systemPrompt },
-          ];
+    // PRIORITY 1: GROQ (Llama 3.3 70B / 3.1 8B)
+    if (hasGroq) {
+      try {
+        const messages: { role: string; content: string }[] = [
+          { role: 'system', content: systemPrompt },
+        ];
 
-          if (Array.isArray(history) && history.length > 0) {
-            history.slice(-6).forEach((h: any) => {
-              const role = (h.sender === 'user' || h.role === 'user') ? 'user' : 'assistant';
-              const content = h.text || h.content || '';
-              if (content.trim()) messages.push({ role, content });
-            });
-          }
-
-          messages.push({ role: 'user', content: queryText });
-
-          const result = await callGroq(messages);
-          if (result && result.text) {
-            return res.json({
-              reply: sanitizeAssistantResponse(result.text),
-              matchedProject: matchResult.bestMatch,
-              source: `Groq (${result.model})`,
-              provider: 'groq',
-              intent: matchResult.bestMatch ? 'PROJECT_SPECIFIC' : 'GENERAL',
-            });
-          }
-        } catch (groqError: any) {
-          console.warn('Groq API call failed, falling back:', groqError.message);
+        if (Array.isArray(history) && history.length > 0) {
+          history.slice(-6).forEach((h: any) => {
+            const role = (h.sender === 'user' || h.role === 'user') ? 'user' : 'assistant';
+            const content = h.text || h.content || '';
+            if (content.trim()) messages.push({ role, content });
+          });
         }
-      }
 
-      // 2. Try Gemini if requested or as fallback
-      if ((provider === 'gemini' || provider === 'auto' || provider === 'groq') && hasGemini) {
-        try {
-          const formattedHistory: any[] = [];
-          if (Array.isArray(history) && history.length > 0) {
-            history.slice(-6).forEach((h: any) => {
-              const role = (h.sender === 'user' || h.role === 'user') ? 'user' : 'model';
-              const text = h.text || h.content || '';
-              if (text.trim()) {
-                formattedHistory.push({ role, parts: [{ text }] });
-              }
-            });
-          }
+        messages.push({ role: 'user', content: queryText });
 
-          const geminiContents = [
-            ...formattedHistory,
-            { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${queryText}` }] },
-          ];
-
-          const result = await callGemini(geminiClient, geminiContents);
-          if (result && result.text) {
-            return res.json({
-              reply: sanitizeAssistantResponse(result.text),
-              matchedProject: matchResult.bestMatch,
-              source: `Google Gemini (${result.model})`,
-              provider: 'gemini',
-              intent: matchResult.bestMatch ? 'PROJECT_SPECIFIC' : 'GENERAL',
-            });
-          }
-        } catch (geminiError: any) {
-          console.warn('Gemini API call failed, falling back:', geminiError.message);
+        const result = await callGroq(messages);
+        if (result && result.text) {
+          return res.json({
+            reply: sanitizeAssistantResponse(result.text),
+            matchedProject: matchResult.bestMatch,
+            source: `Groq (${result.model})`,
+            provider: 'groq',
+            intent: matchResult.bestMatch ? 'PROJECT_SPECIFIC' : 'GENERAL',
+          });
         }
+      } catch (groqError: any) {
+        console.warn('Groq API failed, falling back to Gemini:', groqError.message);
       }
     }
 
-    // 3. Fallback: High-precision Project Intelligence Engine (offline/rule-based)
+    // PRIORITY 2: GEMINI (Flash 2.5 / 2.0 / 1.5)
+    if (hasGemini) {
+      try {
+        const formattedHistory: any[] = [];
+        if (Array.isArray(history) && history.length > 0) {
+          history.slice(-6).forEach((h: any) => {
+            const role = (h.sender === 'user' || h.role === 'user') ? 'user' : 'model';
+            const text = h.text || h.content || '';
+            if (text.trim()) {
+              formattedHistory.push({ role, parts: [{ text }] });
+            }
+          });
+        }
+
+        const geminiContents = [
+          ...formattedHistory,
+          { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${queryText}` }] },
+        ];
+
+        const result = await callGemini(geminiClient, geminiContents);
+        if (result && result.text) {
+          return res.json({
+            reply: sanitizeAssistantResponse(result.text),
+            matchedProject: matchResult.bestMatch,
+            source: `Google Gemini (${result.model})`,
+            provider: 'gemini',
+            intent: matchResult.bestMatch ? 'PROJECT_SPECIFIC' : 'GENERAL',
+          });
+        }
+      } catch (geminiError: any) {
+        console.warn('Gemini API call failed, falling back to Offline Engine:', geminiError.message);
+      }
+    }
+
+    // PRIORITY 3: OFFLINE PROJECT INTELLIGENCE ENGINE
     const engineResult = generateProjectIntelligenceResponse(queryText, activeProjects, activeProject);
 
     return res.json({
@@ -315,10 +402,10 @@ Do NOT put multiple rows on the same line.
   }
 });
 
-// 2. AI Risk Explanation & Deep Dive Endpoint (Multi-Provider)
+// 2. AI Risk Explanation & Deep Dive Endpoint (Priority: Groq > Gemini > Offline)
 app.post('/api/ai/explain', async (req, res) => {
   try {
-    const { project, provider = 'auto' } = req.body;
+    const { project } = req.body;
     const geminiClient = getGeminiClient();
     const hasGroq = !!process.env.GROQ_API_KEY;
 
@@ -337,7 +424,7 @@ Provide:
 3. Actionable Government Intervention Plan`;
 
       // 1. Try Groq
-      if ((provider === 'groq' || (provider === 'auto' && hasGroq)) && hasGroq) {
+      if (hasGroq) {
         try {
           const result = await callGroq([
             { role: 'system', content: 'You are an expert infrastructure risk diagnostic AI for MoSPI.' },
@@ -351,12 +438,12 @@ Provide:
             });
           }
         } catch (err: any) {
-          console.warn('Groq explain call failed, trying fallback:', err.message);
+          console.warn('Groq explain call failed, trying Gemini:', err.message);
         }
       }
 
       // 2. Try Gemini
-      if (geminiClient && (provider === 'gemini' || provider === 'auto' || provider === 'groq')) {
+      if (geminiClient) {
         try {
           const result = await callGemini(geminiClient, [{ parts: [{ text: prompt }] }]);
           if (result && result.text) {
@@ -463,50 +550,6 @@ app.get('/api/projects/:id', (req, res) => {
     dataQualityScore: 98.4,
     lastAuditTimestamp: new Date().toISOString()
   });
-});
-
-// 7b. REST API Endpoint: Import & Persist Projects to Disk
-app.post('/api/projects/import', (req, res) => {
-  try {
-    const { projects } = req.body;
-    if (!Array.isArray(projects) || projects.length === 0) {
-      return res.status(400).json({ error: 'No projects provided in payload' });
-    }
-
-    const recordsPath = path.join(__dirname, 'src', 'data', 'extractedMospiRecords.json');
-    let existingRecords: any[] = [];
-    if (fs.existsSync(recordsPath)) {
-      try {
-        existingRecords = JSON.parse(fs.readFileSync(recordsPath, 'utf-8'));
-      } catch (err) {
-        existingRecords = [];
-      }
-    }
-
-    const map = new Map<string, any>();
-    existingRecords.forEach(r => {
-      if (r && r.projectCode) map.set(String(r.projectCode).trim(), r);
-    });
-
-    projects.forEach(p => {
-      if (p && p.projectCode) {
-        const key = String(p.projectCode).trim();
-        const prev = map.get(key) || {};
-        map.set(key, { ...prev, ...p });
-      }
-    });
-
-    const merged = Array.from(map.values());
-    fs.writeFileSync(recordsPath, JSON.stringify(merged, null, 2), 'utf-8');
-
-    // Refresh server in-memory database
-    SERVER_PROJECTS = getAllMospiProjects();
-
-    res.json({ success: true, savedCount: projects.length, totalPersisted: merged.length });
-  } catch (error: any) {
-    console.error('Error persisting imported projects:', error);
-    res.status(500).json({ error: 'Failed to persist projects to disk', details: error.message });
-  }
 });
 
 // 8. REST API Endpoint: What-If Scenario Simulation

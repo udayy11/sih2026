@@ -102,7 +102,7 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({
       {/* Numerical score overlay */}
       <div className="text-center -mt-2">
         <div className="flex items-baseline justify-center gap-0.5">
-          <span className="text-3xl font-bold tracking-tight text-slate-900 font-mono">{safeScore}</span>
+          <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-mono">{safeScore}</span>
           <span className="text-xs font-semibold text-slate-500">/100</span>
         </div>
         <div className="mt-1">

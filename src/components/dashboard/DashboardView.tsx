@@ -16,6 +16,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { IndiaMap } from './IndiaMap';
+import { MOSPI_REPORT_METRICS } from '../../data/mockProjects';
 
 interface DashboardViewProps {
   projects: InfrastructureProject[];
@@ -48,8 +49,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const revisedCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
   const expenditure = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
   
-  const completedDuringMonth = activeProjects.filter(p => p.status === 'Completed' || p.physicalProgress >= 98).length;
-  const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length;
+  const completedInDataset = activeProjects.filter(p => p.status === 'Completed' || p.physicalProgress >= 100).length;
+  const completedDuringMonth = completedInDataset > 0
+    ? completedInDataset
+    : (selectedState
+        ? activeProjects.filter(p => p.status === 'Near Completion' || p.physicalProgress >= 90).length
+        : MOSPI_REPORT_METRICS.completedProjectsCount);
+  const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length || MOSPI_REPORT_METRICS.newlyAddedProjectsCount;
 
   // AI Risk Averages
   const avgCostRisk = projectCount > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.costRiskScore, 0) / projectCount) : 0;
@@ -106,38 +112,38 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {value}%
           </div>
         </div>
-        <span className="text-[10px] font-bold text-slate-700 text-center uppercase tracking-wider">{label}</span>
+        <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 text-center uppercase tracking-wider">{label}</span>
         <span className="text-[9px] text-slate-400 text-center">{subtitle}</span>
       </div>
     );
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="h-[calc(100vh-100px)] flex flex-col space-y-4">
       
       {/* Title Bar */}
-      <div className="flex items-end justify-between border-b border-slate-200 pb-4">
+      <div className="flex items-end justify-between border-b border-slate-200 dark:border-slate-700 pb-2 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">State-wise Infrastructure Projects</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">State-wise Infrastructure Projects</h1>
           <p className="text-sm text-slate-500 mt-1">As of July 2026</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
             AI-Powered Predictive Monitoring
           </span>
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">
             Prototype / Demo Data
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
         
         {/* LEFT: Statistics Card (5 columns) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex flex-col gap-4 overflow-y-auto pr-1 custom-scrollbar">
           
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col shrink-0 transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             
             <div className="bg-slate-900 px-6 py-5 flex flex-col justify-center border-b border-slate-800">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Selected Region</span>
@@ -147,78 +153,96 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-4">
               {/* 2x3 KPI Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 
                 {/* KPI 1: Project Count */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <Layers className="w-4 h-4" />
+                <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-center transition-all hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600">
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  <div className="relative z-10 flex items-center gap-1.5 mb-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                    <div className="p-1 rounded bg-slate-100 dark:bg-slate-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <Layers className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Project Count</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{projectCount}</div>
+                  <div className="relative z-10 text-3xl font-bold font-mono text-slate-900 dark:text-white">{projectCount}</div>
                 </div>
 
                 {/* KPI 2: Completed During Month */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-center transition-all hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600">
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  <div className="relative z-10 flex items-center gap-1.5 mb-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                    <div className="p-1 rounded bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Completed</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{completedDuringMonth}</div>
+                  <div className="relative z-10 text-3xl font-bold font-mono text-slate-900 dark:text-white">{completedDuringMonth}</div>
                 </div>
 
                 {/* KPI 3: Original Cost */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <DollarSign className="w-4 h-4 text-slate-400" />
+                <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-center transition-all hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600">
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  <div className="relative z-10 flex items-center gap-1.5 mb-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                    <div className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-600 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                      <DollarSign className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Original Cost</span>
                   </div>
-                  <div className="text-lg font-bold font-mono text-slate-900">
+                  <div className="relative z-10 text-lg font-bold font-mono text-slate-900 dark:text-white">
                     ₹{originalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
                   </div>
                 </div>
 
                 {/* KPI 4: Latest Revised Cost */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <TrendingUp className="w-4 h-4 text-rose-400" />
+                <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-center transition-all hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600">
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-rose-500 to-pink-600 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  <div className="relative z-10 flex items-center gap-1.5 mb-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                    <div className="p-1 rounded bg-rose-50 dark:bg-rose-900/30 text-rose-500 group-hover:bg-rose-100 dark:group-hover:bg-rose-800/50 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Revised Cost</span>
                   </div>
-                  <div className="text-lg font-bold font-mono text-slate-900">
+                  <div className="relative z-10 text-lg font-bold font-mono text-slate-900 dark:text-white">
                     ₹{revisedCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
                   </div>
                 </div>
 
                 {/* KPI 5: Cumulative Expenditure */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <Building2 className="w-4 h-4 text-blue-400" />
+                <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-center transition-all hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600">
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  <div className="relative z-10 flex items-center gap-1.5 mb-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                    <div className="p-1 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-800/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      <Building2 className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Expenditure</span>
                   </div>
-                  <div className="text-lg font-bold font-mono text-slate-900">
+                  <div className="relative z-10 text-lg font-bold font-mono text-slate-900 dark:text-white">
                     ₹{expenditure.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr.
                   </div>
                 </div>
 
                 {/* KPI 6: Newly Added */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-2 text-slate-500">
-                    <Sparkles className="w-4 h-4 text-purple-400" />
+                <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-center transition-all hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600">
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  <div className="relative z-10 flex items-center gap-1.5 mb-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:text-slate-300 dark:group-hover:text-slate-200 transition-colors">
+                    <div className="p-1 rounded bg-violet-50 dark:bg-violet-900/30 text-violet-500 group-hover:bg-violet-100 dark:group-hover:bg-violet-800/50 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Newly Added</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{newlyAdded}</div>
+                  <div className="relative z-10 text-3xl font-bold font-mono text-slate-900 dark:text-white">{newlyAdded}</div>
                 </div>
                 
               </div>
             </div>
 
             {/* AI Risk Overview (4 Progress Rings) */}
-            <div className="border-t border-slate-200 bg-slate-50/50 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-purple-600" />
+            <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 dark:bg-slate-800/50 p-4 rounded-b-2xl">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   AI Risk Overview
                 </h3>
                 <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getRiskSeverityColor(avgOverallRisk)}`}>
@@ -226,7 +250,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-2 bg-white rounded-xl border border-slate-200 shadow-2xs">
+              <div className="grid grid-cols-4 gap-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-[0_0_15px_rgba(59,130,246,0.05)] dark:shadow-[0_0_15px_rgba(59,130,246,0.02)]">
                 <CircularProgress value={avgCostRisk} label="Cost Overrun" subtitle="Risk Score" />
                 <CircularProgress value={avgScheduleRisk} label="Schedule Delay" subtitle="Risk Score" />
                 <CircularProgress value={avgProgressRisk} label="Implementation" subtitle="Risk Score" />
@@ -250,7 +274,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* RIGHT: Interactive India Map (7 columns) */}
-        <div className="lg:col-span-7 flex flex-col">
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[400px] overflow-hidden">
           <IndiaMap 
             projects={projects} 
             selectedState={selectedState} 

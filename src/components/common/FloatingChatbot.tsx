@@ -1,27 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, X, Send, Sparkles, User, MessageSquare, RefreshCw, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { InfrastructureProject } from '../../types';
 import { generateProjectIntelligenceResponse } from '../../utils/projectAiEngine';
-
-const cleanMarkdown = (raw: string): string => {
-  if (!raw) return '';
-  let text = raw;
-  // Fix single-line markdown table rows
-  text = text.replace(/\|\s*\|/g, '|\n|');
-  text = text.replace(/(\|\s*[-:]+[-| :]*\|)\s*(\|)/g, '$1\n$2');
-  
-  // Enforce score out of 100
-  text = text.replace(/(\b[0-9](\.[0-9]+)?)\s*\/\s*10\b/g, (_m, score) => {
-    const val = Math.min(100, Math.max(0, Math.round(parseFloat(score) * 10)));
-    return `${val}/100`;
-  });
-  text = text.replace(/\b10(\.0+)?\s*\/\s*10\b/g, '100/100');
-  text = text.replace(/\(0\s*=\s*no risk,\s*10\s*=\s*maximum risk\)/gi, '(0 = low risk, 100 = critical risk)');
-  text = text.replace(/GET\s+\/projects\/[^\s\n]+/gi, '');
-  return text.trim();
-};
 
 interface FloatingChatbotProps {
   projects: InfrastructureProject[];
@@ -110,7 +91,6 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: queryToSend,
-          provider: localStorage.getItem('nirmaanx_ai_provider') || 'groq',
           activeProjectId: activeProject?.id,
           activeProject: activeProject,
           projectContext: {
@@ -162,7 +142,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle AI Chatbot"
         className={`fixed bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-300 z-50 flex items-center justify-center ${
-          isOpen ? 'bg-rose-500 hover:bg-rose-600 rotate-90 scale-105' : 'bg-purple-700 hover:bg-purple-800 hover:scale-110 shadow-purple-900/40'
+          isOpen ? 'bg-rose-500 hover:bg-rose-600 rotate-90 scale-105' : 'bg-blue-700 hover:bg-blue-800 hover:scale-110 shadow-blue-900/40'
         }`}
       >
         {isOpen ? (
@@ -174,19 +154,19 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 
       {/* Chat Window Container */}
       <div
-        className={`fixed bottom-24 right-6 w-[390px] h-[580px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-300 transform origin-bottom-right ${
+        className={`fixed bottom-24 right-6 w-[390px] h-[580px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 flex flex-col overflow-hidden transition-all duration-300 transform origin-bottom-right ${
           isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
         }`}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 p-4 text-white flex items-center justify-between shadow-xs">
+        <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-4 text-white flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-white/ border border-white/20 flex items-center justify-center shadow-xs">
               <Bot className="w-6 h-6 text-amber-300" />
             </div>
             <div>
               <h3 className="font-bold text-sm">NirmaanX AI Assistant</h3>
-              <p className="text-[10px] text-purple-200 flex items-center gap-1 mt-0.5">
+              <p className="text-[10px] text-blue-200 flex items-center gap-1 mt-0.5">
                 <Sparkles className="w-3 h-3 text-amber-300" /> InfraMinds • MoSPI
               </p>
             </div>
@@ -195,7 +175,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
           <button
             onClick={() => setMessages([messages[0]])}
             title="Reset Chat"
-            className="p-1.5 rounded-lg hover:bg-white/10 text-purple-200 hover:text-white transition-all text-xs"
+            className="p-1.5 rounded-lg hover:bg-white/ text-blue-200 hover:text-white transition-all text-xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
@@ -203,23 +183,23 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 
         {/* Active Project Banner */}
         {activeProject && (
-          <div className="bg-purple-950 text-white px-3.5 py-2 text-xs flex items-center justify-between border-b border-purple-800 shrink-0">
+          <div className="bg-blue-950 text-white px-3.5 py-2 text-xs flex items-center justify-between border-b border-blue-800 shrink-0">
             <div className="truncate flex items-center gap-1.5 flex-1 min-w-0">
               <span className="font-bold text-amber-300 text-[10px] uppercase tracking-wider shrink-0">Inspecting:</span>
               <span className="truncate font-medium text-slate-100">{activeProject.name}</span>
             </div>
-            <span className="font-mono text-[9px] px-1.5 py-0.5 bg-white/20 rounded shrink-0 ml-2 font-bold">{activeProject.projectCode}</span>
+            <span className="font-mono text-[9px] px-1.5 py-0.5 bg-white/ rounded shrink-0 ml-2 font-bold">{activeProject.projectCode}</span>
           </div>
         )}
 
         {/* Preset Query Chips */}
-        <div className="bg-slate-100 p-2.5 border-b border-slate-200/80 flex flex-wrap gap-1.5 shrink-0">
+        <div className="bg-slate-100 dark:bg-slate-800 p-2.5 border-b border-slate-200 dark:border-slate-700 flex flex-wrap gap-1.5 shrink-0">
           {displayPresets.map((q, idx) => (
             <button
               key={idx}
               onClick={() => handleSendMessage(undefined, q)}
               disabled={isLoading}
-              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white hover:bg-purple-50 text-slate-700 hover:text-purple-900 border border-slate-200/90 hover:border-purple-300 transition-all text-left shadow-2xs disabled:opacity-50"
+              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-blue-50 text-slate-700 dark:text-slate-300 hover:text-blue-900 border border-slate-200 dark:border-slate-700/90 hover:border-blue-300 transition-all text-left shadow-2xs disabled:opacity-50"
             >
               {q}
             </button>
@@ -227,7 +207,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         </div>
 
         {/* Messages List */}
-        <div className="flex-1 p-4 overflow-y-auto bg-slate-50/70 space-y-4">
+        <div className="flex-1 p-4 overflow-y-auto bg-slate-50 dark:bg-slate-800/70 space-y-4">
           {messages.map((msg) => {
             const isUser = msg.sender === 'user';
             return (
@@ -240,44 +220,18 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                 <div
                   className={`max-w-[82%] rounded-2xl p-3 text-xs shadow-xs leading-relaxed ${
                     isUser
-                      ? 'bg-purple-700 text-white rounded-tr-none font-medium'
-                      : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80'
+                      ? 'bg-blue-700 text-white rounded-tr-none font-medium'
+                      : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-tl-none border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   {isUser ? (
                     <p className="whitespace-pre-wrap">{msg.text}</p>
                   ) : (
-                    <div className="prose prose-xs prose-p:leading-relaxed prose-headings:text-xs prose-headings:font-bold prose-headings:my-1 text-slate-800 max-w-none prose-li:my-0.5">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          table: ({ node, ...props }) => (
-                            <div className="my-2 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs max-w-full">
-                              <table className="w-full text-left text-[11px] border-collapse min-w-[360px]" {...props} />
-                            </div>
-                          ),
-                          thead: ({ node, ...props }) => (
-                            <thead className="bg-slate-100 text-slate-700 font-semibold text-[10px] uppercase border-b border-slate-200" {...props} />
-                          ),
-                          tbody: ({ node, ...props }) => (
-                            <tbody className="divide-y divide-slate-100 bg-white" {...props} />
-                          ),
-                          tr: ({ node, ...props }) => (
-                            <tr className="hover:bg-slate-50/70" {...props} />
-                          ),
-                          th: ({ node, ...props }) => (
-                            <th className="px-2.5 py-1.5 font-bold text-slate-800 text-[10px] border-b border-slate-200 whitespace-nowrap" {...props} />
-                          ),
-                          td: ({ node, ...props }) => (
-                            <td className="px-2.5 py-1.5 text-slate-700 align-top text-[11px]" {...props} />
-                          ),
-                        }}
-                      >
-                        {cleanMarkdown(msg.text)}
-                      </ReactMarkdown>
+                    <div className="prose prose-xs prose-p:leading-relaxed prose-headings:text-xs prose-headings:font-bold prose-headings:my-1 text-slate-800 dark:text-slate-200 max-w-none prose-li:my-0.5">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
                     </div>
                   )}
-                  <div className={`text-[9px] mt-1.5 flex items-center justify-between ${isUser ? 'text-purple-200' : 'text-slate-400'}`}>
+                  <div className={`text-[9px] mt-1.5 flex items-center justify-between ${isUser ? 'text-blue-200' : 'text-slate-400'}`}>
                     <span>{msg.timestamp}</span>
                     {!isUser && msg.source && <span className="font-mono text-[9px] text-slate-400">({msg.source})</span>}
                   </div>
@@ -291,10 +245,10 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               <div className="w-7 h-7 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center shrink-0 shadow-2xs">
                 <Bot className="w-4 h-4 animate-spin" />
               </div>
-              <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-3 shadow-xs flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-tl-none p-3 shadow-xs flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                 <span className="text-[10px] text-slate-600 font-semibold ml-1">Analyzing MoSPI telemetry...</span>
               </div>
             </div>
@@ -303,7 +257,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         </div>
 
         {/* Input Form */}
-        <div className="p-3 bg-white border-t border-slate-200">
+        <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
           <form onSubmit={(e) => handleSendMessage(e)} className="flex items-center gap-2">
             <input
               type="text"
@@ -311,12 +265,12 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               disabled={isLoading}
-              className="flex-1 bg-slate-100 border-none rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-600 focus:bg-white transition-all disabled:opacity-50"
+              className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 transition-all disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!inputQuery.trim() || isLoading}
-              className="w-9 h-9 rounded-xl bg-purple-700 hover:bg-purple-800 text-white flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0"
+              className="w-9 h-9 rounded-xl bg-blue-700 hover:bg-blue-800 text-white flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>

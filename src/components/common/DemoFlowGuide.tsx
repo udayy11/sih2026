@@ -142,9 +142,9 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
   }
 
   return (
-    <div className="fixed bottom-4 right-4 md:right-8 z-40 w-full max-w-lg bg-[#3b0a45] text-white rounded-2xl shadow-2xl border border-purple-900/80 p-4 transition-all animate-in fade-in slide-in-from-bottom-6">
+    <div className="fixed bottom-4 right-4 md:right-8 z-40 w-full max-w-lg bg-[#3b0a45] text-white rounded-2xl shadow-2xl border border-blue-900/80 p-4 transition-all animate-in fade-in slide-in-from-bottom-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-purple-900/60 pb-3">
+      <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-400/30">
             {activeStep.stepNumber}
@@ -152,9 +152,9 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">SIH 2026 Interactive Demo Flow</span>
-              <span className="text-[10px] bg-purple-950 px-2 py-0.5 rounded text-purple-200 font-mono">Step {activeStep.stepNumber} of 11</span>
+              <span className="text-[10px] bg-blue-950 px-2 py-0.5 rounded text-blue-200 font-mono">Step {activeStep.stepNumber} of 11</span>
             </div>
-            <h4 className="text-sm font-semibold text-purple-50">{activeStep.title}</h4>
+            <h4 className="text-sm font-semibold text-blue-50">{activeStep.title}</h4>
           </div>
         </div>
 
@@ -162,13 +162,13 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
           <button
             onClick={handleRestart}
             title="Restart Demo"
-            className="p-1.5 text-purple-300 hover:text-white hover:bg-white/10 rounded-lg text-xs"
+            className="p-1.5 text-blue-300 hover:text-white hover:bg-white/ rounded-lg text-xs"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onToggle}
-            className="text-purple-300 hover:text-white text-xs px-2 py-1 hover:bg-white/10 rounded-lg"
+            className="text-blue-300 hover:text-white text-xs px-2 py-1 hover:bg-white/ rounded-lg"
           >
             Minimize
           </button>
@@ -177,8 +177,8 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
 
       {/* Body */}
       <div className="py-3">
-        <p className="text-xs text-purple-100/90 leading-relaxed">{activeStep.description}</p>
-        <div className="mt-2.5 flex items-start gap-2 bg-purple-950/80 border border-purple-800/60 rounded-xl p-2.5 text-xs text-amber-200/90">
+        <p className="text-xs text-blue-100/90 leading-relaxed">{activeStep.description}</p>
+        <div className="mt-2.5 flex items-start gap-2 bg-blue-950/80 border border-blue-800/60 rounded-xl p-2.5 text-xs text-amber-200/90">
           <Play className="w-3.5 h-3.5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <span className="font-semibold text-white">Suggested Action: </span>
@@ -188,7 +188,7 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
       </div>
 
       {/* Step Pills Navigator */}
-      <div className="flex items-center gap-1 overflow-x-auto py-1 border-t border-purple-900/60 mb-3 scrollbar-none">
+      <div className="flex items-center gap-1 overflow-x-auto py-1 border-t border-blue-900/60 mb-3 scrollbar-none">
         {DEMO_STEPS.map((s) => (
           <button
             key={s.stepNumber}
@@ -198,7 +198,7 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
                 ? 'bg-amber-400 text-slate-950 scale-110 shadow-md ring-2 ring-amber-300/40'
                 : s.stepNumber < currentStep
                 ? 'bg-emerald-500 text-white'
-                : 'bg-purple-950 text-purple-300 hover:bg-purple-900'
+                : 'bg-blue-950 text-blue-300 hover:bg-blue-900'
             }`}
           >
             {s.stepNumber < currentStep ? '✓' : s.stepNumber}
@@ -207,17 +207,17 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
       </div>
 
       {/* Footer Navigation */}
-      <div className="flex items-center justify-between pt-2 border-t border-purple-900/60">
+      <div className="flex items-center justify-between pt-2 border-t border-blue-900/60">
         <button
           onClick={handlePrev}
           disabled={currentStep === 1}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-950 text-purple-200 hover:bg-purple-900 text-xs font-medium disabled:opacity-30 disabled:pointer-events-none"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-950 text-blue-200 hover:bg-blue-900 text-xs font-medium disabled:opacity-30 disabled:pointer-events-none"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Previous</span>
         </button>
 
-        <span className="text-[11px] text-purple-300/80 hidden sm:inline">
+        <span className="text-[11px] text-blue-300/80 hidden sm:inline">
           Predict → Explain → Alert → Recommend → Act
         </span>
 

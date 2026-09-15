@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InfrastructureProject, BenchmarkComparison } from '../../types';
 import { MLEngine } from '../../utils/mlEngine';
 import { RiskBadge } from '../common/RiskBadge';
@@ -48,6 +48,12 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
     selectedProjectId || projects[0]?.id || 'PRJ-TRN-001'
   );
 
+  useEffect(() => {
+    if (selectedProjectId) {
+      setActiveProjectId(selectedProjectId);
+    }
+  }, [selectedProjectId]);
+
   const selectedProject = projects.find(p => p.id === activeProjectId) || projects[0];
 
   // Perform cohort benchmarking
@@ -90,7 +96,7 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Title & Project Selector Bar */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">
@@ -100,7 +106,7 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
               Comparing against {sectorCohort.length} projects in {selectedProject.sector}
             </span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Project Benchmarking & Peer Variance Analysis
           </h2>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -114,7 +120,7 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
           <select
             value={activeProjectId}
             onChange={(e) => setActiveProjectId(e.target.value)}
-            className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+            className="text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
           >
             {projects.map(p => (
               <option key={p.id} value={p.id}>
@@ -165,22 +171,25 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
           const isWorse = item.status === 'Worse';
 
           return (
-            <div key={idx} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase">{item.metric}</span>
-              <div className="text-xl font-bold font-mono text-slate-900">
-                {item.projectValue}
-              </div>
-              <div className="text-[11px] text-slate-500">
-                Sector Cohort Avg: <strong className="text-slate-800">{item.benchmarkAverage}</strong>
-              </div>
-              <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
-                isBetter
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : isWorse
-                  ? 'bg-rose-100 text-rose-800'
-                  : 'bg-slate-100 text-slate-800'
-              }`}>
-                {item.differenceText}
+            <div key={idx} className={`group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-4 border transition-all hover:shadow-xl hover:-translate-y-1 ${isBetter ? 'border-emerald-200 dark:border-emerald-800 hover:border-emerald-400' : isWorse ? 'border-rose-200 dark:border-rose-800 hover:border-rose-400' : 'border-slate-200 dark:border-slate-700 hover:border-slate-400'}`}>
+              <div className={`absolute -top-12 -right-12 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${isBetter ? 'bg-gradient-to-br from-emerald-400 to-teal-500' : isWorse ? 'bg-gradient-to-br from-rose-400 to-red-500' : 'bg-gradient-to-br from-slate-400 to-slate-500'}`} />
+              <div className="relative z-10 space-y-2">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase">{item.metric}</span>
+                <div className="text-xl font-bold font-mono text-slate-900 dark:text-white">
+                  {item.projectValue}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Sector Cohort Avg: <strong className="text-slate-800 dark:text-slate-200">{item.benchmarkAverage}</strong>
+                </div>
+                <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
+                  isBetter
+                    ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400'
+                    : isWorse
+                    ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-400'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300'
+                }`}>
+                  {item.differenceText}
+                </div>
               </div>
             </div>
           );
@@ -191,9 +200,9 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Chart 1: Radar Chart */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-bold text-slate-900">Multi-Dimensional Sector Cohort Radar</h3>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Multi-Dimensional Sector Cohort Radar</h3>
             <p className="text-xs text-slate-500">Comparing project index vs sector cohort mean</p>
           </div>
 
@@ -213,9 +222,9 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
         </div>
 
         {/* Chart 2: Grouped Bar Comparison */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-bold text-slate-900">Direct Metric Comparison vs Sector Average</h3>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Direct Metric Comparison vs Sector Average</h3>
             <p className="text-xs text-slate-500">Side-by-side performance variance</p>
           </div>
 

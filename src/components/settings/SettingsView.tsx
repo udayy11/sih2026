@@ -21,13 +21,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
   return (
     <div className="space-y-6 pb-12 max-w-4xl">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs">
         <div className="flex items-center gap-2 mb-1">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
             System Administration
           </span>
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
           Platform Configuration & Calibration
         </h2>
         <p className="text-sm text-slate-500 mt-0.5">
@@ -43,11 +43,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
       )}
 
       {/* 1. Risk Threshold Calibration */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-5">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-5">
+        <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <Sliders className="w-5 h-5 text-blue-600" />
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Early Warning Trigger Thresholds</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Early Warning Trigger Thresholds</h3>
             <p className="text-xs text-slate-500">Numerical indices for automated alert classification</p>
           </div>
         </div>
@@ -56,7 +56,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <label className="font-bold text-rose-700">Critical Risk Trigger Score (🔴)</label>
-              <span className="font-mono font-bold text-slate-900">≥ {criticalThreshold} / 100</span>
+              <span className="font-mono font-bold text-slate-900 dark:text-white">≥ {criticalThreshold} / 100</span>
             </div>
             <input
               type="range"
@@ -71,7 +71,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <label className="font-bold text-amber-700">High Risk Trigger Score (🟠)</label>
-              <span className="font-mono font-bold text-slate-900">≥ {highThreshold} / 100</span>
+              <span className="font-mono font-bold text-slate-900 dark:text-white">≥ {highThreshold} / 100</span>
             </div>
             <input
               type="range"
@@ -86,7 +86,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <label className="font-bold text-yellow-700">Medium Risk Trigger Score (🟡)</label>
-              <span className="font-mono font-bold text-slate-900">≥ {mediumThreshold} / 100</span>
+              <span className="font-mono font-bold text-slate-900 dark:text-white">≥ {mediumThreshold} / 100</span>
             </div>
             <input
               type="range"
@@ -100,8 +100,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
 
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <label className="font-bold text-slate-700">Progress-Burn Divergence Tolerance</label>
-              <span className="font-mono font-bold text-slate-900">&gt; {divergenceTolerance}% gap</span>
+              <label className="font-bold text-slate-700 dark:text-slate-300">Progress-Burn Divergence Tolerance</label>
+              <span className="font-mono font-bold text-slate-900 dark:text-white">&gt; {divergenceTolerance}% gap</span>
             </div>
             <input
               type="range"
@@ -116,11 +116,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
       </div>
 
       {/* 2. AI Model Selection */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <Server className="w-5 h-5 text-indigo-600" />
           <div>
-            <h3 className="text-sm font-bold text-slate-900">AI Intelligence Core Engine</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">AI Intelligence Core Engine</h3>
             <p className="text-xs text-slate-500">Google Gemini LLM configuration</p>
           </div>
         </div>
@@ -132,7 +132,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
               className={`p-3.5 rounded-xl border cursor-pointer text-xs font-semibold flex flex-col justify-between ${
                 selectedModel === m
                   ? 'bg-indigo-50 border-indigo-500 text-indigo-900 ring-1 ring-indigo-400'
-                  : 'bg-slate-50 border-slate-200 text-slate-700'
+                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
               }`}
             >
               <div className="flex items-center justify-between">

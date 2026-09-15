@@ -21,7 +21,7 @@ export type SectorType =
   | 'Social Justice'
   | string;
 
-export type ProjectStatus = 'Completed' | 'Ongoing' | 'Critical Delayed' | 'At Risk' | 'Near Completion' | 'On Schedule';
+export type ProjectStatus = 'Ongoing' | 'Critical Delayed' | 'At Risk' | 'Near Completion' | 'On Schedule' | 'Completed' | 'Commissioned';
 
 export interface Milestone {
   id: string;
