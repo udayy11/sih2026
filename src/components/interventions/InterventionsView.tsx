@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { InfrastructureProject } from '../../types';
 import { RiskBadge } from '../common/RiskBadge';
 import { 
@@ -12,8 +12,12 @@ import {
   CheckCircle2, 
   ExternalLink,
   Sparkles,
-  Layers,
-  ArrowRight
+  Layers, 
+  ArrowRight,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw
 } from 'lucide-react';
 
 interface InterventionsViewProps {
@@ -33,12 +37,50 @@ export const InterventionsView: React.FC<InterventionsViewProps> = ({
     p => p.riskLevel === 'CRITICAL' || p.riskLevel === 'HIGH'
   );
 
+  // Search & Pagination States
+  const [searchInput, setSearchInput] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const projectsPerPage = 6;
+
+  const searchedProjects = useMemo(() => {
+    return highRiskProjects.filter(p => {
+      if (!searchTerm) return true;
+      const q = searchTerm.toLowerCase();
+      return (
+        p.name.toLowerCase().includes(q) ||
+        p.projectCode.toLowerCase().includes(q) ||
+        p.sector.toLowerCase().includes(q) ||
+        p.ministry.toLowerCase().includes(q) ||
+        p.state.toLowerCase().includes(q) ||
+        (p.detectedIssue || '').toLowerCase().includes(q) ||
+        (p.recommendedIntervention || '').toLowerCase().includes(q)
+      );
+    });
+  }, [highRiskProjects, searchTerm]);
+
+  const totalPages = Math.ceil(searchedProjects.length / projectsPerPage) || 1;
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safeCurrentPage - 1) * projectsPerPage;
+  const paginatedProjects = searchedProjects.slice(startIndex, startIndex + projectsPerPage);
+
   const [activeProjectId, setActiveProjectId] = useState<string>(
     selectedProjectId || highRiskProjects[0]?.id || projects[0]?.id
   );
 
-  const selectedProject = projects.find(p => p.id === activeProjectId) || projects[0];
+  const selectedProject = projects.find(p => p.id === activeProjectId) || searchedProjects[0] || projects[0];
   const [showMemoModal, setShowMemoModal] = useState(false);
+
+  const handleSearch = () => {
+    setSearchTerm(searchInput.trim());
+    setCurrentPage(1);
+  };
+
+  const handleResetSearch = () => {
+    setSearchInput('');
+    setSearchTerm('');
+    setCurrentPage(1);
+  };
 
   const downloadDirectiveMemo = () => {
     const text = `=============================================================================
@@ -136,50 +178,122 @@ CONFIDENTIAL & PRIVILEGED - FOR OFFICIAL USE ONLY (MoSPI NIRMAANX PORTAL)
       {/* Main Layout: Projects Sidebar on Left, Active Prescription on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Left Column: List of High-Risk Projects */}
+        {/* Left Column: List of High-Risk Projects with Search & Pagination */}
         <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-xs space-y-3">
-          <div className="flex items-center justify-between px-2 py-1">
+          <div className="flex items-center justify-between px-1 py-1">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               High-Risk Project Registry
             </span>
-            <span className="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">
-              {highRiskProjects.length} Urgent
+            <span className="text-xs font-mono font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/40 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900">
+              {searchedProjects.length} Filtered
             </span>
           </div>
 
-          <div className="space-y-2 max-h-[640px] overflow-y-auto pr-1">
-            {highRiskProjects.map((p) => {
-              const isSelected = p.id === activeProjectId;
-
-              return (
-                <div
-                  key={p.id}
-                  onClick={() => setActiveProjectId(p.id)}
-                  className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-blue-50/80 border-blue-500 shadow-sm ring-1 ring-blue-400'
-                      : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[11px] font-bold text-blue-600">
-                      {p.projectCode}
-                    </span>
-                    <RiskBadge level={p.riskLevel} size="sm" />
-                  </div>
-
-                  <h4 className="font-semibold text-xs text-slate-900 dark:text-white mt-1.5 line-clamp-1">
-                    {p.name}
-                  </h4>
-
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2 font-mono">
-                    <span>Delay: <strong className="text-rose-600">+{p.delayMonths} mos</strong></span>
-                    <span>Cost Overrun: <strong className="text-rose-600">+{p.costOverrunPercent}%</strong></span>
-                  </div>
-                </div>
-              );
-            })}
+          {/* Search Bar with Explicit Search Button */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search code, name, sector, ministry..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearch();
+                }}
+                className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition-all"
+              />
+            </div>
+            <button
+              onClick={handleSearch}
+              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-2xs shrink-0"
+              title="Execute Search"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Search</span>
+            </button>
+            {searchTerm && (
+              <button
+                onClick={handleResetSearch}
+                className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-xl text-xs transition-all shrink-0"
+                title="Reset search"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
+
+          {/* Paginated Project Cards List */}
+          <div className="space-y-2 min-h-[420px]">
+            {paginatedProjects.length === 0 ? (
+              <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-slate-500 text-xs">
+                No high-risk projects matched your search.
+              </div>
+            ) : (
+              paginatedProjects.map((p) => {
+                const isSelected = p.id === activeProjectId;
+
+                return (
+                  <div
+                    key={p.id}
+                    onClick={() => setActiveProjectId(p.id)}
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-500 shadow-sm ring-1 ring-blue-400'
+                        : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/80 border-slate-200 dark:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                        {p.projectCode}
+                      </span>
+                      <RiskBadge level={p.riskLevel} size="sm" />
+                    </div>
+
+                    <h4 className="font-semibold text-xs text-slate-900 dark:text-white mt-1.5 line-clamp-1">
+                      {p.name}
+                    </h4>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2 font-mono">
+                      <span>Delay: <strong className="text-rose-600">+{p.delayMonths} mos</strong></span>
+                      <span>Cost Overrun: <strong className="text-rose-600">+{p.costOverrunPercent}%</strong></span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Interventions Left Column Pagination Controls */}
+          {searchedProjects.length > 0 && (
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+              <span className="font-mono text-[11px]">
+                Page {safeCurrentPage} of {totalPages} ({searchedProjects.length} total)
+              </span>
+
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={safeCurrentPage === 1}
+                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  title="Previous Page"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <span className="px-2 font-mono font-bold text-slate-700 dark:text-slate-300">
+                  {safeCurrentPage}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={safeCurrentPage === totalPages}
+                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  title="Next Page"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column: Prescriptive 3-Box Protocol */}

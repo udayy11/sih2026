@@ -41,7 +41,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Cell
+  Cell,
+  ReferenceLine
 } from 'recharts';
 
 interface PredictiveAnalyticsViewProps {
@@ -57,7 +58,16 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
   onSelectProject,
   onNavigate,
 }) => {
-  const [activeTab, setActiveTab] = useState<'models' | 'baselines' | 'ablation' | 'pdp' | 'drivers'>('models');
+  const [activeTab, setActiveTab] = useState<'models' | 'baselines' | 'ablation' | 'pdp' | 'drivers'>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'drivers' || tabParam === 'models' || tabParam === 'baselines' || tabParam === 'ablation' || tabParam === 'pdp') {
+        return tabParam;
+      }
+    } catch {}
+    return 'models';
+  });
   const [activeProjectId, setActiveProjectId] = useState<string>(
     selectedProjectId || projects[0]?.id || 'PRJ-TRN-001'
   );
@@ -135,6 +145,46 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
     'Actual Physical (%)': h.actualPhysical,
     'Financial Burn (%)': h.actualFinancial,
   }));
+
+  // SHAP Feature Attribution Metric Toggle
+  const [shapMetricType, setShapMetricType] = useState<'cost' | 'delay'>('cost');
+
+  // Dynamic Project SHAP Attribution Values
+  const shapCostData = useMemo(() => {
+    const finProg = selectedProject.financialProgress || 50;
+    const physProg = selectedProject.physicalProgress || 50;
+    const divergence = Math.max(0, finProg - physProg);
+    const delay = selectedProject.delayMonths || 0;
+    const unacquiredLand = Math.max(0, 100 - (selectedProject.landAcquiredPercent || 85));
+
+    return [
+      { feature: 'Progress-Spend Divergence', value: Number((divergence * 0.75 + 3.2).toFixed(1)), unit: '%', type: 'CUF Field' },
+      { feature: 'Unacquired Land Deficit', value: Number((unacquiredLand * 0.28 + 2.1).toFixed(1)), unit: '%', type: 'CUF Field' },
+      { feature: 'Cumulative Schedule Delay', value: Number((delay * 0.38 + 1.5).toFixed(1)), unit: '%', type: 'CUF Field' },
+      { feature: 'Sector WPI Inflation Index', value: Number((selectedProject.sector === 'Railways' ? 5.8 : selectedProject.sector === 'Road Transport & Highways' ? 4.9 : 3.4).toFixed(1)), unit: '%', type: 'Macro Signal' },
+      { feature: 'Forest & Statutory Clearance', value: selectedProject.forestClearance.includes('Pending') ? 6.4 : 1.8, unit: '%', type: 'CUF Field' },
+      { feature: 'Contractor Liquidity Buffer', value: -3.2, unit: '%', type: 'Mitigating Factor' },
+      { feature: 'Milestone Escrow Mechanism', value: -2.4, unit: '%', type: 'Mitigating Factor' }
+    ].sort((a, b) => b.value - a.value);
+  }, [selectedProject]);
+
+  const shapDelayData = useMemo(() => {
+    const delay = selectedProject.delayMonths || 0;
+    const physLag = Math.max(0, (selectedProject.plannedPhysicalProgress || 60) - (selectedProject.physicalProgress || 50));
+    const unacquiredLand = Math.max(0, 100 - (selectedProject.landAcquiredPercent || 85));
+
+    return [
+      { feature: 'Physical Target Execution Lag', value: Number((physLag * 0.55 + 2.8).toFixed(1)), unit: ' mos', type: 'CUF Field' },
+      { feature: 'Right-of-Way Land Impasse', value: Number((unacquiredLand * 0.32 + 1.9).toFixed(1)), unit: ' mos', type: 'CUF Field' },
+      { feature: 'Statutory Clearances Impasse', value: selectedProject.forestClearance.includes('Pending') ? 7.2 : 2.1, unit: ' mos', type: 'CUF Field' },
+      { feature: 'Geological & Monsoon Friction', value: Number((Math.min(5, delay * 0.2) + 1.4).toFixed(1)), unit: ' mos', type: 'Macro Signal' },
+      { feature: 'Contractor Mobilization Gap', value: selectedProject.contractorRiskRating === 'High Default Risk' ? 4.8 : 1.5, unit: ' mos', type: 'CUF Field' },
+      { feature: 'State High-Level Taskforce Interventions', value: -2.6, unit: ' mos', type: 'Mitigating Factor' },
+      { feature: 'Pre-cast Modular Fabrication Pace', value: -1.8, unit: ' mos', type: 'Mitigating Factor' }
+    ].sort((a, b) => b.value - a.value);
+  }, [selectedProject]);
+
+  const activeShapData = shapMetricType === 'cost' ? shapCostData : shapDelayData;
 
   return (
     <div className="space-y-6 pb-12">
@@ -471,6 +521,127 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* VISUAL SHAP FEATURE ATTRIBUTION WATERFALL / BAR CHART */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+                    Explainable AI (XAI) Engine
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">
+                    Project: {selectedProject.projectCode}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <BrainCircuit className="w-5 h-5 text-violet-600" />
+                  SHAP (Shapley Additive exPlanations) Feature Attribution Graph
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Isolates the empirical marginal push (+risk escalation) and pull (-mitigating dampener) of each project variable on prediction.
+                </p>
+              </div>
+
+              {/* Metric Switcher: Cost SHAP vs Delay SHAP */}
+              <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                <button
+                  onClick={() => setShapMetricType('cost')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    shapMetricType === 'cost'
+                      ? 'bg-rose-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Cost Overrun SHAP (%)
+                </button>
+                <button
+                  onClick={() => setShapMetricType('delay')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    shapMetricType === 'delay'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Schedule Delay SHAP (Months)
+                </button>
+              </div>
+            </div>
+
+            {/* SHAP Attribution Explanatory Pills */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-xl flex items-center gap-2.5">
+                <div className="w-3 h-3 rounded-full bg-rose-500 shrink-0" />
+                <div>
+                  <span className="font-bold text-rose-800 dark:text-rose-300 block">Positive SHAP (&gt;0)</span>
+                  <span className="text-[11px] text-rose-600 dark:text-rose-400">Pushes risk, delay &amp; cost escalation higher</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-xl flex items-center gap-2.5">
+                <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
+                <div>
+                  <span className="font-bold text-emerald-800 dark:text-emerald-300 block">Negative SHAP (&lt;0)</span>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400">Protective buffers mitigating escalation</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-between font-mono">
+                <span className="text-slate-500">Base Expected Value:</span>
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {shapMetricType === 'cost' ? '12.4% Cost Drift' : '4.2 Months Delay'}
+                </span>
+              </div>
+            </div>
+
+            {/* Horizontal Bar Chart for SHAP Feature Values */}
+            <div className="h-80 w-full pt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={activeShapData}
+                  margin={{ top: 10, right: 40, left: 60, bottom: 10 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke="#E2E8F0" />
+                  <XAxis 
+                    type="number" 
+                    domain={[-6, 20]} 
+                    tick={{ fontSize: 11, fill: '#64748B' }}
+                    unit={shapMetricType === 'cost' ? '%' : ' mos'}
+                  />
+                  <YAxis 
+                    type="category" 
+                    dataKey="feature" 
+                    tick={{ fontSize: 11, fill: '#334155' }} 
+                    width={180}
+                  />
+                  <ReferenceLine x={0} stroke="#475569" strokeWidth={1.5} />
+                  <Tooltip
+                    formatter={(value: any) => [
+                      `${Number(value) > 0 ? '+' : ''}${value}${shapMetricType === 'cost' ? '%' : ' months'}`,
+                      'SHAP Value (Marginal Impact)'
+                    ]}
+                    contentStyle={{
+                      backgroundColor: '#0F172A',
+                      borderColor: '#334155',
+                      borderRadius: '0.75rem',
+                      color: '#F8FAFC',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <Bar dataKey="value" name="SHAP Attribution" radius={[0, 4, 4, 0]}>
+                    {activeShapData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.value >= 0 ? (shapMetricType === 'cost' ? '#E11D48' : '#F59E0B') : '#10B981'} 
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 

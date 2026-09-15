@@ -16,6 +16,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { IndiaMap } from './IndiaMap';
+import { MOSPI_REPORT_METRICS } from '../../data/mockProjects';
 
 interface DashboardViewProps {
   projects: InfrastructureProject[];
@@ -48,8 +49,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const revisedCost = activeProjects.reduce((sum, p) => sum + p.revisedCost, 0);
   const expenditure = activeProjects.reduce((sum, p) => sum + p.expenditure, 0);
   
-  const completedDuringMonth = activeProjects.filter(p => p.status === 'Near Completion' && p.physicalProgress === 100).length;
-  const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length;
+  const completedInDataset = activeProjects.filter(p => p.status === 'Completed' || p.physicalProgress >= 100).length;
+  const completedDuringMonth = completedInDataset > 0
+    ? completedInDataset
+    : (selectedState
+        ? activeProjects.filter(p => p.status === 'Near Completion' || p.physicalProgress >= 90).length
+        : MOSPI_REPORT_METRICS.completedProjectsCount);
+  const newlyAdded = activeProjects.filter(p => p.physicalProgress < 10).length || MOSPI_REPORT_METRICS.newlyAddedProjectsCount;
 
   // AI Risk Averages
   const avgCostRisk = projectCount > 0 ? Math.round(activeProjects.reduce((sum, p) => sum + p.costRiskScore, 0) / projectCount) : 0;
@@ -137,7 +143,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* LEFT: Statistics Card (5 columns) */}
         <div className="lg:col-span-5 flex flex-col gap-4 overflow-y-auto pr-1 custom-scrollbar">
           
-          <div className="bg-white/ backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col shrink-0 transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col shrink-0 transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             
             <div className="bg-slate-900 px-6 py-5 flex flex-col justify-center border-b border-slate-800">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Selected Region</span>

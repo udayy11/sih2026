@@ -15,7 +15,9 @@ import {
   ChevronRight,
   ShieldCheck,
   FileSpreadsheet,
-  Home
+  Home,
+  Sliders,
+  MessageSquare
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,7 +25,7 @@ interface SidebarProps {
   onNavigate: (view: string) => void;
   criticalCount: number;
   highRiskCount: number;
-  currentUserRole?: 'Admin' | 'Project Tracker' | 'Engineer' | string;
+  currentUserRole?: 'Admin' | 'Project Tracker' | 'Engineer' | 'Citizen' | string;
 }
 
 interface NavItem {
@@ -44,20 +46,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // All sidebar navigation items (Milestones, Issues, Drivers, Reports moved/removed as requested)
+  // All sidebar navigation items
   const allNavItems: NavItem[] = [
-    { id: 'overview', label: 'Platform Overview', icon: Home, badge: null, allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
+    { id: 'overview', label: 'Platform Overview', icon: Home, badge: null, allowedRoles: ['Admin', 'Project Tracker', 'Engineer', 'Citizen'] },
     { id: 'dashboard', label: 'Dashboard', icon: BarChart2, badge: null, allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
-    { id: 'projects', label: 'Projects & Roadblocks', icon: Folder, badge: null, allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
+    { id: 'projects', label: 'Projects & Roadblocks', icon: Folder, badge: null, allowedRoles: ['Admin', 'Project Tracker', 'Engineer', 'Citizen'] },
     { id: 'early-warnings', label: 'AI Early Warning & Alerts', icon: Package, badge: `${criticalCount + highRiskCount}`, badgeColor: 'bg-amber-400 text-slate-950 font-bold', allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
-    { id: 'predictive', label: 'Predictive Analytics & Drivers', icon: Gauge, badge: 'ML', allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
+    { id: 'predictive', label: 'Predictive Analytics', icon: Gauge, badge: 'ML', allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
+    { id: 'feedback', label: 'Citizen & RWA Feedback', icon: MessageSquare, badge: 'NEW', badgeColor: 'bg-amber-400 text-slate-950 font-bold', allowedRoles: ['Admin', 'Project Tracker', 'Engineer', 'Citizen'] },
     { id: 'benchmarking', label: 'Benchmarking', icon: Database, badge: null, allowedRoles: ['Admin', 'Project Tracker'] },
     { id: 'scenario', label: 'Scenario What-If', icon: Folder, badge: 'Sim', allowedRoles: ['Admin', 'Project Tracker'] },
     { id: 'interventions', label: 'Interventions (PMG)', icon: Shield, badge: null, allowedRoles: ['Admin', 'Project Tracker'] },
     { id: 'data-quality', label: 'Data Quality', icon: Database, badge: null, allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
     { id: 'data-import', label: 'Data Import (CSV)', icon: FileSpreadsheet, badge: 'NEW', badgeColor: 'bg-emerald-500 text-white', allowedRoles: ['Admin'] },
     { id: 'users', label: 'User Management', icon: ShieldCheck, badge: null, allowedRoles: ['Admin'] },
-    { id: 'assistant', label: 'AI Assistant (LLM)', icon: LayoutGrid, badge: 'AI', badgeColor: 'bg-fuchsia-500 text-white', allowedRoles: ['Admin', 'Project Tracker', 'Engineer'] },
+    { id: 'assistant', label: 'AI Assistant (LLM)', icon: LayoutGrid, badge: 'AI', badgeColor: 'bg-fuchsia-500 text-white', allowedRoles: ['Admin', 'Project Tracker', 'Engineer', 'Citizen'] },
     { id: 'settings', label: 'Settings', icon: Settings, badge: null, allowedRoles: ['Admin'] },
   ];
 
@@ -79,11 +82,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between w-full pl-2">
             <div className="flex flex-col">
               <span className="text-[13px] uppercase tracking-wider text-blue-200 font-bold">Portal Menu</span>
-            <span className="text-[11px] text-amber-300 font-medium">{currentUserRole} Access</span>
+              <span className="text-[11px] text-amber-300 font-medium">{currentUserRole} Access</span>
             </div> 
             <button
               onClick={() => setIsExpanded(false)}
-              className="w-8 h-8 rounded-lg hover:bg-white/ flex items-center justify-center text-blue-200 hover:text-white transition-all focus:outline-hidden"
+              className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-blue-200 hover:text-white transition-all focus:outline-hidden cursor-pointer"
               title="Collapse sidebar"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -92,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ) : (
           <button
             onClick={() => setIsExpanded(true)}
-            className="w-10 h-10 rounded-xl hover:bg-white/ flex items-center justify-center text-blue-200 hover:text-white transition-all mx-auto focus:outline-hidden"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-blue-200 hover:text-white transition-all mx-auto focus:outline-hidden cursor-pointer"
             title="Expand sidebar"
           >
             <Menu className="w-5 h-5" />
@@ -113,15 +116,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onNavigate(item.id)}
               className={`w-full group relative flex items-center ${
                 isExpanded ? 'px-3.5 justify-between' : 'justify-center px-0'
-              } py-2.5 rounded-xl text-xs font-semibold transition-all duration-300 transform hover:translate-x-1 ${
+              } py-2.5 rounded-xl text-xs font-semibold transition-all duration-300 transform hover:translate-x-1 cursor-pointer ${
                 isActive
                   ? 'bg-gradient-to-r from-blue-600/80 to-blue-500/80 backdrop-blur-md text-white shadow-[0_0_15px_rgba(59,130,246,0.3)] ring-1 ring-white/30'
-                  : 'text-blue-200/80 hover:bg-white/ hover:text-white hover:shadow-inner'
+                  : 'text-blue-200/80 hover:bg-white/10 hover:text-white hover:shadow-inner'
               }`}
               title={!isExpanded ? item.label : undefined}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className={`p-1 rounded-lg shrink-0 transition-colors ${isActive ? 'bg-white/ text-white' : 'text-blue-200 group-hover:text-white'}`}>
+                <div className={`p-1 rounded-lg shrink-0 transition-colors ${isActive ? 'bg-white/20 text-white' : 'text-blue-200 group-hover:text-white'}`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 {isExpanded && (

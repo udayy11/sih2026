@@ -48,4 +48,87 @@ class AuditLogModel(Base):
     details = Column(Text)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+class FeedbackModel(Base):
+    __tablename__ = "feedbacks"
+
+    id = Column(String(64), primary_key=True, index=True)
+    case_id = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(String(64), index=True, nullable=False)
+    citizen_id = Column(String(64), index=True, nullable=False)
+    feedback_type = Column(String(64), default="Ground-Level Issue")
+    category = Column(String(128), nullable=False)
+    description = Column(Text, nullable=False)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    location = Column(String(256), nullable=False)
+    priority = Column(String(32), default="Medium")
+    status = Column(String(64), default="SUBMITTED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+class FeedbackEvidenceModel(Base):
+    __tablename__ = "feedback_evidences"
+
+    id = Column(String(64), primary_key=True, index=True)
+    case_id = Column(String(64), index=True, nullable=False)
+    url = Column(String(512), nullable=False)
+    file_name = Column(String(256), nullable=False)
+    file_type = Column(String(64))
+    uploaded_by = Column(String(128))
+    uploaded_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class FeedbackStatusHistoryModel(Base):
+    __tablename__ = "feedback_status_history"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    case_id = Column(String(64), index=True, nullable=False)
+    status = Column(String(64), nullable=False)
+    title = Column(String(128))
+    description = Column(Text)
+    actor = Column(String(128))
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
+class FeedbackAssignmentModel(Base):
+    __tablename__ = "feedback_assignments"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    case_id = Column(String(64), index=True, nullable=False)
+    tracker_id = Column(String(64), nullable=False)
+    assigned_by = Column(String(128))
+    notes = Column(Text)
+    assigned_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class FeedbackVerificationModel(Base):
+    __tablename__ = "feedback_verifications"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    case_id = Column(String(64), index=True, nullable=False)
+    verified = Column(String(16), default="Verified")
+    verified_by = Column(String(128))
+    notes = Column(Text, nullable=False)
+    verified_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class CorrectiveActionModel(Base):
+    __tablename__ = "corrective_actions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    case_id = Column(String(64), index=True, nullable=False)
+    action_taken = Column(String(256), nullable=False)
+    action_description = Column(Text, nullable=False)
+    responsible_team = Column(String(128))
+    action_date = Column(String(64))
+    remarks = Column(Text)
+    recorded_by = Column(String(128))
+    recorded_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class CitizenResponseModel(Base):
+    __tablename__ = "citizen_responses"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    case_id = Column(String(64), index=True, nullable=False)
+    satisfied = Column(String(16), nullable=False)
+    dissatisfaction_reason = Column(String(256))
+    comments = Column(Text)
+    response_date = Column(DateTime, default=datetime.datetime.utcnow)
+
 Base.metadata.create_all(bind=engine)

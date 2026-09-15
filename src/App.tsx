@@ -23,6 +23,8 @@ const DataImportView = React.lazy(() => import('./components/import/DataImportVi
 const UserManagementView = React.lazy(() => import('./components/users/UserManagementView').then(m => ({ default: m.UserManagementView })));
 const AiAssistantView = React.lazy(() => import('./components/assistant/AiAssistantView').then(m => ({ default: m.AiAssistantView })));
 const SettingsView = React.lazy(() => import('./components/settings/SettingsView').then(m => ({ default: m.SettingsView })));
+const EscalationDriversView = React.lazy(() => import('./components/drivers/EscalationDriversView').then(m => ({ default: m.EscalationDriversView })));
+const FeedbackView = React.lazy(() => import('./components/feedback/FeedbackView').then(m => ({ default: m.FeedbackView })));
 
 // Loading Spinner for Code-Split Modules
 function ModuleLoader() {
@@ -61,8 +63,26 @@ function AppContent({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Application Data State
-  const [projects, setProjects] = useState<InfrastructureProject[]>(MOCK_PROJECTS);
+  // Application Data State with LocalStorage Persistence
+  const [projects, setProjects] = useState<InfrastructureProject[]>(() => {
+    try {
+      const stored = localStorage.getItem('nirmaanx_projects_data');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return MOCK_PROJECTS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('nirmaanx_projects_data', JSON.stringify(projects));
+    } catch (e) {
+      console.warn('Storage limit reached or failed saving projects', e);
+    }
+  }, [projects]);
+
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<InfrastructureProject | null>(null);
   const [targetModuleProjectId, setTargetModuleProjectId] = useState<string>(MOCK_PROJECTS[0]?.id || '');
 
@@ -99,6 +119,9 @@ function AppContent({
   };
 
   const handleResetData = () => {
+    try {
+      localStorage.removeItem('nirmaanx_projects_data');
+    } catch {}
     setProjects(MOCK_PROJECTS);
   };
 
@@ -195,6 +218,20 @@ function AppContent({
                 }
               />
 
+              <Route path="/drivers" element={<Navigate to="/predictive?tab=drivers" replace />} />
+              <Route path="/cost-escalation" element={<Navigate to="/predictive?tab=drivers" replace />} />
+
+              <Route
+                path="/feedback"
+                element={
+                  <FeedbackView
+                    projects={projects}
+                    currentUser={currentUser}
+                    onSelectProject={handleSelectProject}
+                  />
+                }
+              />
+
               <Route
                 path="/benchmarking"
                 element={
@@ -252,8 +289,11 @@ function AppContent({
                 element={
                   <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
                     <DataImportView
-                      onImportSuccess={(newProjects) => {
+                      onImportSuccess={(newProjects, mode = 'append') => {
                         setProjects(prevProjects => {
+                          if (mode === 'replace') {
+                            return newProjects;
+                          }
                           const projectMap = new Map<string, InfrastructureProject>();
                           prevProjects.forEach(p => projectMap.set(p.projectCode || p.id, p));
                           newProjects.forEach(p => projectMap.set(p.projectCode || p.id, p));

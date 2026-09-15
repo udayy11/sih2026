@@ -13,7 +13,9 @@ import {
   Layers, 
   ArrowRight,
   Sparkles,
-  CheckCheck
+  CheckCheck,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface EarlyWarningsViewProps {
@@ -33,12 +35,29 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Record<string, boolean>>({});
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const alertsPerPage = 10;
 
   const filteredAlerts = alerts.filter(a => {
     if (activeTab !== 'ALL' && a.riskLevel !== activeTab) return false;
     if (selectedCategory !== 'ALL' && a.riskType !== selectedCategory) return false;
     return true;
   });
+
+  const totalPages = Math.ceil(filteredAlerts.length / alertsPerPage) || 1;
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safeCurrentPage - 1) * alertsPerPage;
+  const paginatedAlerts = filteredAlerts.slice(startIndex, startIndex + alertsPerPage);
+
+  const handleTabChange = (tab: 'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM') => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
 
   const criticalCount = alerts.filter(a => a.riskLevel === 'CRITICAL').length;
   const highCount = alerts.filter(a => a.riskLevel === 'HIGH').length;
@@ -73,7 +92,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
           <span className="text-slate-500">Filter Category:</span>
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
             className="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-slate-800 dark:text-slate-200 focus:outline-hidden"
           >
             <option value="ALL">All Warning Types</option>
@@ -89,7 +108,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* ALL */}
         <button
-          onClick={() => setActiveTab('ALL')}
+          onClick={() => handleTabChange('ALL')}
           className={`p-4 rounded-2xl border text-left transition-all ${
             activeTab === 'ALL'
               ? 'bg-slate-900 text-white border-slate-900 shadow-md'
@@ -108,7 +127,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
 
         {/* CRITICAL */}
         <button
-          onClick={() => setActiveTab('CRITICAL')}
+          onClick={() => handleTabChange('CRITICAL')}
           className={`group relative overflow-hidden p-4 rounded-2xl border text-left transition-all hover:shadow-xl hover:-translate-y-1 ${
             activeTab === 'CRITICAL'
               ? 'bg-rose-900 text-white border-rose-900 shadow-lg shadow-rose-900/20'
@@ -128,7 +147,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
 
         {/* HIGH */}
         <button
-          onClick={() => setActiveTab('HIGH')}
+          onClick={() => handleTabChange('HIGH')}
           className={`group relative overflow-hidden p-4 rounded-2xl border text-left transition-all hover:shadow-xl hover:-translate-y-1 ${
             activeTab === 'HIGH'
               ? 'bg-amber-900 text-white border-amber-900 shadow-lg shadow-amber-900/20'
@@ -148,7 +167,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
 
         {/* MEDIUM */}
         <button
-          onClick={() => setActiveTab('MEDIUM')}
+          onClick={() => handleTabChange('MEDIUM')}
           className={`group relative overflow-hidden p-4 rounded-2xl border text-left transition-all hover:shadow-xl hover:-translate-y-1 ${
             activeTab === 'MEDIUM'
               ? 'bg-yellow-900 text-white border-yellow-900 shadow-lg shadow-yellow-900/20'
@@ -181,7 +200,14 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredAlerts.map((alert) => {
+              {paginatedAlerts.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                    No active warnings found in this category.
+                  </td>
+                </tr>
+              ) : (
+                paginatedAlerts.map((alert) => {
                 const associatedProject = projects.find(p => p.id === alert.projectId);
                 const isAck = acknowledgedAlerts[alert.id] || alert.status === 'Acknowledged' || alert.status === 'Action Initiated';
 
@@ -317,7 +343,7 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                 </div>
 
                 {/* Recommended Action */}
-                <div className="bg-white/ backdrop-blur-sm border border-blue-100 shadow-[0_4px_20px_rgba(59,130,246,0.03)] rounded-xl p-5">
+                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-blue-100 dark:border-blue-900/40 shadow-[0_4px_20px_rgba(59,130,246,0.03)] rounded-xl p-5">
                   <h4 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
                     Prescriptive Recommendation
@@ -366,10 +392,69 @@ export const EarlyWarningsView: React.FC<EarlyWarningsViewProps> = ({
                     )}
                   </React.Fragment>
                 );
-              })}
+              })
+            )}
             </tbody>
           </table>
         </div>
+
+        {/* Early Warnings Pagination Footer (10 per page) */}
+        {filteredAlerts.length > 0 && (
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-xs text-slate-500 font-medium">
+              Showing <strong className="text-slate-900 dark:text-white font-mono">{startIndex + 1}</strong> to{' '}
+              <strong className="text-slate-900 dark:text-white font-mono">
+                {Math.min(startIndex + alertsPerPage, filteredAlerts.length)}
+              </strong>{' '}
+              of <strong className="text-slate-900 dark:text-white font-mono">{filteredAlerts.length}</strong> Alerts
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={safeCurrentPage === 1}
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-xs font-semibold flex items-center gap-1 text-slate-700 dark:text-slate-300"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
+
+              <div className="flex items-center gap-1 px-2">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum = i + 1;
+                  if (totalPages > 5 && safeCurrentPage > 3) {
+                    pageNum = safeCurrentPage - 3 + i;
+                    if (pageNum + 4 > totalPages) {
+                      pageNum = totalPages - 4 + i;
+                    }
+                  }
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-8 h-8 rounded-xl text-xs font-mono font-bold transition-all ${
+                        safeCurrentPage === pageNum
+                          ? 'bg-rose-600 text-white shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={safeCurrentPage === totalPages}
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-xs font-semibold flex items-center gap-1 text-slate-700 dark:text-slate-300"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

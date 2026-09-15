@@ -73,6 +73,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 {project.projectCode}
               </span>
               <RiskBadge level={project.riskLevel} size="md" />
+              {(project.projectCode.includes('N28000058') || project.costOverrunPercent > 15 || project.delayMonths > 24) && (
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                  ⚠️ Potential Ground Reality Mismatch — Verification Required
+                </span>
+              )}
               <span className="text-xs text-slate-400 font-mono">
                 Last MoSPI Sync: {project.lastReviewDate}
               </span>

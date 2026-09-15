@@ -5,6 +5,7 @@ import { GoogleGenAI } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import { authRouter } from './backend/auth.ts';
+import { feedbackRouter } from './backend/feedback.ts';
 import { getAllMospiProjects } from './src/data/projectParser.ts';
 import {
   findMatchingProjects,
@@ -28,6 +29,9 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Auth Routes
 app.use('/api/auth', authRouter);
+
+// Citizen Feedback & Issue Resolution Routes
+app.use('/api/feedback', feedbackRouter);
 
 // Initialize Gemini Client safely
 if (process.env.GEMINI_API_KEY) {

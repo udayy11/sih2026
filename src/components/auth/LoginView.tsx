@@ -5,7 +5,7 @@ export interface UserSession {
   id: string;
   username: string;
   name: string;
-  role: 'Admin' | 'Project Tracker' | 'Engineer';
+  role: 'Admin' | 'Project Tracker' | 'Engineer' | 'Citizen';
   department: string;
 }
 
@@ -13,7 +13,13 @@ interface LoginViewProps {
   onLogin: (user: UserSession) => void;
 }
 
-export const AUTHORIZED_USERS: Record<string, { pass: string; name: string; role: 'Admin' | 'Project Tracker' | 'Engineer'; department: string }> = {
+export const AUTHORIZED_USERS: Record<string, { pass: string; name: string; role: 'Admin' | 'Project Tracker' | 'Engineer' | 'Citizen'; department: string }> = {
+  citizen: {
+    pass: 'citizen',
+    name: 'Aarav Sharma',
+    role: 'Citizen',
+    department: 'Resident Welfare Association / Citizen Representative',
+  },
   uday: {
     pass: 'uday',
     name: 'uday',
@@ -138,13 +144,27 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
+                onClick={() => handleSelectAccount('citizen')}
+                className={`p-2.5 rounded-xl border text-left transition-all ${
+                  username === 'citizen' ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200'
+                }`}
+              >
+                <div className="text-xs font-bold flex items-center justify-between">
+                  <span>🏘️ citizen</span>
+                  <span className="text-[10px] font-mono opacity-80">RWA / Public</span>
+                </div>
+                <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: citizen</div>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => handleSelectAccount('uday')}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
                   username === 'uday' ? 'bg-blue-900 text-white border-blue-900 shadow-sm' : 'bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200'
                 }`}
               >
                 <div className="text-xs font-bold flex items-center justify-between">
-                  <span>👑 Uday</span>
+                  <span>🛡️ uday</span>
                   <span className="text-[10px] font-mono opacity-80">Admin</span>
                 </div>
                 <div className="text-[10px] opacity-80 mt-0.5 font-mono">pass: uday</div>
