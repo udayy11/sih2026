@@ -166,10 +166,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   return (
-    <div className="h-[calc(100vh-100px)] flex flex-col space-y-4">
+    <div className="space-y-6 pb-12">
       
       {/* Title Bar */}
-      <div className="flex items-end justify-between border-b border-slate-200 pb-2 shrink-0">
+      <div className="flex items-end justify-between border-b border-slate-200 pb-3 shrink-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">State-wise Infrastructure Projects</h1>
           <p className="text-sm text-slate-500 mt-1">As of July 2026</p>
@@ -185,12 +185,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* LEFT: Statistics Card (5 columns) */}
-        <div className="lg:col-span-5 flex flex-col gap-4 overflow-y-auto pr-1 custom-scrollbar">
+        <div className="lg:col-span-5 flex flex-col gap-4">
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col shrink-0 transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             
             <div className="bg-slate-900 px-6 py-5 flex flex-col justify-center border-b border-slate-800">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Selected Region</span>
@@ -223,7 +223,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     </div>
                     <span className="text-[11px] font-semibold uppercase tracking-wider">Completed</span>
                   </div>
-                  <div className="text-3xl font-bold font-mono text-slate-900">{completedProjects}</div>
+                  <div className="text-3xl font-bold font-mono text-slate-900">{completedDuringMonth}</div>
                 </div>
 
                 {/* KPI 3: Original Cost */}
@@ -315,7 +315,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* RIGHT: Interactive India Map (7 columns) */}
-        <div className="lg:col-span-7 flex flex-col h-full min-h-[400px] overflow-hidden">
+        <div className="lg:col-span-7 flex flex-col h-[560px] rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <IndiaMap 
             projects={projects} 
             selectedState={selectedState} 
