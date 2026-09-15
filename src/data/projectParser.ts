@@ -64,8 +64,9 @@ function mapMinistry(sector: string, agency: string): string {
 export function transformMospiRecord(raw: RawMospiProject, index: number): InfrastructureProject {
   const safeCostOriginal = Number(raw.costOriginal) || 1200;
   const rawAnticipated = Number(raw.costAnticipated) || Number(raw.costRevised);
+  const safeCumulativeExpenditure = Number(raw.cumulativeExpenditure) || Math.round(safeCostOriginal * 0.45);
   
-  // Calculate cost overrun
+  // Calculate cost overrun deterministically
   let costOverrunAmount = 0;
   let costOverrunPercent = 0;
   let revisedCost = safeCostOriginal;
@@ -74,33 +75,33 @@ export function transformMospiRecord(raw: RawMospiProject, index: number): Infra
     revisedCost = rawAnticipated;
     costOverrunAmount = Number((revisedCost - safeCostOriginal).toFixed(2));
     costOverrunPercent = Number(((costOverrunAmount / safeCostOriginal) * 100).toFixed(1));
-  } else {
-    // Sector-based realistic overrun derivation for unrevised MoSPI records
-    const seed = (index * 17 + safeCostOriginal) % 100;
-    if (seed < 25) {
-      costOverrunPercent = Number((15 + (seed % 35)).toFixed(1));
-      costOverrunAmount = Math.round(safeCostOriginal * (costOverrunPercent / 100));
-      revisedCost = safeCostOriginal + costOverrunAmount;
+  } else if (safeCumulativeExpenditure > safeCostOriginal) {
+    revisedCost = safeCumulativeExpenditure;
+    costOverrunAmount = Number((revisedCost - safeCostOriginal).toFixed(2));
+    costOverrunPercent = Number(((costOverrunAmount / safeCostOriginal) * 100).toFixed(1));
+  }
+
+  // Calculate delay months strictly from real dates
+  const origCompDate = raw.originalCompletionDate || '2025-06-30';
+  const revCompDate = raw.revisedCompletionDate || origCompDate;
+  
+  let delayMonths = calculateDelayMonths(origCompDate, revCompDate);
+  if (delayMonths === 0 && origCompDate) {
+    // Check if original date has elapsed relative to current date (July 2026)
+    try {
+      const orig = new Date(parseDateToISO(origCompDate));
+      const now = new Date('2026-07-01');
+      if (now.getTime() > orig.getTime()) {
+        const diffMs = now.getTime() - orig.getTime();
+        delayMonths = Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24 * 30.44)));
+      }
+    } catch {
+      delayMonths = 0;
     }
   }
 
-  const safeCumulativeExpenditure = Number(raw.cumulativeExpenditure) || Math.round(revisedCost * 0.55);
-  const safePhysicalProgress = Number(raw.physicalProgress) || Math.max(10, Math.min(95, Math.round(40 + (index % 45))));
-  
-  // Calculate delay months
-  let delayMonths = calculateDelayMonths(
-    raw.originalCompletionDate || '2025-03-31', 
-    raw.revisedCompletionDate || '2027-06-30'
-  );
-  if (delayMonths === 0) {
-    // Derive delay months based on sector & cost scale
-    const delaySeed = (index * 23 + Math.floor(safeCostOriginal)) % 100;
-    if (delaySeed < 40) {
-      delayMonths = 12 + (delaySeed % 28); // 12 to 39 months delay
-    } else if (delaySeed < 70) {
-      delayMonths = 6 + (delaySeed % 12);  // 6 to 17 months delay
-    }
-  }
+  // Safe physical progress
+  const safePhysicalProgress = Math.min(100, Math.max(0, Number(raw.physicalProgress) || 0));
 
   const financialProgress = revisedCost > 0 ? Math.min(100, Number(((safeCumulativeExpenditure / revisedCost) * 100).toFixed(1))) : safePhysicalProgress;
   const expenditureRatio = financialProgress;
@@ -108,9 +109,6 @@ export function transformMospiRecord(raw: RawMospiProject, index: number): Infra
   const progressEfficiencyIndex = expenditureRatio > 0 ? Number((safePhysicalProgress / expenditureRatio).toFixed(2)) : 1;
   
   const approvalDate = raw.dateOfApproval || '2022-01-01';
-  const origCompDate = raw.originalCompletionDate || '2025-06-30';
-  const revCompDate = raw.revisedCompletionDate || origCompDate;
-
   const originalDurationMonths = calculateDelayMonths(approvalDate, origCompDate) || 36;
   const revisedDurationMonths = originalDurationMonths + delayMonths;
   const delayPercent = Number(((delayMonths / originalDurationMonths) * 100).toFixed(1));
@@ -138,7 +136,11 @@ export function transformMospiRecord(raw: RawMospiProject, index: number): Infra
   let riskLevel: RiskLevel = 'LOW';
   let status: ProjectStatus = 'On Schedule';
 
-  if (overallRiskScore >= 72 || delayMonths >= 24 || costOverrunPercent >= 30) {
+  if (safePhysicalProgress >= 100) {
+    riskLevel = 'LOW';
+    status = 'Completed';
+    overallRiskScore = 12;
+  } else if (overallRiskScore >= 72 || delayMonths >= 24 || costOverrunPercent >= 30) {
     riskLevel = 'CRITICAL';
     status = 'Critical Delayed';
     overallRiskScore = Math.max(75, overallRiskScore);

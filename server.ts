@@ -53,47 +53,301 @@ function getGeminiClient(): GoogleGenAI | null {
   return ai;
 }
 
+// Candidate models with automatic fallbacks for Groq and Gemini
+function getGroqCandidateModels(): string[] {
+  const preferred = process.env.GROQ_MODEL || process.env.AI_MODEL || 'openai/gpt-oss-120b';
+  const candidates = [
+    preferred,
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3.8-27b',
+    'qwen/qwen3.6-27b',
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'llama3-70b-8192',
+    'llama3-8b-8192',
+    'deepseek-r1-distill-llama-70b',
+  ];
+  return Array.from(new Set(candidates));
+}
+
+const GEMINI_CANDIDATE_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-3.7-flash',
+];
+
+// Helper function to call Groq with automatic model fallback
+async function callGroq(messages: { role: string; content: string }[], temperature = 0.2): Promise<{ text: string; model: string }> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('GROQ_API_KEY is not configured in .env');
+
+  const models = getGroqCandidateModels();
+  let lastError: any = null;
+
+  for (const model of models) {
+    try {
+      console.log(`[Groq AI] Sending prompt to model: ${model}...`);
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'User-Agent': 'PAIMANA-AI/1.0',
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature,
+        }),
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (res.ok) {
+        const data: any = await res.json();
+        const text = data?.choices?.[0]?.message?.content || '';
+        if (text) {
+          console.log(`[Groq AI] Successfully received response from ${model}`);
+          return { text, model };
+        }
+      } else {
+        const errText = await res.text();
+        console.warn(`[Groq AI] Model ${model} returned ${res.status}: ${errText}`);
+        lastError = new Error(`Groq ${model} error ${res.status}: ${errText}`);
+        continue;
+      }
+    } catch (err: any) {
+      console.warn(`[Groq AI] Error calling ${model}:`, err.message);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('All candidate Groq models failed');
+}
+
+// Helper function to call Gemini with automatic model fallback
+async function callGemini(client: any, contents: any[]): Promise<{ text: string; model: string }> {
+  let lastError: any = null;
+  for (const model of GEMINI_CANDIDATE_MODELS) {
+    try {
+      const response = await client.models.generateContent({
+        model,
+        contents,
+      });
+      if (response && response.text) {
+        return { text: response.text, model };
+      }
+    } catch (err: any) {
+      lastError = err;
+      continue;
+    }
+  }
+  throw lastError || new Error('All candidate Gemini models failed');
+}
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     system: 'NirmaanX Decision Support Engine | Team InfraMinds',
     timestamp: new Date().toISOString(),
-    geminiEnabled: !!process.env.GEMINI_API_KEY,
+    geminiEnabled: !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
+    groqEnabled: !!process.env.GROQ_API_KEY,
+    availableProviders: [
+      ...(process.env.GROQ_API_KEY ? [`Groq (${process.env.GROQ_MODEL || 'openai/gpt-oss-120b'})`] : []),
+      ...(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY ? ['Gemini Flash (2.5 / 2.0 / 1.5)'] : []),
+      'NirmaanX Offline Rule Engine',
+    ],
   });
 });
 
-// 1. LLM Assistant API Endpoint (Trained with Project-Specific Intelligence)
+function convertPipeTablesToCards(content: string): string {
+  // Normalize double-pipe table boundaries and rows
+  let normalized = content.replace(/\|\s*\|/g, '|\n|');
+  normalized = normalized.replace(/(\|\s*[-:]+[-| :]*\|)\s*(\|)/g, '$1\n$2');
+
+  const lines = normalized.split('\n');
+  const newLines: string[] = [];
+  let tableLines: string[] = [];
+
+  const flushTable = (tbl: string[]) => {
+    if (tbl.length === 0) return [];
+    // Filter out separator lines (|---|---|)
+    const contentRows = tbl.filter((r) => !/^\s*\|[-:\s|]+\|\s*$/.test(r));
+    if (contentRows.length < 2) return tbl;
+
+    const parseRow = (r: string) => {
+      let parts = r.trim().split('|').map((c) => c.trim());
+      if (parts.length > 0 && parts[0] === '') parts = parts.slice(1);
+      if (parts.length > 0 && parts[parts.length - 1] === '') parts = parts.slice(0, -1);
+      return parts;
+    };
+
+    const headers = parseRow(contentRows[0]);
+    const cards: string[] = [];
+
+    for (let i = 1; i < contentRows.length; i++) {
+      const cells = parseRow(contentRows[i]);
+      const cardParts: string[] = [];
+      for (let idx = 0; idx < headers.length; idx++) {
+        const val = cells[idx] || '';
+        if (val) {
+          cardParts.push(`- **${headers[idx]}**: ${val}`);
+        }
+      }
+      if (cardParts.length > 0) {
+        cards.push(cardParts.join('\n'));
+      }
+    }
+
+    if (cards.length > 0) {
+      return ['\n' + cards.join('\n\n---\n\n') + '\n'];
+    }
+    return tbl;
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+      tableLines.push(trimmed);
+    } else {
+      if (tableLines.length > 0) {
+        newLines.push(...flushTable(tableLines));
+        tableLines = [];
+      }
+      newLines.push(line);
+    }
+  }
+
+  if (tableLines.length > 0) {
+    newLines.push(...flushTable(tableLines));
+  }
+
+  return newLines.join('\n');
+}
+
+function sanitizeAssistantResponse(raw: string): string {
+  if (!raw) return '';
+  let text = raw;
+
+  // Convert raw markdown pipe tables into human-readable executive cards
+  text = convertPipeTablesToCards(text);
+
+  // Strictly enforce risk scores out of 100 instead of /10
+  text = text.replace(/(\b[0-9](\.[0-9]+)?)\s*\/\s*10\b/g, (_m, score) => {
+    const val = Math.min(100, Math.max(0, Math.round(parseFloat(score) * 10)));
+    return `${val}/100`;
+  });
+  text = text.replace(/\b10(\.0+)?\s*\/\s*10\b/g, '100/100');
+  text = text.replace(/\(0\s*=\s*no risk,\s*10\s*=\s*maximum risk\)/gi, '(0 = low risk, 100 = critical risk)');
+  text = text.replace(/\b0\s*to\s*10\s*scale\b/gi, '0 to 100 scale');
+  text = text.replace(/\b0-10\s*scale\b/gi, '0-100 scale');
+  text = text.replace(/GET\s+\/projects\/[^\s\n]+/gi, '');
+  return text.trim();
+}
+
+// 1. LLM Assistant API Endpoint (Priority: Groq > Gemini > Offline)
 app.post('/api/ai/assistant', async (req, res) => {
   try {
     const { prompt, history, projectContext, activeProjectId, activeProject: clientActiveProject } = req.body;
-    const client = getGeminiClient();
+    const geminiClient = getGeminiClient();
+    const hasGroq = !!process.env.GROQ_API_KEY;
+    const hasGemini = !!geminiClient;
 
-    // Use active projects from context if provided by frontend, or fallback to server database
     const activeProjects = (projectContext && Array.isArray(projectContext.projects) && projectContext.projects.length > 0)
       ? projectContext.projects
       : SERVER_PROJECTS;
 
-    // Resolve active project if provided
     const activeProject = clientActiveProject ||
       (activeProjectId ? activeProjects.find((p: any) => p.id === activeProjectId || p.projectCode === activeProjectId) : null);
 
     const queryText = prompt || '';
     const matchResult = findMatchingProjects(queryText, activeProjects, activeProject);
 
-    // If Gemini client is active (API Key provided), prompt Gemini with the exact project ground truth
-    if (client) {
-      try {
-        let systemPrompt = '';
-        if (matchResult.bestMatch) {
-          systemPrompt = buildProjectGeminiPrompt(matchResult.bestMatch, queryText);
-        } else {
-          systemPrompt = `You are the NirmaanX AI Risk & Decision Assistant for the Ministry of Statistics and Programme Implementation (MoSPI), engineered by Team InfraMinds for the NirmaanX Infrastructure Project Predictive Monitoring & Early Warning Platform.
+    let systemPrompt = '';
+    if (matchResult.bestMatch) {
+      systemPrompt = buildProjectGeminiPrompt(matchResult.bestMatch, queryText);
+    } else {
+      const topRiskProjects = [...activeProjects]
+        .sort((a, b) => b.overallRiskScore - a.overallRiskScore)
+        .slice(0, 5);
+
+      const topProjectsList = topRiskProjects.map((p, i) => 
+        `Rank ${i + 1}: Project "${p.name}" (Code: ${p.projectCode})
+- Sector: ${p.sector} | Ministry: ${p.ministry}
+- Overall Risk Score: ${p.overallRiskScore}/100 (${p.riskLevel})
+- Schedule Delay: +${p.delayMonths} months
+- Cost Overrun: ₹${p.costOverrunAmount} Cr (+${p.costOverrunPercent}%)
+- Physical Progress: ${p.physicalProgress}% | Expenditure: ₹${p.expenditure} Cr (${p.financialProgress}%)
+- Primary Issues: ${p.detectedIssue || p.shortIssuesSummary}
+- Actionable Intervention: ${p.recommendedIntervention}`
+      ).join('\n\n');
+
+      systemPrompt = `You are the NirmaanX AI Risk & Decision Assistant for the Ministry of Statistics and Programme Implementation (MoSPI), Government of India, engineered by Team InfraMinds.
 Total Monitored Projects in Database: ${activeProjects.length}.
-Provide authoritative, structured, and factual answers regarding infrastructure project monitoring, cost escalations, schedule delays, and root causes.
-Do not invent fictional project metrics; be truthful and accurate.`;
+
+GROUND TRUTH - TOP 5 HIGHEST-RISK INFRASTRUCTURE PROJECTS:
+${topProjectsList}
+
+CRITICAL RULES FOR HUMAN-READABLE OUTPUT:
+1. NEVER USE MARKDOWN PIPE TABLES: Do NOT output pipe tables (| col1 | col2 |). They are unreadable in chat windows.
+2. ELEGANT EXECUTIVE BRIEFING FORMAT: Format every project evaluation as a clean, human-readable card with clear headings and bulleted metrics:
+   ### 🚨 Highest-Risk Project (Rank X): [Project Name]
+   - **Project Code**: [Code]
+   - **Sector & Ministry**: [Sector] | [Ministry]
+   - **Overall Risk Score**: 🔴 **[Score]/100 ([Level])**
+   - **Schedule Delay**: **+[Months] months** behind schedule
+   - **Cost Overrun**: **₹[Amount] Cr** (+[Percent]%)
+   - **Physical Progress**: **[Progress]%** executed vs **₹[Expenditure] Cr** spent ([FinancialProgress]%)
+
+   #### 🔍 Why it is at Risk:
+   - Specific bullet points explaining delay and cost drivers.
+
+   #### ⚠️ Primary Roadblocks:
+   - Hand-over delays, contractor issues, clearances.
+
+   #### 💡 Recommended MoSPI Action:
+   - Direct prescriptive intervention and responsible authority.
+3. RISK SCORE MUST ALWAYS BE OUT OF 100: State all risk scores strictly as "X/100" (e.g. 94/100). NEVER use a scale of 10.
+4. ONLY REAL PROJECTS: Cite exclusively real project names, codes, and numbers from ground truth.`;
+    }
+
+    // PRIORITY 1: GROQ (Llama 3.3 70B / 3.1 8B)
+    if (hasGroq) {
+      try {
+        const messages: { role: string; content: string }[] = [
+          { role: 'system', content: systemPrompt },
+        ];
+
+        if (Array.isArray(history) && history.length > 0) {
+          history.slice(-6).forEach((h: any) => {
+            const role = (h.sender === 'user' || h.role === 'user') ? 'user' : 'assistant';
+            const content = h.text || h.content || '';
+            if (content.trim()) messages.push({ role, content });
+          });
         }
 
+        messages.push({ role: 'user', content: queryText });
+
+        const result = await callGroq(messages);
+        if (result && result.text) {
+          return res.json({
+            reply: sanitizeAssistantResponse(result.text),
+            matchedProject: matchResult.bestMatch,
+            source: `Groq (${result.model})`,
+            provider: 'groq',
+            intent: matchResult.bestMatch ? 'PROJECT_SPECIFIC' : 'GENERAL',
+          });
+        }
+      } catch (groqError: any) {
+        console.warn('Groq API failed, falling back to Gemini:', groqError.message);
+      }
+    }
+
+    // PRIORITY 2: GEMINI (Flash 2.5 / 2.0 / 1.5)
+    if (hasGemini) {
+      try {
         const formattedHistory: any[] = [];
         if (Array.isArray(history) && history.length > 0) {
           history.slice(-6).forEach((h: any) => {
@@ -105,34 +359,34 @@ Do not invent fictional project metrics; be truthful and accurate.`;
           });
         }
 
-        const response = await client.models.generateContent({
-          model: 'gemini-3.7-flash',
-          contents: [
-            ...formattedHistory,
-            { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${queryText}` }] }
-          ],
-        });
+        const geminiContents = [
+          ...formattedHistory,
+          { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${queryText}` }] },
+        ];
 
-        if (response && response.text) {
+        const result = await callGemini(geminiClient, geminiContents);
+        if (result && result.text) {
           return res.json({
-            reply: response.text,
+            reply: sanitizeAssistantResponse(result.text),
             matchedProject: matchResult.bestMatch,
-            source: 'Gemini 3.7 Flash Model (Grounded in MoSPI OCMS)',
+            source: `Google Gemini (${result.model})`,
+            provider: 'gemini',
             intent: matchResult.bestMatch ? 'PROJECT_SPECIFIC' : 'GENERAL',
           });
         }
       } catch (geminiError: any) {
-        console.warn('Gemini API call failed, activating NirmaanX Project Intelligence Engine:', geminiError.message);
+        console.warn('Gemini API call failed, falling back to Offline Engine:', geminiError.message);
       }
     }
 
-    // High-precision Project Intelligence Engine (runs offline or when Gemini API is unconfigured/fails)
+    // PRIORITY 3: OFFLINE PROJECT INTELLIGENCE ENGINE
     const engineResult = generateProjectIntelligenceResponse(queryText, activeProjects, activeProject);
 
     return res.json({
       reply: engineResult.reply,
       matchedProject: engineResult.matchedProject,
-      source: engineResult.source,
+      source: `${engineResult.source} (Offline Engine)`,
+      provider: 'offline',
       intent: engineResult.intent,
     });
   } catch (error: any) {
@@ -144,13 +398,14 @@ Do not invent fictional project metrics; be truthful and accurate.`;
   }
 });
 
-// 2. AI Risk Explanation & Deep Dive Endpoint
+// 2. AI Risk Explanation & Deep Dive Endpoint (Priority: Groq > Gemini > Offline)
 app.post('/api/ai/explain', async (req, res) => {
   try {
     const { project } = req.body;
-    const client = getGeminiClient();
+    const geminiClient = getGeminiClient();
+    const hasGroq = !!process.env.GROQ_API_KEY;
 
-    if (client && project) {
+    if (project) {
       const prompt = `As an expert infrastructure risk analyst, provide an explainable AI diagnostic for the following infrastructure project:
 Project: ${project.name} (${project.projectCode})
 Sector: ${project.sector}, Ministry: ${project.ministry}
@@ -164,21 +419,47 @@ Provide:
 2. Breakdown of the 4 Risk Factors: Schedule Risk, Cost Risk, Progress Risk, Expenditure-Progress Risk.
 3. Actionable Government Intervention Plan`;
 
-      const response = await client.models.generateContent({
-        model: 'gemini-3.7-flash',
-        contents: prompt,
-      });
+      // 1. Try Groq
+      if (hasGroq) {
+        try {
+          const result = await callGroq([
+            { role: 'system', content: 'You are an expert infrastructure risk diagnostic AI for MoSPI.' },
+            { role: 'user', content: prompt },
+          ]);
+          if (result && result.text) {
+            return res.json({
+              explanation: result.text,
+              source: `Groq (${result.model})`,
+              provider: 'groq',
+            });
+          }
+        } catch (err: any) {
+          console.warn('Groq explain call failed, trying Gemini:', err.message);
+        }
+      }
 
-      return res.json({
-        explanation: response.text,
-        source: 'Gemini 3.7 Flash',
-      });
+      // 2. Try Gemini
+      if (geminiClient) {
+        try {
+          const result = await callGemini(geminiClient, [{ parts: [{ text: prompt }] }]);
+          if (result && result.text) {
+            return res.json({
+              explanation: result.text,
+              source: `Google Gemini (${result.model})`,
+              provider: 'gemini',
+            });
+          }
+        } catch (err: any) {
+          console.warn('Gemini explain call failed, trying fallback:', err.message);
+        }
+      }
     }
 
-    // Heuristic fallback
+    // 3. Heuristic fallback
     return res.json({
       explanation: `**Why is ${project?.name || 'this project'} at ${project?.riskLevel || 'HIGH'} risk?**\n\n- **Physical Progress Lag**: Executed physical progress (${project?.physicalProgress}%) is trailing planned schedule (${project?.plannedPhysicalProgress}%).\n- **Cost-Progress Burn Divergence**: Expenditure stands at ${project?.financialProgress}%, outpacing physical output delivery.\n- **Clearance Friction**: Land possession (${project?.landAcquiredPercent}%) and forest statutory approval status (${project?.forestClearance}) remain key bottlenecks.`,
-      source: 'NirmaanX Rule-Based Engine',
+      source: 'NirmaanX Rule-Based Engine (Offline)',
+      provider: 'offline',
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

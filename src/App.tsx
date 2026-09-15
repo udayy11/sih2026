@@ -252,7 +252,14 @@ function AppContent({
                 element={
                   <RoleGuard userRole={currentUser.role} allowedRoles={['Admin']}>
                     <DataImportView
-                      onImportSuccess={(newProjects) => setProjects(newProjects)}
+                      onImportSuccess={(newProjects) => {
+                        setProjects(prevProjects => {
+                          const projectMap = new Map<string, InfrastructureProject>();
+                          prevProjects.forEach(p => projectMap.set(p.projectCode || p.id, p));
+                          newProjects.forEach(p => projectMap.set(p.projectCode || p.id, p));
+                          return Array.from(projectMap.values());
+                        });
+                      }}
                       onNavigate={handleNavigate}
                     />
                   </RoleGuard>

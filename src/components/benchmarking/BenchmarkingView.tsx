@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InfrastructureProject, BenchmarkComparison } from '../../types';
 import { MLEngine } from '../../utils/mlEngine';
 import { RiskBadge } from '../common/RiskBadge';
@@ -47,6 +47,12 @@ export const BenchmarkingView: React.FC<BenchmarkingViewProps> = ({
   const [activeProjectId, setActiveProjectId] = useState<string>(
     selectedProjectId || projects[0]?.id || 'PRJ-TRN-001'
   );
+
+  useEffect(() => {
+    if (selectedProjectId) {
+      setActiveProjectId(selectedProjectId);
+    }
+  }, [selectedProjectId]);
 
   const selectedProject = projects.find(p => p.id === activeProjectId) || projects[0];
 
