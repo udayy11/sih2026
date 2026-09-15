@@ -55,18 +55,16 @@ function getGeminiClient(): GoogleGenAI | null {
 
 // Candidate models with automatic fallbacks for Groq and Gemini
 function getGroqCandidateModels(): string[] {
-  const preferred = process.env.GROQ_MODEL || process.env.AI_MODEL || 'openai/gpt-oss-120b';
+  const preferred = process.env.GROQ_MODEL || process.env.AI_MODEL || 'llama-3.3-70b-versatile';
   const candidates = [
     preferred,
-    'openai/gpt-oss-120b',
-    'openai/gpt-oss-20b',
-    'qwen/qwen3.8-27b',
-    'qwen/qwen3.6-27b',
     'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
+    'mixtral-8x7b-32768',
+    'deepseek-r1-distill-llama-70b',
     'llama3-70b-8192',
     'llama3-8b-8192',
-    'deepseek-r1-distill-llama-70b',
+    'qwen-2.5-coder-32b',
   ];
   return Array.from(new Set(candidates));
 }
@@ -75,7 +73,7 @@ const GEMINI_CANDIDATE_MODELS = [
   'gemini-2.5-flash',
   'gemini-2.0-flash',
   'gemini-1.5-flash',
-  'gemini-3.7-flash',
+  'gemini-1.5-pro',
 ];
 
 // Helper function to call Groq with automatic model fallback
@@ -131,14 +129,17 @@ async function callGemini(client: any, contents: any[]): Promise<{ text: string;
   let lastError: any = null;
   for (const model of GEMINI_CANDIDATE_MODELS) {
     try {
+      console.log(`[Gemini AI] Attempting model: ${model}...`);
       const response = await client.models.generateContent({
         model,
         contents,
       });
       if (response && response.text) {
+        console.log(`[Gemini AI] Successfully received response from ${model}`);
         return { text: response.text, model };
       }
     } catch (err: any) {
+      console.warn(`[Gemini AI] Model ${model} failed:`, err?.message || err);
       lastError = err;
       continue;
     }
@@ -611,7 +612,7 @@ app.get('/api/quality/audit', (req, res) => {
   res.json({
     overallCompletenessScore: '98.6%',
     cufFieldHealth: 'EXCELLENT',
-    totalRecordsAudited: 3017,
+    totalRecordsAudited: SERVER_PROJECTS.length,
     anomalyCount: 42,
     auditTimestamp: new Date().toISOString()
   });

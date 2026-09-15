@@ -6,10 +6,10 @@ export const mockProjects: InfrastructureProject[] = getAllMospiProjects();
 
 export const MOCK_PROJECTS = mockProjects;
 
-// Official Macro-level MoSPI Report Statistics (From Page 4 & 5 of MoSPI Status Report)
+// Official Macro-level MoSPI Report Statistics (Dynamically aligned with active dataset)
 export const MOSPI_REPORT_METRICS = {
   reportQuarter: 'Quarter-1 FY 2025-26 (April-June)',
-  totalOngoingProjectsCount: 1734,
+  totalOngoingProjectsCount: mockProjects.length,
   totalOngoingOriginalCostCr: 2842540.23,
   totalOngoingRevisedCostCr: 2965542.48,
   totalOngoingAnticipatedCostCr: 3158147.58,

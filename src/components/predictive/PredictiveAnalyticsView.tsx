@@ -82,7 +82,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
   // Similarity ranking for search dropdown
   const displayedProjects = useMemo(() => {
     if (!searchQuery.trim()) {
-      return projects.slice(0, 10);
+      return projects;
     }
     const q = searchQuery.toLowerCase().trim();
     const terms = q.split(/\s+/);
@@ -114,7 +114,6 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
       })
       .filter(r => r.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 8)
       .map(r => r.project);
   }, [searchQuery, projects]);
 
@@ -140,9 +139,9 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
   }, [selectedProject]);
 
   // Benchmarks & Static Data from MLEngine
-  const modelComparison = MLEngine.getModelComparisonMetrics();
+  const modelComparison = MLEngine.getModelComparisonMetrics(selectedProject);
   const ablationData = MLEngine.getAblationMetrics();
-  const pdpData = MLEngine.getPartialDependencePlots();
+  const pdpData = MLEngine.getPartialDependencePlots(selectedProject);
   const deploymentSpecs = MLEngine.getDeploymentSpecs();
 
   // Generate S-Curve Data for Forecasting

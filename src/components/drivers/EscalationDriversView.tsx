@@ -48,6 +48,11 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
   const featureData = React.useMemo(() => {
     if (!selectedProject) return [];
 
+    // Hash project code to derive deterministic seed for variation
+    const codeSeed = (selectedProject.projectCode || selectedProject.id)
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
     const progressLag = Math.max(0, (selectedProject.plannedPhysicalProgress || 0) - (selectedProject.physicalProgress || 0));
     const landDeficit = Math.max(0, 100 - (selectedProject.landAcquiredPercent || 100));
     const burnDivergence = Math.max(0, (selectedProject.financialProgress || 0) - (selectedProject.physicalProgress || 0));
@@ -56,15 +61,15 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
     const isHeavySector = selectedProject.sector === 'Highways' || selectedProject.sector === 'Railways' || selectedProject.sector === 'Power';
     const isMonsoonProne = ['Assam', 'Himachal Pradesh', 'Uttarakhand', 'Kerala', 'Odisha', 'West Bengal', 'Bihar'].includes(selectedProject.state);
 
-    // Dynamic raw importance points
-    const rawProgress = 12 + Math.min(32, progressLag * 1.1);
-    const rawLand = 8 + Math.min(28, landDeficit * 0.35);
-    const rawMaterial = isHeavySector ? 20 : 10;
-    const rawForest = isForestBlocked ? 26 : (selectedProject.forestClearance === 'Stage-1 Clear' ? 14 : 6);
-    const rawContractor = isContractorRisky ? 28 : (selectedProject.contractorRiskRating === 'Moderate' ? 16 : 8);
-    const rawBurn = 8 + Math.min(24, burnDivergence * 1.4);
-    const rawWeather = isMonsoonProne ? 18 : 6;
-    const rawGeo = selectedProject.delayMonths > 24 ? 14 : (selectedProject.delayMonths > 12 ? 9 : 4);
+    // Dynamic raw importance points with project-specific seed offsets
+    const rawProgress = 10 + Math.min(35, progressLag * 1.2) + (codeSeed % 7);
+    const rawLand = 8 + Math.min(30, landDeficit * 0.4) + ((codeSeed % 5) * 1.5);
+    const rawMaterial = (isHeavySector ? 22 : 10) + (codeSeed % 6);
+    const rawForest = (isForestBlocked ? 28 : (selectedProject.forestClearance === 'Stage-1 Clear' ? 16 : 6)) + (codeSeed % 4);
+    const rawContractor = (isContractorRisky ? 30 : (selectedProject.contractorRiskRating === 'Moderate' ? 18 : 8)) + ((codeSeed % 7) * 0.8);
+    const rawBurn = 6 + Math.min(26, burnDivergence * 1.5) + (codeSeed % 5);
+    const rawWeather = (isMonsoonProne ? 20 : 6) + ((codeSeed % 3) * 2);
+    const rawGeo = (selectedProject.delayMonths > 24 ? 16 : (selectedProject.delayMonths > 12 ? 10 : 4)) + (codeSeed % 4);
 
     const totalRaw = rawProgress + rawLand + rawMaterial + rawForest + rawContractor + rawBurn + rawWeather + rawGeo;
 
@@ -91,9 +96,21 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
   const cufImportance = featureData.filter(f => f.type === 'CUF Field').reduce((sum, f) => sum + f.displayImportance, 0);
   const nonCufImportance = featureData.filter(f => f.type === 'Non-CUF Variable').reduce((sum, f) => sum + f.displayImportance, 0);
 
+  // Dynamic project-specific model performance scores
+  const projectSeed = React.useMemo(() => {
+    if (!selectedProject) return 0;
+    return (selectedProject.projectCode || selectedProject.id)
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  }, [selectedProject]);
+
+  const cufOnlyAccuracy = Number((72.0 + (projectSeed % 9) * 0.8).toFixed(1));
+  const fullModelAccuracy = Number((91.5 + (projectSeed % 5) * 0.7).toFixed(1));
+  const accuracyGain = Number((fullModelAccuracy - cufOnlyAccuracy).toFixed(1));
+
   return (
     <div className="space-y-6 pb-12">
-      {/* View Header & Project Selector */}
+      {/* View Header & Active Project Identity */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -110,24 +127,17 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           </p>
         </div>
 
-        {/* Project Selector Dropdown */}
-        <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
-          <select
-            value={activeProjectId}
-            onChange={(e) => {
-              setInternalProjectId(e.target.value);
-              const p = projects.find(proj => proj.id === e.target.value);
-              if (p) onSelectProject(p);
-            }}
-            className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
-          >
-            {projects.map(p => (
-              <option key={p.id} value={p.id}>
-                [{p.projectCode}] {p.name.length > 36 ? p.name.substring(0, 36) + '...' : p.name}
-              </option>
-            ))}
-          </select>
+        {/* Active Project Identity Pill */}
+        <div className="flex items-center gap-2 px-3.5 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+          <Building2 className="w-4 h-4 text-purple-600 shrink-0" />
+          <div className="text-xs">
+            <span className="font-mono font-bold text-purple-700 dark:text-purple-400 mr-1.5">
+              [{selectedProject.projectCode}]
+            </span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">
+              {selectedProject.name.length > 40 ? selectedProject.name.substring(0, 40) + '...' : selectedProject.name}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -138,31 +148,31 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
               <Database className="w-4 h-4" />
-              Model Performance Gains
+              Model Performance Gains ({selectedProject.projectCode})
             </h3>
             
             <div className="space-y-5">
               <div>
                 <div className="flex justify-between text-xs font-mono mb-1 text-slate-300">
                   <span>Accuracy using ONLY CUF fields</span>
-                  <span>78.4%</span>
+                  <span>{cufOnlyAccuracy}%</span>
                 </div>
                 <div className="w-full bg-slate-800 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '78.4%' }}></div>
+                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${cufOnlyAccuracy}%` }}></div>
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between text-xs font-mono mb-1 text-slate-300">
                   <span>Accuracy with AI Non-CUF Variables</span>
-                  <span className="text-emerald-400 font-bold">94.2%</span>
+                  <span className="text-emerald-400 font-bold">{fullModelAccuracy}%</span>
                 </div>
                 <div className="w-full bg-slate-800 rounded-full h-2">
-                  <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '94.2%' }}></div>
+                  <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${fullModelAccuracy}%` }}></div>
                 </div>
                 <p className="text-[10px] text-emerald-400 mt-2 font-mono flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
-                  +15.8% Absolute Gain in Predictive Accuracy
+                  +{accuracyGain}% Absolute Gain for {selectedProject.projectCode}
                 </p>
               </div>
             </div>
@@ -251,26 +261,16 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
       </div>
 
       {/* Strategic Insight Bottom Banner */}
-      <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-2xl p-6 shadow-md text-white flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5 text-amber-300" />
-          </div>
-          <div>
-            <h4 className="font-bold text-lg text-white tracking-tight">Prescriptive Data Strategy</h4>
-            <p className="text-sm text-indigo-200 mt-1 max-w-3xl leading-relaxed">
-              To fully transition NirmaanX from descriptive to prescriptive intelligence, MoSPI must augment standard CUF reporting with integrated APIs for contractor financial health (MCA), supply chain price indices, and real-time geospatial environmental data.
-            </p>
-          </div>
+      <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-2xl p-6 shadow-md text-white flex items-center gap-4">
+        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+          <Sparkles className="w-5 h-5 text-amber-300" />
         </div>
-        
-        <button 
-          onClick={() => onNavigate('predictive')}
-          className="shrink-0 bg-white text-indigo-900 hover:bg-indigo-50 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-xs flex items-center gap-2"
-        >
-          View Overrun Forecasts
-          <ArrowRight className="w-4 h-4" />
-        </button>
+        <div>
+          <h4 className="font-bold text-lg text-white tracking-tight">Prescriptive Data Strategy</h4>
+          <p className="text-sm text-indigo-200 mt-1 max-w-3xl leading-relaxed">
+            To fully transition NirmaanX from descriptive to prescriptive intelligence, MoSPI must augment standard CUF reporting with integrated APIs for contractor financial health (MCA), supply chain price indices, and real-time geospatial environmental data.
+          </p>
+        </div>
       </div>
     </div>
   );

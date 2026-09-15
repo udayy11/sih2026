@@ -237,14 +237,32 @@ export function transformMospiRecord(raw: RawMospiProject, index: number): Infra
     { id: `m4-${raw.projectCode}`, name: 'Testing, Pre-commissioning & Safety Audit', plannedDate: parseDateToISO(revCompDate), actualDate: safePhysicalProgress >= 98 ? parseDateToISO(revCompDate) : undefined, status: safePhysicalProgress >= 98 ? 'Completed' : (delayMonths > 0 ? 'Delayed' : 'Pending'), weight: 25 }
   ];
 
-  // Monthly progress mock curve
-  const monthlyProgressHistory: ProjectMonthlyProgress[] = [
-    { month: 'Oct 2025', plannedPhysical: Math.max(5, safePhysicalProgress - 12), actualPhysical: Math.max(3, safePhysicalProgress - 15), plannedFinancial: Math.max(5, financialProgress - 10), actualFinancial: Math.max(4, financialProgress - 12) },
-    { month: 'Nov 2025', plannedPhysical: Math.max(8, safePhysicalProgress - 9), actualPhysical: Math.max(5, safePhysicalProgress - 11), plannedFinancial: Math.max(8, financialProgress - 7), actualFinancial: Math.max(6, financialProgress - 9) },
-    { month: 'Dec 2025', plannedPhysical: Math.max(12, safePhysicalProgress - 6), actualPhysical: Math.max(8, safePhysicalProgress - 8), plannedFinancial: Math.max(11, financialProgress - 5), actualFinancial: Math.max(9, financialProgress - 6) },
-    { month: 'Jan 2026', plannedPhysical: Math.max(15, safePhysicalProgress - 3), actualPhysical: Math.max(10, safePhysicalProgress - 4), plannedFinancial: Math.max(14, financialProgress - 3), actualFinancial: Math.max(11, financialProgress - 3) },
-    { month: 'Feb 2026', plannedPhysical: Math.min(100, safePhysicalProgress + 2), actualPhysical: safePhysicalProgress, plannedFinancial: Math.min(100, financialProgress + 2), actualFinancial: financialProgress }
+  // Generate project-specific deterministic monthly history curve
+  const monthsList = [
+    { m: 'Jul 2025', frac: 0.2 },
+    { m: 'Sep 2025', frac: 0.4 },
+    { m: 'Nov 2025', frac: 0.6 },
+    { m: 'Jan 2026', frac: 0.8 },
+    { m: 'Mar 2026', frac: 0.9 },
+    { m: 'May 2026', frac: 0.95 },
+    { m: 'Jul 2026', frac: 1.0 }
   ];
+  const curveFactor = 0.85 + ((index % 6) * 0.08);
+  const monthlyProgressHistory: ProjectMonthlyProgress[] = monthsList.map((item) => {
+    const plannedPhysical = Number(Math.min(100, Math.round(Math.pow(item.frac, curveFactor) * (safePhysicalProgress + 12))).toFixed(1));
+    const actualPhysical = Number(Math.min(100, Math.round(item.frac * safePhysicalProgress)).toFixed(1));
+    const actualFinancial = Number(Math.min(100, Math.round(item.frac * financialProgress)).toFixed(1));
+
+    const plannedFinancial = Number(Math.min(100, Math.round(Math.pow(item.frac, curveFactor) * (financialProgress + 10))).toFixed(1));
+
+    return {
+      month: item.m,
+      plannedPhysical,
+      actualPhysical,
+      plannedFinancial,
+      actualFinancial
+    };
+  });
 
   return {
     id: `proj-${raw.projectCode}-${index}`,

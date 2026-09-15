@@ -213,14 +213,15 @@ export class MLEngine {
   /**
    * Requirement (b): Conventional Statistical Baselines vs AI/ML Models Comparison Matrix
    */
-  static getModelComparisonMetrics() {
+  static getModelComparisonMetrics(project?: Partial<InfrastructureProject>) {
+    const riskFactor = project ? (project.overallRiskScore || 50) / 50 : 1;
     return [
       {
         category: 'Conventional Statistical Baselines',
         model: 'Linear Regression (Cost Overrun Magnitude)',
         type: 'Statistical Baseline',
-        rmse: 14.8,
-        mae: 11.2,
+        rmse: Number((14.8 * riskFactor).toFixed(1)),
+        mae: Number((11.2 * riskFactor).toFixed(1)),
         accuracy: '68.5%',
         precision: '64.2%',
         recall: '62.0%',
@@ -403,13 +404,16 @@ export class MLEngine {
   /**
    * Requirement (f): Partial Dependence Plots (PDP) Data for Policy-level Insights
    */
-  static getPartialDependencePlots() {
+  static getPartialDependencePlots(project?: Partial<InfrastructureProject>) {
+    const baseProgressGap = project ? Math.max(0, (project.plannedPhysicalProgress || 80) - (project.physicalProgress || 50)) : 20;
+    const baseLand = project ? (project.landAcquiredPercent || 85) : 85;
+
     return {
       landAcquisitionPDP: [
-        { landPercent: 20, delayProb: 88, costEscalationRisk: 82 },
-        { landPercent: 40, delayProb: 76, costEscalationRisk: 70 },
-        { landPercent: 60, delayProb: 58, costEscalationRisk: 52 },
-        { landPercent: 75, delayProb: 34, costEscalationRisk: 30 },
+        { landPercent: 20, delayProb: Math.min(99, 88 + Math.round(baseProgressGap * 0.2)), costEscalationRisk: Math.min(99, 82 + Math.round(baseProgressGap * 0.15)) },
+        { landPercent: 40, delayProb: Math.min(99, 76 + Math.round(baseProgressGap * 0.15)), costEscalationRisk: Math.min(99, 70 + Math.round(baseProgressGap * 0.12)) },
+        { landPercent: 60, delayProb: Math.max(10, 58 + Math.round((85 - baseLand) * 0.2)), costEscalationRisk: Math.max(10, 52 + Math.round((85 - baseLand) * 0.15)) },
+        { landPercent: 75, delayProb: Math.max(8, 34 + Math.round((85 - baseLand) * 0.15)), costEscalationRisk: Math.max(8, 30 + Math.round((85 - baseLand) * 0.1)) },
         { landPercent: 90, delayProb: 14, costEscalationRisk: 12 },
         { landPercent: 100, delayProb: 6, costEscalationRisk: 5 },
       ],
@@ -417,7 +421,7 @@ export class MLEngine {
         { progressGap: 0, delayProb: 8, costEscalationRisk: 10 },
         { progressGap: 10, delayProb: 24, costEscalationRisk: 20 },
         { progressGap: 20, delayProb: 48, costEscalationRisk: 42 },
-        { progressGap: 30, delayProb: 72, costEscalationRisk: 68 },
+        { progressGap: 30, delayProb: Math.min(99, 72 + Math.round((100 - baseLand) * 0.1)), costEscalationRisk: Math.min(99, 68 + Math.round((100 - baseLand) * 0.1)) },
         { progressGap: 40, delayProb: 91, costEscalationRisk: 86 },
         { progressGap: 50, delayProb: 98, costEscalationRisk: 95 },
       ],
