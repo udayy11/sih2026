@@ -94,13 +94,13 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
   return (
     <div className="space-y-6 pb-12">
       {/* Top Header Mode Selector */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-900 flex items-center justify-center font-bold">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               MoSPI Official Reports & Decision Dossiers
             </h2>
             <p className="text-xs text-slate-500">
@@ -116,7 +116,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'MOSPI_DOCUMENT'
                 ? 'bg-blue-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'EXECUTIVE_DOSSIER'
                 ? 'bg-blue-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
           <div className="flex justify-end gap-2">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-300 transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition-all"
             >
               <Printer className="w-4 h-4" />
               <span>Print Dossier</span>
@@ -168,7 +168,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
           </div>
 
           {/* Report Document Sheet (Government Style) */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-300 shadow-md space-y-8 max-w-4xl mx-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-300 dark:border-slate-700 shadow-md space-y-8 max-w-4xl mx-auto">
             {/* Document Official Header */}
             <div className="border-b-2 border-slate-900 pb-6 text-center space-y-1">
               <div className="text-xs font-bold uppercase tracking-widest text-slate-500">Government of India</div>
@@ -185,23 +185,23 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
 
             {/* Section 1: Portfolio High-Level Snapshot */}
             <div className="space-y-3">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1">
                 1. Portfolio Financial & Schedule Health Snapshot
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-[11px] text-slate-500 font-medium block">Total Projects</span>
-                  <span className="text-xl font-bold font-mono text-slate-900">{projects.length}</span>
+                  <span className="text-xl font-bold font-mono text-slate-900 dark:text-white">{projects.length}</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-[11px] text-slate-500 font-medium block">Critical Risk Projects</span>
                   <span className="text-xl font-bold font-mono text-rose-700">{criticalProjects.length}</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-[11px] text-slate-500 font-medium block">Sanctioned Budget</span>
-                  <span className="text-xl font-bold font-mono text-slate-900">₹{(totalOriginalCost / 1000).toFixed(1)}k Cr</span>
+                  <span className="text-xl font-bold font-mono text-slate-900 dark:text-white">₹{(totalOriginalCost / 1000).toFixed(1)}k Cr</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-[11px] text-slate-500 font-medium block">Revised Forecast</span>
                   <span className="text-xl font-bold font-mono text-rose-700">₹{(totalRevisedCost / 1000).toFixed(1)}k Cr</span>
                 </div>
@@ -210,30 +210,30 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
 
             {/* Section 2: Critical Interventions Register */}
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1 flex items-center justify-between">
                 <span>2. Priority Projects Requiring Cabinet / PMG Interventions</span>
                 <span className="text-xs font-mono font-normal text-slate-500">{criticalProjects.length} Flagged</span>
               </h3>
 
               <div className="space-y-4">
                 {criticalProjects.slice(0, 8).map((p, idx) => (
-                  <div key={p.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
+                  <div key={p.id} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center font-mono text-xs font-bold">
                           {idx + 1}
                         </span>
                         <span className="font-mono text-xs font-bold text-blue-900">{p.projectCode}</span>
-                        <span className="font-bold text-slate-900 text-xs">{p.name}</span>
+                        <span className="font-bold text-slate-900 dark:text-white text-xs">{p.name}</span>
                       </div>
                       <RiskBadge level={p.riskLevel} size="sm" />
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono bg-white p-2.5 rounded-xl border border-slate-200">
-                      <div>Ministry: <strong className="text-slate-900">{p.ministry.replace('Ministry of ', '')}</strong></div>
-                      <div>Cost: <strong className="text-slate-900">₹{p.revisedCost.toLocaleString('en-IN')} Cr (+{p.costOverrunPercent}%)</strong></div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                      <div>Ministry: <strong className="text-slate-900 dark:text-white">{p.ministry.replace('Ministry of ', '')}</strong></div>
+                      <div>Cost: <strong className="text-slate-900 dark:text-white">₹{p.revisedCost.toLocaleString('en-IN')} Cr (+{p.costOverrunPercent}%)</strong></div>
                       <div>Delay: <strong className="text-rose-700">+{p.delayMonths} mos</strong></div>
-                      <div>Progress: <strong className="text-emerald-700">{p.physicalProgress}% Phys</strong> / <strong className="text-slate-800">{p.financialProgress}% Fin</strong></div>
+                      <div>Progress: <strong className="text-emerald-700">{p.physicalProgress}% Phys</strong> / <strong className="text-slate-800 dark:text-slate-200">{p.financialProgress}% Fin</strong></div>
                     </div>
 
                     <div className="text-xs space-y-1">
@@ -241,7 +241,7 @@ CONFIDENTIAL & OFFICIAL - PREPARED BY NIRMAANX PREDICTIVE DECISION SYSTEM (TEAM 
                         <span className="text-rose-600">Detected Bottleneck: </span>
                         {p.detectedIssue}
                       </div>
-                      <div className="text-slate-800 font-medium">
+                      <div className="text-slate-800 dark:text-slate-200 font-medium">
                         <span className="text-blue-900 font-bold">Action Directive: </span>
                         {p.recommendedIntervention}
                       </div>

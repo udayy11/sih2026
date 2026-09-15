@@ -106,30 +106,25 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white relative">
       {/* Background blur decoration */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-xl border border-slate-200 overflow-hidden z-10">
-        <div className="p-8 pb-6 border-b border-slate-100 bg-slate-900 text-white relative">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-10">
+        <div className="p-8 pb-6 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white relative">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500" />
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 via-blue-700 to-indigo-600 p-0.5 shadow-sm flex items-center justify-center">
-              <div className="w-full h-full bg-blue-900 rounded-[10px] flex items-center justify-center">
-                <Layers className="w-5 h-5 text-amber-400" />
-              </div>
-            </div>
+            <img src="/logo.png" alt="NirmaanX Logo" className="h-16 md:h-20 object-contain mix-blend-multiply dark:mix-blend-normal" />
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight">Nirmaan<span className="text-blue-400">X</span></h1>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mt-0.5">Team InfraMinds • MoSPI Access Control Gateway</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">Team InfraMinds • MoSPI Access Control Gateway</p>
             </div>
           </div>
           
           <h2 className="text-2xl font-bold tracking-tight mb-1">Access Control Portal</h2>
-          <p className="text-xs text-slate-400">Role-Based Infrastructure Decision & Monitoring Platform</p>
+          <p className="text-xs text-slate-500">Role-Based Infrastructure Decision & Monitoring Platform</p>
         </div>
 
         <div className="p-8 pt-6 space-y-6">
@@ -209,7 +204,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 ml-1">Username / ID</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Username / ID</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <UserIcon className="w-4 h-4" />
@@ -220,13 +215,13 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="e.g. uday, piyush, nikhil, lavanya"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 rounded-xl text-xs text-slate-800 placeholder-slate-400 transition-all outline-hidden font-mono"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-100 rounded-xl text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 transition-all outline-hidden font-mono"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 ml-1">Password</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <Lock className="w-4 h-4" />
@@ -237,7 +232,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 rounded-xl text-xs text-slate-800 placeholder-slate-400 transition-all outline-hidden font-mono"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-100 rounded-xl text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 transition-all outline-hidden font-mono"
                 />
               </div>
             </div>
@@ -258,10 +253,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
             </button>
           </form>
 
-          <div className="pt-4 border-t border-slate-100 flex items-start gap-2.5 bg-slate-50/50 p-3.5 rounded-xl text-[11px] text-slate-500 font-medium">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-start gap-2.5 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl text-[11px] text-slate-500 font-medium">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              Role-Based Access Control (RBAC) active for <span className="font-bold text-slate-700">MoSPI DIID Infrastructure Monitoring Platform</span>.
+              Role-Based Access Control (RBAC) active for <span className="font-bold text-slate-700 dark:text-slate-300">MoSPI DIID Infrastructure Monitoring Platform</span>.
             </div>
           </div>
         </div>

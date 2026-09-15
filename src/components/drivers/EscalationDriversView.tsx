@@ -60,7 +60,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* View Header & Project Selector */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
@@ -68,7 +68,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
             </span>
             <span className="text-xs text-slate-400 font-mono">SIH 2026 Problem Statement C</span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Cost Escalation Drivers & Variables
           </h2>
           <p className="text-sm text-slate-500 mt-0.5 max-w-3xl">
@@ -82,7 +82,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
           <select
             value={activeProjectId}
             onChange={(e) => setActiveProjectId(e.target.value)}
-            className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+            className="text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
           >
             {projects.map(p => (
               <option key={p.id} value={p.id}>
@@ -130,8 +130,8 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-blue-600" />
               Weight Distribution
             </h3>
@@ -153,15 +153,15 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
         </div>
 
         {/* Right Column: Driver Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs">
+          <div className="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <BrainCircuit className="w-5 h-5 text-amber-500" />
                 SHAP Feature Importance Analysis
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                Drivers actively causing cost & schedule variance on <span className="font-bold text-slate-700">{selectedProject.projectCode}</span>
+                Drivers actively causing cost & schedule variance on <span className="font-bold text-slate-700 dark:text-slate-300">{selectedProject.projectCode}</span>
               </p>
             </div>
             
@@ -215,7 +215,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
       {/* Strategic Insight Bottom Banner */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 shadow-md text-white flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full bg-white/ flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-amber-300" />
           </div>
           <div>
@@ -228,7 +228,7 @@ export const EscalationDriversView: React.FC<EscalationDriversViewProps> = ({
         
         <button 
           onClick={() => onNavigate('predictive')}
-          className="shrink-0 bg-white text-indigo-900 hover:bg-indigo-50 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-xs flex items-center gap-2"
+          className="shrink-0 bg-white dark:bg-slate-900 text-indigo-900 hover:bg-indigo-50 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-xs flex items-center gap-2"
         >
           View Overrun Forecasts
           <ArrowRight className="w-4 h-4" />

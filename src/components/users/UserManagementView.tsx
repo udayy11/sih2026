@@ -165,14 +165,14 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
       case 'Ministry Officer': return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'Project Officer':
       case 'Engineer': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
   };
 
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-200">
@@ -180,7 +180,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
             </span>
             <span className="text-xs text-slate-500 font-mono">Authorized Creator: uday (Admin) & piyush (Tracker)</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <Shield className="w-6 h-6 text-blue-700" />
             User Management & Authorized Engineers
           </h1>
@@ -192,7 +192,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs ${
             canAddUser 
               ? 'bg-blue-700 hover:bg-blue-800 text-white shadow-blue-900/20' 
-              : 'bg-slate-200 text-slate-500 cursor-not-allowed border border-slate-300'
+              : 'bg-slate-200 text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-700'
           }`}
           title={canAddUser ? 'Add new engineer account' : 'Only uday (Admin) & piyush (Tracker) can add new engineers'}
         >
@@ -218,7 +218,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
       )}
 
       {/* Search & Stats Bar */}
-      <div className="bg-white p-4 rounded-xl shadow-xs border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -226,26 +226,26 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
             placeholder="Search users by name, email, or department..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 transition-all"
           />
         </div>
         <div className="flex gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-600">
             <Users className="w-4 h-4 text-blue-600" />
-            <span className="font-bold text-slate-900">{users.length}</span> Total Registered Accounts
+            <span className="font-bold text-slate-900 dark:text-white">{users.length}</span> Total Registered Accounts
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600">
             <Key className="w-4 h-4 text-indigo-600" />
-            <span className="font-bold text-slate-900">4</span> RBAC Tiers Active
+            <span className="font-bold text-slate-900 dark:text-white">4</span> RBAC Tiers Active
           </div>
         </div>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
-            <thead className="text-slate-500 uppercase bg-slate-50 border-b border-slate-200 font-bold">
+            <thead className="text-slate-500 uppercase bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 font-bold">
               <tr>
                 <th className="px-6 py-3.5">User & Account Details</th>
                 <th className="px-6 py-3.5">Role & Permissions</th>
@@ -257,7 +257,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/60 transition-colors">
+                <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/80 dark:hover:bg-slate-800/60 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                       <span>{user.name}</span>
@@ -305,7 +305,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
       {/* ADD NEW ENGINEER MODAL (Only for Admin: uday & Tracker: piyush) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden">
             <div className="bg-slate-900 text-white p-6 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-blue-700 text-white flex items-center justify-center">
@@ -326,60 +326,60 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
 
             <form onSubmit={handleCreateEngineer} className="p-6 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Engineer Full Name *</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300">Engineer Full Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Ramesh Chandra"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Username / Login ID *</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300">Username / Login ID *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. ramesh"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden font-mono"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Password *</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300">Password *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. 1234"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden font-mono"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden font-mono"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Official Email</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300">Official Email</label>
                 <input
                   type="email"
                   placeholder="e.g. ramesh@nirmaanx.gov.in"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Role</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300">Role</label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden font-bold"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden font-bold"
                 >
                   <option value="Engineer">Engineer / Project Officer</option>
                   <option value="Ministry Officer">Ministry Liaison Officer</option>
@@ -387,21 +387,21 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Department / Engineering Division</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300">Department / Engineering Division</label>
                 <input
                   type="text"
                   placeholder="e.g. Geotechnical & Infrastructure Engineering"
                   value={newDept}
                   onChange={(e) => setNewDept(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold transition-all"
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 font-bold transition-all"
                 >
                   Cancel
                 </button>

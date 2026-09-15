@@ -139,7 +139,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
   return (
     <div className="space-y-6 pb-12">
       {/* View Header & Main Navigation Tabs */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-5">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -148,7 +148,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
               </span>
               <span className="text-xs text-slate-500 font-mono">Gradient Boosted Ensembles + SHAP + Survival Analysis</span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Predictive Intelligence & ML Evaluation Lab
             </h2>
             <p className="text-sm text-slate-500 mt-0.5 max-w-3xl">
@@ -233,7 +233,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             }`}
           >
             <BrainCircuit className="w-4 h-4" />
-            <span>1. Overrun Prediction Models (a, b)</span>
+            <span>1. Overrun Prediction Models</span>
           </button>
 
           <button
@@ -245,7 +245,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             }`}
           >
             <Scale className="w-4 h-4" />
-            <span>2. AI/ML vs Stats Comparison (Req b)</span>
+            <span>2. AI/ML vs Stats Comparison</span>
           </button>
 
           <button
@@ -257,7 +257,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             }`}
           >
             <Layers className="w-4 h-4" />
-            <span>3. Feature Ablation Study A/B/C (Req c)</span>
+            <span>3. Feature Ablation Study</span>
           </button>
 
           <button
@@ -269,7 +269,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             }`}
           >
             <TrendingUp className="w-4 h-4" />
-            <span>4. Partial Dependence PDP (Policy)</span>
+            <span>4. Partial Dependence PDP</span>
           </button>
 
           <button
@@ -281,7 +281,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             }`}
           >
             <Sliders className="w-4 h-4 text-amber-400" />
-            <span>5. Escalation Drivers & CUF/SHAP (Req d)</span>
+            <span>5. Escalation Drivers & CUF/SHAP</span>
           </button>
         </div>
       </div>
@@ -326,36 +326,37 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* MODEL 1: Cost Overrun Prediction Model */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 transition-all hover:shadow-2xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600 space-y-5">
+              <div className="absolute -top-24 -left-24 w-48 h-48 bg-gradient-to-br from-rose-500 to-pink-600 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+              <div className="relative z-10 flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 flex items-center justify-center font-bold group-hover:scale-110 transition-transform duration-300">
                     <DollarSign className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900">Cost Overrun Forecast Model</h3>
-                    <span className="text-[11px] text-slate-500 font-mono">Algorithm: LightGBM Regressor + SHAP</span>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Cost Overrun Forecast Model</h3>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Algorithm: LightGBM Regressor + SHAP</span>
                   </div>
                 </div>
 
-                <span className="text-xs font-mono font-bold bg-slate-100 px-2 py-1 rounded text-slate-700">
+                <span className="text-xs font-mono font-bold bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-700 dark:text-slate-300">
                   ROC-AUC: 0.96
                 </span>
               </div>
 
               {/* Model Numerical Output Cards */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-xs text-slate-500 block">Cost Overrun Probability</span>
                   <div className="flex items-baseline gap-1 mt-1 font-mono">
-                    <span className={`text-2xl font-bold ${costPrediction.probability > 70 ? 'text-rose-600' : 'text-slate-900'}`}>
+                    <span className={`text-2xl font-bold ${costPrediction.probability > 70 ? 'text-rose-600' : 'text-slate-900 dark:text-white'}`}>
                       {costPrediction.probability}%
                     </span>
                     <span className="text-xs text-slate-400">risk prob</span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-xs text-slate-500 block">Expected Cost Overrun</span>
                   <div className="flex items-baseline gap-1 mt-1 font-mono">
                     <span className="text-2xl font-bold text-rose-700">
@@ -387,7 +388,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                 </span>
                 <div className="space-y-1.5">
                   {costPrediction.drivers.map((driver, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs text-slate-700 border border-slate-100">
+                    <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
                       <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[10px] font-bold font-mono">
                         {idx + 1}
                       </span>
@@ -399,36 +400,37 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
             </div>
 
             {/* MODEL 2: Schedule Delay Overrun Model */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 transition-all hover:shadow-2xl hover:-translate-y-1 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600 space-y-5">
+              <div className="absolute -top-24 -left-24 w-48 h-48 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+              <div className="relative z-10 flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold group-hover:scale-110 transition-transform duration-300">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900">Time / Schedule Delay Model</h3>
-                    <span className="text-[11px] text-slate-500 font-mono">Algorithm: Gradient Boosting + Cox Survival</span>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Time / Schedule Delay Model</h3>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Algorithm: Gradient Boosting + Cox Survival</span>
                   </div>
                 </div>
 
-                <span className="text-xs font-mono font-bold bg-slate-100 px-2 py-1 rounded text-slate-700">
+                <span className="text-xs font-mono font-bold bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-700 dark:text-slate-300">
                   ROC-AUC: 0.95
                 </span>
               </div>
 
               {/* Numerical Delay Outputs */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-xs text-slate-500 block">Delay Overrun Probability</span>
                   <div className="flex items-baseline gap-1 mt-1 font-mono">
-                    <span className={`text-2xl font-bold ${delayPrediction.delayProbability > 70 ? 'text-amber-600' : 'text-slate-900'}`}>
+                    <span className={`text-2xl font-bold ${delayPrediction.delayProbability > 70 ? 'text-amber-600' : 'text-slate-900 dark:text-white'}`}>
                       {delayPrediction.delayProbability}%
                     </span>
                     <span className="text-xs text-slate-400">probability</span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   <span className="text-xs text-slate-500 block">Predicted Delay Duration</span>
                   <div className="flex items-baseline gap-1 mt-1 font-mono">
                     <span className="text-2xl font-bold text-amber-600">
@@ -460,7 +462,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                 </span>
                 <div className="space-y-1.5">
                   {delayPrediction.drivers.map((driver, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs text-slate-700 border border-slate-100">
+                    <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
                       <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] font-bold font-mono">
                         {idx + 1}
                       </span>
@@ -473,10 +475,10 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
           </div>
 
           {/* S-Curve Progress vs Burn Trajectory Chart */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
                   Project S-Curve: Physical Target vs Actual vs Financial Burn
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -554,10 +556,10 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
           </div>
 
           {/* Model Metrics Comparison Matrix Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs overflow-hidden">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Scale className="w-5 h-5 text-blue-700" />
                   Model Performance Benchmark Matrix
                 </h3>
@@ -572,7 +574,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
+                <thead className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700">
                   <tr>
                     <th className="p-3.5">Model Architecture</th>
                     <th className="p-3.5">Category</th>
@@ -585,26 +587,26 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                     <th className="p-3.5 text-right">Early Warning Lead</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
                   {modelComparison.map((m, idx) => {
                     const isChampion = m.status.includes('Champion') || m.status.includes('Deep');
                     return (
-                      <tr key={idx} className={`hover:bg-slate-50 transition-colors ${isChampion ? 'bg-blue-50/40 font-semibold' : ''}`}>
-                        <td className="p-3.5 text-slate-900 font-sans font-bold flex items-center gap-2">
+                      <tr key={idx} className={`hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800 transition-colors ${isChampion ? 'bg-blue-50/40 font-semibold' : ''}`}>
+                        <td className="p-3.5 text-slate-900 dark:text-white font-sans font-bold flex items-center gap-2">
                           {isChampion && <Award className="w-4 h-4 text-blue-700 shrink-0" />}
                           <span>{m.model}</span>
                         </td>
                         <td className="p-3.5 font-sans">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            m.category.includes('Baselines') ? 'bg-slate-100 text-slate-700' : 'bg-blue-100 text-blue-900'
+                            m.category.includes('Baselines') ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' : 'bg-blue-100 text-blue-900'
                           }`}>
                             {m.type}
                           </span>
                         </td>
                         <td className="p-3.5 text-right text-rose-700">{m.rmse}</td>
                         <td className="p-3.5 text-right text-rose-600">{m.mae}</td>
-                        <td className="p-3.5 text-right font-bold text-slate-900">{m.accuracy}</td>
-                        <td className="p-3.5 text-right text-slate-800">{m.f1Score}</td>
+                        <td className="p-3.5 text-right font-bold text-slate-900 dark:text-white">{m.accuracy}</td>
+                        <td className="p-3.5 text-right text-slate-800 dark:text-slate-200">{m.f1Score}</td>
                         <td className="p-3.5 text-right font-bold text-blue-800">{m.rocAuc}</td>
                         <td className="p-3.5 text-right text-emerald-700">{m.brierScore}</td>
                         <td className="p-3.5 text-right text-emerald-800 font-bold font-sans">{m.earlyWarningLeadDays}</td>
@@ -621,7 +623,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
       {/* TAB 3: FEATURE ABLATION STUDY (REQUIREMENT C) */}
       {activeTab === 'ablation' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200">
@@ -629,7 +631,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                 </span>
                 <span className="text-xs text-slate-500 font-mono">CUF Fields vs Derived Dynamics vs External Signals</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Feature Ablation Study: Quantifying Information Value
               </h3>
               <p className="text-xs text-slate-500 mt-1 max-w-3xl">
@@ -645,16 +647,16 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                     <span className="text-xs font-bold font-mono px-2.5 py-1 rounded" style={{ backgroundColor: `${model.color}20`, color: model.color }}>
                       {model.name.split(':')[0]}
                     </span>
-                    <span className="text-xs font-bold text-slate-700">ROC-AUC: {model.rocAuc}</span>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">ROC-AUC: {model.rocAuc}</span>
                   </div>
 
-                  <h4 className="font-bold text-slate-900 text-sm">{model.name.split(':')[1]}</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm">{model.name.split(':')[1]}</h4>
                   <p className="text-xs text-slate-600 leading-relaxed min-h-[48px]">{model.description}</p>
 
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 text-xs font-mono">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/60 text-xs font-mono">
                     <div>
                       <span className="text-slate-500 block text-[10px]">Accuracy</span>
-                      <span className="font-bold text-slate-900 text-base">{model.accuracy}%</span>
+                      <span className="font-bold text-slate-900 dark:text-white text-base">{model.accuracy}%</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block text-[10px]">MAPE Error</span>
@@ -667,15 +669,15 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
           </div>
 
           {/* Quantified Lift Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden p-6 space-y-4">
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs overflow-hidden p-6 space-y-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-500" />
               Quantified Ablation Performance Lift (A → B → C)
             </h3>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
+                <thead className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700">
                   <tr>
                     <th className="p-3">Performance Dimension</th>
                     <th className="p-3 text-right">Model A (CUF Only)</th>
@@ -685,12 +687,12 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                     <th className="p-3 text-right text-blue-700 font-bold">Total Lift (A→C)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
                   {ablationData.liftMetrics.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50">
-                      <td className="p-3 text-slate-900 font-sans font-semibold">{row.metric}</td>
+                    <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800">
+                      <td className="p-3 text-slate-900 dark:text-white font-sans font-semibold">{row.metric}</td>
                       <td className="p-3 text-right text-slate-600">{row.ModelA}</td>
-                      <td className="p-3 text-right text-slate-800">{row.ModelB}</td>
+                      <td className="p-3 text-right text-slate-800 dark:text-slate-200">{row.ModelB}</td>
                       <td className="p-3 text-right text-blue-700 font-bold">{row.liftB}</td>
                       <td className="p-3 text-right text-blue-900 font-bold">{row.ModelC}</td>
                       <td className="p-3 text-right text-blue-700 font-bold bg-blue-50">{row.liftC}</td>
@@ -706,9 +708,9 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
       {/* TAB 4: PARTIAL DEPENDENCE PLOTS (POLICY INSIGHTS) */}
       {activeTab === 'pdp' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-indigo-600" />
                 Partial Dependence Plots (PDP): Non-Linear Policy Curves
               </h3>
@@ -719,8 +721,8 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Land Acquisition PDP Chart */}
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Land Possession % vs Schedule Delay Risk
                 </h4>
                 <div className="h-60 w-full">
@@ -736,13 +738,13 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                   </ResponsiveContainer>
                 </div>
                 <p className="text-[11px] text-slate-600">
-                  <span className="font-bold text-slate-900">Key Policy Finding:</span> Projects with &lt;75% land acquisition at start exhibit non-linear delay risk spikes (+54% risk increment).
+                  <span className="font-bold text-slate-900 dark:text-white">Key Policy Finding:</span> Projects with &lt;75% land acquisition at start exhibit non-linear delay risk spikes (+54% risk increment).
                 </p>
               </div>
 
               {/* Progress Gap PDP Chart */}
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Physical Progress Deficit (%) vs Overrun Risk
                 </h4>
                 <div className="h-60 w-full">
@@ -758,7 +760,7 @@ export const PredictiveAnalyticsView: React.FC<PredictiveAnalyticsViewProps> = (
                   </ResponsiveContainer>
                 </div>
                 <p className="text-[11px] text-slate-600">
-                  <span className="font-bold text-slate-900">Critical Threshold:</span> Physical progress deficits exceeding 20% trigger rapid exponential cost inflation.
+                  <span className="font-bold text-slate-900 dark:text-white">Critical Threshold:</span> Physical progress deficits exceeding 20% trigger rapid exponential cost inflation.
                 </p>
               </div>
             </div>

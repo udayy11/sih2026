@@ -91,7 +91,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Title & Project Selector Bar */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
@@ -99,7 +99,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
             </span>
             <span className="text-xs text-slate-400 font-mono">Dynamic Decision-Support Simulation</span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             What-If Scenario Simulation & Risk Sensitivity
           </h2>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -113,7 +113,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           <select
             value={activeProjectId}
             onChange={(e) => setActiveProjectId(e.target.value)}
-            className="text-xs font-semibold bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+            className="text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3.5 py-2.5 max-w-sm focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
           >
             {projects.map(p => (
               <option key={p.id} value={p.id}>
@@ -128,15 +128,15 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: Interactive Simulation Sliders */}
-        <div className="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <Sliders className="w-5 h-5 text-blue-600" />
-              <h3 className="text-base font-bold text-slate-900">Policy Scenario Controls</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Policy Scenario Controls</h3>
             </div>
             <button
               onClick={handleReset}
-              className="text-xs text-slate-500 hover:text-slate-900 font-medium flex items-center gap-1"
+              className="text-xs text-slate-500 hover:text-slate-900 dark:text-white font-medium flex items-center gap-1"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -146,7 +146,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           {/* Slider 1: Progress Pace Change */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <label className="font-bold text-slate-700">Physical Progress Pace Delta</label>
+              <label className="font-bold text-slate-700 dark:text-slate-300">Physical Progress Pace Delta</label>
               <span className="font-mono font-bold text-blue-600">
                 {scenario.physicalProgressPaceDeltaPercent > 0 ? `+${scenario.physicalProgressPaceDeltaPercent}%` : `${scenario.physicalProgressPaceDeltaPercent}%`}
               </span>
@@ -170,7 +170,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           {/* Slider 2: Monthly Expenditure Delta */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <label className="font-bold text-slate-700">Monthly Expenditure Delta</label>
+              <label className="font-bold text-slate-700 dark:text-slate-300">Monthly Expenditure Delta</label>
               <span className="font-mono font-bold text-indigo-600">
                 {scenario.monthlyExpenditureDeltaPercent > 0 ? `+${scenario.monthlyExpenditureDeltaPercent}%` : `${scenario.monthlyExpenditureDeltaPercent}%`}
               </span>
@@ -194,7 +194,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           {/* Slider 3: Resource Availability */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <label className="font-bold text-slate-700">Machinery & Crew Capacity</label>
+              <label className="font-bold text-slate-700 dark:text-slate-300">Machinery & Crew Capacity</label>
               <span className="font-mono font-bold text-emerald-600">
                 {scenario.resourceAvailabilityPercent}%
               </span>
@@ -218,7 +218,7 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           {/* Slider 4: Extension Months */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <label className="font-bold text-slate-700">Schedule Extension Buffer</label>
+              <label className="font-bold text-slate-700 dark:text-slate-300">Schedule Extension Buffer</label>
               <span className="font-mono font-bold text-amber-600">
                 +{scenario.completionExtensionMonths} months
               </span>
@@ -240,10 +240,10 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           </div>
 
           {/* Toggles */}
-          <div className="pt-2 border-t border-slate-100 space-y-2">
-            <label className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors">
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <label className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 transition-colors">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-slate-900 block">Single-Window Fast-Track Clearance</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">Single-Window Fast-Track Clearance</span>
                 <span className="text-[11px] text-slate-500 block">Immediate resolution of forest & utility ROW</span>
               </div>
               <input
@@ -254,9 +254,9 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
               />
             </label>
 
-            <label className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors">
+            <label className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 transition-colors">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-slate-900 block">EPC Contractor Re-allocation / Subletting</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">EPC Contractor Re-allocation / Subletting</span>
                 <span className="text-[11px] text-slate-500 block">Inject secondary executing agencies for lagging packages</span>
               </div>
               <input
@@ -299,37 +299,41 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
             {/* Before vs After Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {/* Cost Overrun Risk */}
-              <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                <span className="text-[11px] text-slate-400 block">Cost Overrun Risk</span>
-                <div className="flex items-baseline gap-1 mt-1 font-mono">
-                  <span className="text-slate-400 text-sm">{selectedProject.costOverrunProbability}%</span>
-                  <span className="text-slate-500">→</span>
+              <div className="group relative overflow-hidden bg-slate-800/80 p-3 rounded-xl border border-slate-700 transition-all hover:-translate-y-1 hover:border-slate-50 dark:border-slate-8000 hover:shadow-lg hover:shadow-emerald-900/20">
+                <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-emerald-500/30 to-teal-600/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="relative z-10 text-[11px] text-slate-400 block group-hover:text-slate-300 transition-colors">Cost Overrun Risk</span>
+                <div className="relative z-10 flex items-baseline gap-1 mt-1 font-mono">
+                  <span className="text-slate-400 text-sm group-hover:text-slate-300 transition-colors">{selectedProject.costOverrunProbability}%</span>
+                  <span className="text-slate-500 group-hover:text-slate-400">→</span>
                   <span className="text-lg font-bold text-emerald-400">{simResult.simulatedCostRisk}%</span>
                 </div>
               </div>
 
               {/* Delay Risk */}
-              <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                <span className="text-[11px] text-slate-400 block">Delay Probability</span>
-                <div className="flex items-baseline gap-1 mt-1 font-mono">
-                  <span className="text-slate-400 text-sm">{selectedProject.delayProbability}%</span>
-                  <span className="text-slate-500">→</span>
+              <div className="group relative overflow-hidden bg-slate-800/80 p-3 rounded-xl border border-slate-700 transition-all hover:-translate-y-1 hover:border-slate-50 dark:border-slate-8000 hover:shadow-lg hover:shadow-emerald-900/20">
+                <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-emerald-500/30 to-teal-600/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="relative z-10 text-[11px] text-slate-400 block group-hover:text-slate-300 transition-colors">Delay Probability</span>
+                <div className="relative z-10 flex items-baseline gap-1 mt-1 font-mono">
+                  <span className="text-slate-400 text-sm group-hover:text-slate-300 transition-colors">{selectedProject.delayProbability}%</span>
+                  <span className="text-slate-500 group-hover:text-slate-400">→</span>
                   <span className="text-lg font-bold text-emerald-400">{simResult.simulatedDelayRisk}%</span>
                 </div>
               </div>
 
               {/* Projected Completion */}
-              <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                <span className="text-[11px] text-slate-400 block">Est Completion Date</span>
-                <div className="text-xs font-mono font-bold text-amber-300 mt-1 truncate">
+              <div className="group relative overflow-hidden bg-slate-800/80 p-3 rounded-xl border border-slate-700 transition-all hover:-translate-y-1 hover:border-slate-50 dark:border-slate-8000 hover:shadow-lg hover:shadow-amber-900/20">
+                <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-amber-500/30 to-orange-600/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="relative z-10 text-[11px] text-slate-400 block group-hover:text-slate-300 transition-colors">Est Completion Date</span>
+                <div className="relative z-10 text-xs font-mono font-bold text-amber-300 mt-1 truncate group-hover:text-amber-200 transition-colors">
                   {simResult.simulatedCompletionDate}
                 </div>
               </div>
 
               {/* Revised Budget */}
-              <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                <span className="text-[11px] text-slate-400 block">Simulated Final Cost</span>
-                <div className="text-sm font-mono font-bold text-white mt-1">
+              <div className="group relative overflow-hidden bg-slate-800/80 p-3 rounded-xl border border-slate-700 transition-all hover:-translate-y-1 hover:border-slate-50 dark:border-slate-8000 hover:shadow-lg hover:shadow-blue-900/20">
+                <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-blue-500/30 to-indigo-600/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="relative z-10 text-[11px] text-slate-400 block group-hover:text-slate-300 transition-colors">Simulated Final Cost</span>
+                <div className="relative z-10 text-sm font-mono font-bold text-white mt-1 group-hover:text-blue-100 transition-colors">
                   ₹{simResult.simulatedRevisedCost.toLocaleString()} Cr
                 </div>
               </div>
@@ -347,8 +351,8 @@ export const ScenarioAnalysisView: React.FC<ScenarioAnalysisViewProps> = ({
           </div>
 
           {/* Comparative Bar Visual */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
-            <h4 className="text-sm font-bold text-slate-900 mb-1">Before vs After Probability Comparison</h4>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-xs">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Before vs After Probability Comparison</h4>
             <p className="text-xs text-slate-500 mb-4">Visualizing risk reduction impact across key predictive indices</p>
 
             <div className="h-56 w-full">

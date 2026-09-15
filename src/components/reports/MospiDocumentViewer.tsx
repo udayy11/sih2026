@@ -102,7 +102,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Top Document Bar & Page Navigator */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-200 flex items-center gap-1">
@@ -111,18 +111,18 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             </span>
             <span className="text-xs text-slate-400 font-mono">1,734 Central Sector Projects</span>
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             Official Report Document & Executive Transmittal
           </h2>
         </div>
 
         {/* Page Switcher Toolbar */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
             <button
               onClick={handlePrevPage}
               disabled={currentIndex === 0}
-              className="p-1.5 rounded-lg hover:bg-white text-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              className="p-1.5 rounded-lg hover:bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
               title="Previous section"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -131,7 +131,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             <select
               value={currentPage}
               onChange={(e) => setCurrentPage(e.target.value)}
-              className="bg-transparent text-xs font-bold text-slate-800 px-2 py-1 focus:outline-hidden cursor-pointer"
+              className="bg-transparent text-xs font-bold text-slate-800 dark:text-slate-200 px-2 py-1 focus:outline-hidden cursor-pointer"
             >
               {pageList.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -143,7 +143,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             <button
               onClick={handleNextPage}
               disabled={currentIndex === pageList.length - 1}
-              className="p-1.5 rounded-lg hover:bg-white text-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              className="p-1.5 rounded-lg hover:bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
               title="Next section"
             >
               <ChevronRight className="w-4 h-4" />
@@ -152,7 +152,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-300 transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition-all"
           >
             <Printer className="w-4 h-4" />
             <span>Print Section</span>
@@ -169,7 +169,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition-all border ${
               currentPage === p.id
                 ? 'bg-blue-900 text-white border-blue-900 shadow-xs'
-                : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-900'
+                : 'bg-white dark:bg-slate-900 text-slate-600 border-slate-200 dark:border-slate-700 hover:border-blue-300 hover:text-blue-900'
             }`}
           >
             {p.label}
@@ -181,7 +181,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 1. COVER PAGE VIEW */}
       {/* ========================================================================= */}
       {currentPage === 'cover' && (
-        <div className="bg-white rounded-3xl p-8 sm:p-14 border-2 border-slate-900 shadow-xl max-w-5xl mx-auto space-y-10 relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-14 border-2 border-slate-900 shadow-xl max-w-5xl mx-auto space-y-10 relative overflow-hidden">
           {/* Subtle Government Emblem Watermark Pattern */}
           <div className="absolute inset-0 bg-radial from-blue-50/40 to-transparent pointer-events-none" />
 
@@ -190,7 +190,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             <div className="inline-block px-4 py-1.5 bg-slate-900 text-white text-xs sm:text-sm font-mono font-bold tracking-widest uppercase rounded-sm">
               OCMS • Online Computerized Monitoring System
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-800 uppercase tracking-wider pt-2">
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider pt-2">
               Government of India
             </h3>
             <h2 className="text-xl sm:text-3xl font-extrabold text-blue-950 uppercase tracking-tight">
@@ -206,7 +206,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             <div className="inline-block px-5 py-2 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs sm:text-sm">
               CENTRAL SECTOR INFRASTRUCTURE PROJECTS
             </div>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 uppercase tracking-tight leading-tight max-w-3xl mx-auto">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight leading-tight max-w-3xl mx-auto">
               IMPLEMENTATION STATUS REPORT COSTING RS. 150 CRORE & ABOVE
             </h1>
             <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200 max-w-lg mx-auto shadow-2xs">
@@ -217,7 +217,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
           </div>
 
           {/* Macro Overview Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 sm:p-8 bg-slate-50 rounded-2xl border border-slate-200">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 sm:p-8 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
             <div className="text-center">
               <span className="text-xs text-slate-500 font-bold uppercase block">Total Monitored</span>
               <span className="text-3xl font-black font-mono text-blue-900">1,734</span>
@@ -225,7 +225,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             </div>
             <div className="text-center">
               <span className="text-xs text-slate-500 font-bold uppercase block">Original Cost</span>
-              <span className="text-2xl font-black font-mono text-slate-800">₹28.43 L Cr</span>
+              <span className="text-2xl font-black font-mono text-slate-800 dark:text-slate-200">₹28.43 L Cr</span>
               <span className="text-xs text-slate-400 block mt-0.5">Sanctioned Outlay</span>
             </div>
             <div className="text-center">
@@ -242,15 +242,15 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
 
           {/* Classification Banner */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
               <strong className="text-blue-900 block text-base font-bold">619 Mega Projects</strong>
               <span className="text-slate-600 text-xs sm:text-sm">Costing ₹1,000 Cr and above (Total: ₹23.33 Lakh Cr)</span>
             </div>
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
               <strong className="text-blue-900 block text-base font-bold">1,115 Major Projects</strong>
               <span className="text-slate-600 text-xs sm:text-sm">Costing ₹150 Cr to ₹1,000 Cr (Total: ₹5.10 Lakh Cr)</span>
             </div>
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
               <strong className="text-emerald-900 block text-base font-bold">224 North-East Projects</strong>
               <span className="text-slate-600 text-xs sm:text-sm">Special priority corridor monitoring (₹2.13 Lakh Cr)</span>
             </div>
@@ -259,7 +259,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
           {/* Official Footer */}
           <div className="border-t-2 border-slate-900 pt-6 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-600 gap-4">
             <div className="space-y-1">
-              <div className="font-bold text-slate-900 text-base">Ministry of Statistics & Programme Implementation</div>
+              <div className="font-bold text-slate-900 dark:text-white text-base">Ministry of Statistics & Programme Implementation</div>
               <div className="font-mono text-xs text-slate-500">Website: www.mospi.gov.in • X: @GoIStats</div>
             </div>
             <button
@@ -277,25 +277,25 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 2. TABLE OF CONTENTS VIEW */}
       {/* ========================================================================= */}
       {currentPage === 'contents' && (
-        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-300 shadow-md max-w-5xl mx-auto space-y-8">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-300 dark:border-slate-700 shadow-md max-w-5xl mx-auto space-y-8">
           <div className="border-b-2 border-slate-900 pb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase">CONTENTS</h2>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase">CONTENTS</h2>
               <p className="text-sm text-slate-500 font-mono">Implementation Status Report - Q1 FY 2025-26</p>
             </div>
-            <span className="px-3.5 py-1.5 bg-slate-100 rounded-lg text-xs sm:text-sm font-mono font-bold text-slate-700">
+            <span className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs sm:text-sm font-mono font-bold text-slate-700 dark:text-slate-300">
               Official Page 2
             </span>
           </div>
 
-          <div className="space-y-4 divide-y divide-slate-100">
+          <div className="space-y-4 divide-y divide-slate-100 dark:divide-slate-800">
             {/* Synopsis Link */}
             <div 
               onClick={() => setCurrentPage('synopsis_letter')}
               className="pt-3 flex items-center justify-between group cursor-pointer hover:bg-blue-50/60 p-4 rounded-xl transition-colors"
             >
               <div>
-                <span className="font-bold text-base text-slate-900 group-hover:text-blue-900 flex items-center gap-2.5">
+                <span className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-900 flex items-center gap-2.5">
                   <FileText className="w-5 h-5 text-blue-700" />
                   Synopsis & Executive Transmittal Letter
                 </span>
@@ -319,7 +319,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
               className="pt-3 flex items-center justify-between group cursor-pointer hover:bg-blue-50/60 p-4 rounded-xl transition-colors"
             >
               <div>
-                <span className="font-bold text-base text-slate-900 group-hover:text-blue-900 flex items-center gap-2.5">
+                <span className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-900 flex items-center gap-2.5">
                   <Layers className="w-5 h-5 text-blue-700" />
                   Table:- 1. Overview of Ongoing Projects: Sector-wise Distribution
                 </span>
@@ -327,7 +327,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   Distribution across 18 Central Sectors (Roads, Railways, Petroleum, Power, Coal, Urban, Aviation)
                 </span>
               </div>
-              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-md">
+              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-md">
                 Pages 3 - 4
               </span>
             </div>
@@ -338,7 +338,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
               className="pt-3 flex items-center justify-between group cursor-pointer hover:bg-blue-50/60 p-4 rounded-xl transition-colors"
             >
               <div>
-                <span className="font-bold text-base text-slate-900 group-hover:text-blue-900 flex items-center gap-2.5">
+                <span className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-900 flex items-center gap-2.5">
                   <Building2 className="w-5 h-5 text-emerald-700" />
                   Table:- 2. Overview of Ongoing Projects: State-wise Distribution
                 </span>
@@ -346,7 +346,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   State/UT-wise breakdown of 33 States/UTs and Multi-State Corridors
                 </span>
               </div>
-              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-md">
+              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-md">
                 Pages 5 - 7
               </span>
             </div>
@@ -357,7 +357,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
               className="pt-3 flex items-center justify-between group cursor-pointer hover:bg-blue-50/60 p-4 rounded-xl transition-colors"
             >
               <div>
-                <span className="font-bold text-base text-slate-900 group-hover:text-blue-900 flex items-center gap-2.5">
+                <span className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-900 flex items-center gap-2.5">
                   <CheckCircle2 className="w-5 h-5 text-teal-700" />
                   Table:- 3. Project List: Completed during 1st Quarter (April-June), 2025-26
                 </span>
@@ -365,7 +365,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   116 Completed Projects costing ₹1,34,336.13 Crore
                 </span>
               </div>
-              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-md">
+              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-md">
                 Pages 8 - 21
               </span>
             </div>
@@ -376,7 +376,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
               className="pt-3 flex items-center justify-between group cursor-pointer hover:bg-blue-50/60 p-4 rounded-xl transition-colors"
             >
               <div>
-                <span className="font-bold text-base text-slate-900 group-hover:text-blue-900 flex items-center gap-2.5">
+                <span className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-900 flex items-center gap-2.5">
                   <BookOpen className="w-5 h-5 text-blue-700" />
                   Table:- 7. Project List: Ongoing Projects during 1st Quarter, 2025-26
                 </span>
@@ -384,7 +384,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   All 1,734 Ongoing Central Sector Projects costing ₹31,58,147.58 Crore
                 </span>
               </div>
-              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-md">
+              <span className="font-mono text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-md">
                 Pages 55 - 252
               </span>
             </div>
@@ -396,7 +396,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 3. SYNOPSIS & EXECUTIVE LETTER VIEW (Pages 1-2) */}
       {/* ========================================================================= */}
       {currentPage === 'synopsis_letter' && (
-        <div className="bg-white rounded-3xl p-8 sm:p-14 border border-slate-300 shadow-md max-w-5xl mx-auto space-y-9">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-14 border border-slate-300 dark:border-slate-700 shadow-md max-w-5xl mx-auto space-y-9">
           {/* Letter Head */}
           <div className="border-b-2 border-slate-900 pb-6 space-y-3">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -419,18 +419,18 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
           </div>
 
           {/* Letter Text Content */}
-          <div className="space-y-6 text-base sm:text-lg text-slate-800 leading-relaxed">
-            <h2 className="text-lg sm:text-2xl font-bold text-slate-900 border-b border-slate-200 pb-3">
+          <div className="space-y-6 text-base sm:text-lg text-slate-800 dark:text-slate-200 leading-relaxed">
+            <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-3">
               SYNOPSIS: CENTRAL SECTOR INFRASTRUCTURE PROJECTS (COSTING ₹150 CRORE & ABOVE)
             </h2>
 
             <p className="leading-relaxed">
-              <strong className="text-slate-900">1. Background & Scope:</strong> The Ministry of Statistics and Programme Implementation (MoSPI) monitors all Central Sector Infrastructure Projects costing ₹150 crore and above on a monthly/quarterly basis through the Online Computerized Monitoring System (OCMS). The objective is to provide early signals of schedule slippage, cost overruns, and statutory bottlenecks to the Cabinet Secretariat, Project Monitoring Group (PMG), and concerned administrative ministries.
+              <strong className="text-slate-900 dark:text-white">1. Background & Scope:</strong> The Ministry of Statistics and Programme Implementation (MoSPI) monitors all Central Sector Infrastructure Projects costing ₹150 crore and above on a monthly/quarterly basis through the Online Computerized Monitoring System (OCMS). The objective is to provide early signals of schedule slippage, cost overruns, and statutory bottlenecks to the Cabinet Secretariat, Project Monitoring Group (PMG), and concerned administrative ministries.
             </p>
 
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 text-sm sm:text-base space-y-3">
+            <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-sm sm:text-base space-y-3">
               <strong className="text-blue-950 text-base sm:text-lg block">Macro Portfolio Highlights for Quarter-1 FY 2025-26:</strong>
-              <ul className="list-disc pl-6 space-y-2.5 text-slate-700">
+              <ul className="list-disc pl-6 space-y-2.5 text-slate-700 dark:text-slate-300">
                 <li><strong>Total Ongoing Projects:</strong> As on 30th June 2025, a total of <strong>1,734 central sector infrastructure projects</strong> costing ₹150 crore and above were monitored.</li>
                 <li><strong>Sanctioned vs Anticipated Cost:</strong> Total original sanctioned cost of ₹28,42,540.23 Crore has escalated to an anticipated completion cost of <strong>₹31,58,147.58 Crore</strong>, reflecting an overall cost overrun of <strong>₹3,15,607.35 Crore (+11.10%)</strong>.</li>
                 <li><strong>Cumulative Capital Expenditure:</strong> Expenditure incurred till the end of Q1 2025-26 stands at <strong>₹17,74,657.72 Crore</strong>, which represents <strong>56.19%</strong> of the anticipated cost.</li>
@@ -441,37 +441,37 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
             </div>
 
             <p className="leading-relaxed">
-              <strong className="text-slate-900">2. Systemic Reasons for Delays and Overruns:</strong> The status reports submitted by project implementing authorities highlight several recurring impediments:
+              <strong className="text-slate-900 dark:text-white">2. Systemic Reasons for Delays and Overruns:</strong> The status reports submitted by project implementing authorities highlight several recurring impediments:
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
               <div className="p-4 bg-rose-50 rounded-xl border border-rose-200">
                 <strong className="text-rose-900 block font-bold text-base">Land Acquisition & Right of Way (RoW)</strong>
-                <span className="text-slate-700 mt-1 block">Protracted compensation disputes, land demarcation delays by state revenue authorities, and court litigations.</span>
+                <span className="text-slate-700 dark:text-slate-300 mt-1 block">Protracted compensation disputes, land demarcation delays by state revenue authorities, and court litigations.</span>
               </div>
               <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                 <strong className="text-amber-900 block font-bold text-base">Statutory & Environmental Clearances</strong>
-                <span className="text-slate-700 mt-1 block">Stage-II forest diversion approvals, wildlife sanctuary eco-sensitive clearances, and coastal regulation clearances.</span>
+                <span className="text-slate-700 dark:text-slate-300 mt-1 block">Stage-II forest diversion approvals, wildlife sanctuary eco-sensitive clearances, and coastal regulation clearances.</span>
               </div>
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <strong className="text-blue-900 block font-bold text-base">Utility Shifting & Tree Felling</strong>
-                <span className="text-slate-700 mt-1 block">Translocation of high-tension power transmission lines, municipal water mains, petroleum pipelines, and tree enumeration.</span>
+                <span className="text-slate-700 dark:text-slate-300 mt-1 block">Translocation of high-tension power transmission lines, municipal water mains, petroleum pipelines, and tree enumeration.</span>
               </div>
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <strong className="text-blue-900 block font-bold text-base">Geological Anomalies & Terrain Challenges</strong>
-                <span className="text-slate-700 mt-1 block">Sub-surface tunneling faults in Himalayan belt, extended monsoon inundation, and contractor equipment mobilization.</span>
+                <span className="text-slate-700 dark:text-slate-300 mt-1 block">Sub-surface tunneling faults in Himalayan belt, extended monsoon inundation, and contractor equipment mobilization.</span>
               </div>
             </div>
 
             <p className="leading-relaxed">
-              <strong className="text-slate-900">3. Conclusion & Recommendations:</strong> It is imperative that administrative ministries institutionalize predictive analytics and proactive inter-ministerial coordination via PMG/Pragati mechanisms to resolve state-level RoW disputes and expedite final-stage clearances for the 765 projects in the 80-100% completion bracket.
+              <strong className="text-slate-900 dark:text-white">3. Conclusion & Recommendations:</strong> It is imperative that administrative ministries institutionalize predictive analytics and proactive inter-ministerial coordination via PMG/Pragati mechanisms to resolve state-level RoW disputes and expedite final-stage clearances for the 765 projects in the 80-100% completion bracket.
             </p>
           </div>
 
           {/* Sign-off */}
           <div className="border-t-2 border-slate-900 pt-6 flex justify-between items-end text-sm">
             <div>
-              <span className="font-bold text-slate-900 block text-base">Infrastructure & Project Monitoring Division</span>
+              <span className="font-bold text-slate-900 dark:text-white block text-base">Infrastructure & Project Monitoring Division</span>
               <span className="text-slate-600">Ministry of Statistics and Programme Implementation</span>
             </div>
             <div className="text-right font-mono text-xs sm:text-sm text-slate-500 font-semibold">
@@ -485,11 +485,11 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 4. TABLE 1: SECTOR-WISE DISTRIBUTION VIEW (Pages 3-4) */}
       {/* ========================================================================= */}
       {currentPage === 'table1_sectors' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-300 shadow-md space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-300 dark:border-slate-700 shadow-md space-y-6">
           <div className="border-b-2 border-slate-900 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <div className="text-xs font-mono font-bold text-blue-900">TABLE 1 • PAGES 3-4</div>
-              <h2 className="text-xl font-black text-slate-900 uppercase">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase">
                 Overview of Ongoing Projects: Sector-wise Distribution
               </h2>
             </div>
@@ -497,7 +497,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-slate-200">
+            <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-700">
               <thead className="bg-slate-900 text-white font-mono text-[11px]">
                 <tr>
                   <th className="p-3">Sector</th>
@@ -509,13 +509,13 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   <th className="p-3 text-right">Expenditure</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700 font-mono text-[11px]">
                 {sectorTableData.map((s, idx) => (
-                  <tr key={idx} className="hover:bg-blue-50/50 transition-colors">
-                    <td className="p-3 font-sans font-bold text-slate-900">{s.sector}</td>
+                  <tr key={idx} className="hover:bg-blue-50/50 dark:hover:bg-slate-800/80 transition-colors">
+                    <td className="p-3 font-sans font-bold text-slate-900 dark:text-white">{s.sector}</td>
                     <td className="p-3 text-center font-bold text-blue-900">{s.count}</td>
                     <td className="p-3 text-right text-slate-600">₹{s.origCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    <td className="p-3 text-right font-bold text-slate-900">₹{s.antCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td className="p-3 text-right font-bold text-slate-900 dark:text-white">₹{s.antCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                     <td className={`p-3 text-right font-bold ${s.overrun > 0 ? 'text-rose-700' : 'text-slate-600'}`}>
                       ₹{s.overrun.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
@@ -548,11 +548,11 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 5. TABLE 2: STATE-WISE DISTRIBUTION VIEW (Pages 5-7) */}
       {/* ========================================================================= */}
       {currentPage === 'table2_states' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-300 shadow-md space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-300 dark:border-slate-700 shadow-md space-y-6">
           <div className="border-b-2 border-slate-900 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <div className="text-xs font-mono font-bold text-blue-900">TABLE 2 • PAGES 5-7</div>
-              <h2 className="text-xl font-black text-slate-900 uppercase">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase">
                 Overview of Ongoing Projects: State-wise Distribution
               </h2>
             </div>
@@ -560,7 +560,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-slate-200">
+            <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-700">
               <thead className="bg-slate-900 text-white font-mono text-[11px]">
                 <tr>
                   <th className="p-3">State / Union Territory</th>
@@ -570,12 +570,12 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   <th className="p-3 text-right">% of Total National Outlay</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700 font-mono text-[11px]">
                 {stateTableData.map((st, idx) => (
-                  <tr key={idx} className="hover:bg-blue-50/50 transition-colors">
-                    <td className="p-3 font-sans font-bold text-slate-900">{st.state}</td>
+                  <tr key={idx} className="hover:bg-blue-50/50 dark:hover:bg-slate-800/80 transition-colors">
+                    <td className="p-3 font-sans font-bold text-slate-900 dark:text-white">{st.state}</td>
                     <td className="p-3 text-center font-bold text-blue-900">{st.count}</td>
-                    <td className="p-3 text-right font-bold text-slate-900">₹{st.cost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td className="p-3 text-right font-bold text-slate-900 dark:text-white">₹{st.cost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                     <td className="p-3 text-center">
                       <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold">
                         {st.delayedCount} Delayed
@@ -596,11 +596,11 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 6. PROJECT LISTS (Tables 3-7) */}
       {/* ========================================================================= */}
       {currentPage === 'table_projects' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-300 shadow-md space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-300 dark:border-slate-700 shadow-md space-y-6">
           <div className="border-b-2 border-slate-900 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="text-xs font-mono font-bold text-blue-900">OFFICIAL PROJECT REGISTRY • PAGES 8 - 252</div>
-              <h2 className="text-xl font-black text-slate-900 uppercase">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase">
                 Central Sector Projects List (₹150 Cr & Above)
               </h2>
             </div>
@@ -614,14 +614,14 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   placeholder="Search code, name, state..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:border-blue-600 w-48"
+                  className="pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs focus:outline-hidden focus:border-blue-600 w-48"
                 />
               </div>
 
               <select
                 value={selectedSectorFilter}
                 onChange={(e) => setSelectedSectorFilter(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-white"
+                className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900"
               >
                 <option value="ALL">All Sectors</option>
                 <option value="Road">Road Transport & Highways</option>
@@ -636,7 +636,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-slate-200">
+            <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-700">
               <thead className="bg-slate-900 text-white font-mono text-[11px]">
                 <tr>
                   <th className="p-2.5">Code / Agency</th>
@@ -649,7 +649,7 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                   <th className="p-2.5 text-center">Risk Level</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700 font-mono text-[11px]">
                 {projects
                   .filter(p => {
                     if (selectedSectorFilter !== 'ALL' && !p.sector.toLowerCase().includes(selectedSectorFilter.toLowerCase())) return false;
@@ -668,12 +668,12 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
                         [{p.projectCode}]<br/>
                         <span className="text-[9px] text-slate-400 font-normal">{p.implementingAgency}</span>
                       </td>
-                      <td className="p-2.5 font-sans font-bold text-slate-900 max-w-[200px] truncate" title={p.name}>
+                      <td className="p-2.5 font-sans font-bold text-slate-900 dark:text-white max-w-[200px] truncate" title={p.name}>
                         {p.name}
                       </td>
                       <td className="p-2.5 font-sans text-slate-600 whitespace-nowrap">{p.state}</td>
                       <td className="p-2.5 text-right text-slate-600">₹{p.originalCost.toLocaleString('en-IN')}</td>
-                      <td className="p-2.5 text-right font-bold text-slate-900">₹{p.revisedCost.toLocaleString('en-IN')}</td>
+                      <td className="p-2.5 text-right font-bold text-slate-900 dark:text-white">₹{p.revisedCost.toLocaleString('en-IN')}</td>
                       <td className="p-2.5 text-center">
                         <span className={`px-1.5 py-0.5 rounded-md font-bold ${p.delayMonths > 24 ? 'bg-rose-100 text-rose-900' : p.delayMonths > 0 ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-900'}`}>
                           {p.delayMonths > 0 ? `+${p.delayMonths}m` : '0m'}
@@ -697,44 +697,44 @@ export const MospiDocumentViewer: React.FC<MospiDocumentViewerProps> = ({
       {/* 7. ABBREVIATIONS VIEW (Pages 253-256) */}
       {/* ========================================================================= */}
       {currentPage === 'abbreviations' && (
-        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-300 shadow-md max-w-4xl mx-auto space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-300 dark:border-slate-700 shadow-md max-w-4xl mx-auto space-y-6">
           <div className="border-b-2 border-slate-900 pb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 uppercase">ABBREVIATIONS USED IN REPORT</h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase">ABBREVIATIONS USED IN REPORT</h2>
               <p className="text-xs text-slate-500 font-mono">Official Reference Guide • Pages 253 - 256</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">MoSPI</strong>
               <span className="text-slate-600 font-sans">Ministry of Statistics and Programme Implementation</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">OCMS</strong>
               <span className="text-slate-600 font-sans">Online Computerized Monitoring System</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">NHAI</strong>
               <span className="text-slate-600 font-sans">National Highways Authority of India</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">DFCCIL</strong>
               <span className="text-slate-600 font-sans">Dedicated Freight Corridor Corporation of India Ltd</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">NHPC</strong>
               <span className="text-slate-600 font-sans">National Hydroelectric Power Corporation</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">PGCIL</strong>
               <span className="text-slate-600 font-sans">Power Grid Corporation of India Limited</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">NRL / IOCL / ONGC</strong>
               <span className="text-slate-600 font-sans">Numaligarh Refinery / Indian Oil / Oil & Natural Gas Corp</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <strong className="text-blue-950 font-bold block text-sm">MMRCL / BMRCL</strong>
               <span className="text-slate-600 font-sans">Mumbai Metro Rail Corp / Bangalore Metro Rail Corp</span>
             </div>

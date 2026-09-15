@@ -162,13 +162,13 @@ export const DemoFlowGuide: React.FC<DemoFlowGuideProps> = ({
           <button
             onClick={handleRestart}
             title="Restart Demo"
-            className="p-1.5 text-blue-300 hover:text-white hover:bg-white/10 rounded-lg text-xs"
+            className="p-1.5 text-blue-300 hover:text-white hover:bg-white/ rounded-lg text-xs"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onToggle}
-            className="text-blue-300 hover:text-white text-xs px-2 py-1 hover:bg-white/10 rounded-lg"
+            className="text-blue-300 hover:text-white text-xs px-2 py-1 hover:bg-white/ rounded-lg"
           >
             Minimize
           </button>

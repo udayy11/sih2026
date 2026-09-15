@@ -176,7 +176,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
   return (
     <div className="space-y-6 pb-12">
       {/* Title Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">
@@ -186,7 +186,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               Grounded on 110 Live Infrastructure Projects
             </span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             LLM Project Intelligence Assistant
           </h2>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -196,7 +196,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
 
         <button
           onClick={handleClearChat}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 text-xs font-medium hover:bg-slate-100 transition-all border border-slate-200 shadow-2xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:text-white text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 transition-all border border-slate-200 dark:border-slate-700 shadow-2xs"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Clear Session</span>
@@ -215,7 +215,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               key={idx}
               onClick={() => handleSendMessage(q)}
               disabled={isLoading}
-              className="text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-900 border border-slate-200 shadow-2xs hover:border-blue-300 transition-all text-left disabled:opacity-50"
+              className="text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-blue-50 text-slate-800 dark:text-slate-200 hover:text-blue-900 border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-blue-300 transition-all text-left disabled:opacity-50"
             >
               {q}
             </button>
@@ -243,9 +243,9 @@ I am your official decision-support assistant for the **Ministry of Statistics a
       </div>
 
       {/* Chat Container */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col h-[680px] overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col h-[680px] overflow-hidden">
         {/* Messages Feed */}
-        <div className="flex-1 p-6 sm:p-8 overflow-y-auto space-y-5 bg-slate-50/60">
+        <div className="flex-1 p-6 sm:p-8 overflow-y-auto space-y-5 bg-slate-50 dark:bg-slate-800/60">
           {messages.map((msg) => {
             const isUser = msg.sender === 'user';
 
@@ -264,13 +264,13 @@ I am your official decision-support assistant for the **Ministry of Statistics a
                   className={`max-w-3xl rounded-2xl p-5 text-sm sm:text-base leading-relaxed shadow-xs ${
                     isUser
                       ? 'bg-blue-700 text-white rounded-tr-xs font-medium'
-                      : 'bg-white text-slate-900 rounded-tl-xs border border-slate-200'
+                      : 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-tl-xs border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   {isUser ? (
                     <p className="whitespace-pre-wrap text-sm sm:text-base font-medium">{msg.text}</p>
                   ) : (
-                    <div className="prose prose-sm sm:prose-base max-w-none text-slate-800 space-y-3 leading-relaxed">
+                    <div className="prose prose-sm sm:prose-base max-w-none text-slate-800 dark:text-slate-200 space-y-3 leading-relaxed">
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
                     </div>
                   )}
@@ -299,11 +299,11 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center shrink-0">
                 <Bot className="w-5 h-5 animate-spin" />
               </div>
-              <div className="bg-white rounded-2xl p-4 text-sm text-slate-600 border border-slate-200 flex items-center gap-2.5 shadow-xs">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 text-sm text-slate-600 border border-slate-200 dark:border-slate-700 flex items-center gap-2.5 shadow-xs">
                 <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" />
                 <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0.2s' }} />
                 <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0.4s' }} />
-                <span className="font-semibold text-slate-800 ml-1.5 text-sm sm:text-base">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 ml-1.5 text-sm sm:text-base">
                   Analyzing infrastructure telemetry & formulating prescriptive brief...
                 </span>
               </div>
@@ -314,7 +314,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 sm:p-5 bg-white border-t border-slate-200">
+        <div className="p-4 sm:p-5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -328,7 +328,7 @@ I am your official decision-support assistant for the **Ministry of Statistics a
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               disabled={isLoading}
-              className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-5 py-3 text-sm sm:text-base focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all font-medium disabled:opacity-50"
+              className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-5 py-3 text-sm sm:text-base focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white dark:focus:bg-slate-900 transition-all font-medium disabled:opacity-50"
             />
             <button
               type="submit"

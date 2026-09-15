@@ -159,10 +159,10 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="flex items-center space-x-3 mb-2">
           <FileSpreadsheet className="h-7 w-7 text-blue-600" />
-          <h1 className="text-2xl font-bold text-slate-800">Project Data Import</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Project Data Import</h1>
         </div>
         <p className="text-slate-500 mb-8">
           Upload your NirmaanX monthly monitoring report in CSV format to automatically generate AI risk scores, compute schedule delays, and update dashboard analytics.
@@ -171,7 +171,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
         {/* Upload Dropzone */}
         <div 
           className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-            ${file ? 'border-blue-300 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'}`}
+            ${file ? 'border-blue-300 bg-blue-50' : 'border-slate-300 dark:border-slate-700 hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800'}`}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
@@ -194,17 +194,17 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
               <div className="h-12 w-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2">
                 <FileSpreadsheet className="h-6 w-6" />
               </div>
-              <p className="text-lg font-semibold text-slate-700">{file.name}</p>
+              <p className="text-lg font-semibold text-slate-700 dark:text-slate-300">{file.name}</p>
               <p className="text-sm text-slate-500">{(file.size / 1024).toFixed(2)} KB</p>
               <p className="text-sm text-blue-600 mt-2 hover:underline">Click or drag to replace file</p>
             </div>
           ) : (
             <div className="flex flex-col items-center space-y-4">
-              <div className="h-14 w-14 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-2">
+              <div className="h-14 w-14 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mb-2">
                 <Upload className="h-7 w-7" />
               </div>
               <div>
-                <p className="text-lg font-medium text-slate-700">Drag & drop your CSV file here</p>
+                <p className="text-lg font-medium text-slate-700 dark:text-slate-300">Drag & drop your CSV file here</p>
                 <p className="text-sm text-slate-500 mt-1">or click to browse from your computer</p>
               </div>
             </div>
@@ -214,13 +214,13 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
         {/* Parse Results */}
         {importStats && !isParsing && (
           <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Parsing Results</h3>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Parsing Results</h3>
             
-            <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-emerald-500" />
-                  <span className="text-slate-700 font-medium">{importStats.validProjects} projects detected</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">{importStats.validProjects} projects detected</span>
                 </div>
                 <span className="text-sm font-semibold bg-emerald-100 text-emerald-700 py-1 px-2.5 rounded-full">Valid</span>
               </div>
@@ -228,7 +228,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-emerald-500" />
-                  <span className="text-slate-700 font-medium">Date & Cost fields mapped successfully</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">Date & Cost fields mapped successfully</span>
                 </div>
               </div>
 
@@ -236,7 +236,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <XCircle className="h-5 w-5 text-rose-500" />
-                    <span className="text-slate-700 font-medium">{importStats.invalidIds} invalid or empty rows ignored</span>
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">{importStats.invalidIds} invalid or empty rows ignored</span>
                   </div>
                 </div>
               )}
@@ -245,7 +245,7 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    <span className="text-slate-700 font-medium">{importStats.missingDates} projects missing exact completion dates (defaults applied)</span>
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">{importStats.missingDates} projects missing exact completion dates (defaults applied)</span>
                   </div>
                 </div>
               )}
@@ -285,15 +285,15 @@ export function DataImportView({ onImportSuccess, onNavigate }: DataImportViewPr
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-          <div className="bg-white/10 backdrop-blur-md border border-white/10 p-5 rounded-xl">
+          <div className="bg-white/ backdrop-blur-md border border-white/10 p-5 rounded-xl">
             <h4 className="font-medium text-indigo-300 mb-2">1. Date Intelligence</h4>
             <p className="text-sm text-slate-300">Automatically calculates original vs revised durations, schedule extensions, and predicts structural completion lags.</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-md border border-white/10 p-5 rounded-xl">
+          <div className="bg-white/ backdrop-blur-md border border-white/10 p-5 rounded-xl">
             <h4 className="font-medium text-indigo-300 mb-2">2. Risk Profiling</h4>
             <p className="text-sm text-slate-300">Generates 4 distinct ML risk scores (Schedule, Cost, Progress, Divergence) and aggregates them into a critical risk level.</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-md border border-white/10 p-5 rounded-xl">
+          <div className="bg-white/ backdrop-blur-md border border-white/10 p-5 rounded-xl">
             <h4 className="font-medium text-indigo-300 mb-2">3. Early Warnings</h4>
             <p className="text-sm text-slate-300">Flags anomalies such as progress-expenditure divergence and triggers automated intervention recommendations.</p>
           </div>

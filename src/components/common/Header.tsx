@@ -88,23 +88,44 @@ export const Header: React.FC<HeaderProps> = ({
     .map(r => r.project);
   }, [localSearchQuery, projects]);
 
+  const getPageTitle = (view: string) => {
+    switch (view) {
+      case 'overview': return 'Platform Launchpad';
+      case 'dashboard': return 'Dashboard';
+      case 'projects': return 'Projects & Roadblocks';
+      case 'early-warnings': return 'AI Early Warning & Alerts';
+      case 'predictive': return 'Predictive Analytics & AI';
+      case 'benchmarking': return 'Benchmarking';
+      case 'scenario': return 'Scenario What-If Simulator';
+      case 'interventions': return 'Interventions (PMG)';
+      case 'data-quality': return 'Data Quality Engine';
+      case 'data-import': return 'Bulk Data Import';
+      case 'users': return 'User Management';
+      case 'assistant': return 'AI Assistant';
+      case 'settings': return 'System Settings';
+      default: return '';
+    }
+  };
+
   return (
-    <header className="bg-white/80 dark:bg-[#111827]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-30 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
+    <header className="bg-white/ dark:bg-[#111827]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/50 dark:border-slate-800/50 sticky top-0 z-30 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
       <div className="px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
         {/* Brand Logo & Portal Title */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-slate-900 via-blue-700 to-indigo-600 p-0.5 shadow-sm flex items-center justify-center">
-            <div className="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
-              <Layers className="w-4 h-4 text-amber-400" />
-            </div>
-          </div>
+          <img src="/logo.png" alt="NirmaanX Logo" className="h-12 md:h-12 object-contain object-left -ml-3 sm:-ml-4 mix-blend-multiply dark:mix-blend-normal" />
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-slate-900 dark:text-white text-base tracking-tight">Nirmaan</span>
-              <span className="font-extrabold text-blue-700 dark:text-blue-400 text-base tracking-tight">X</span>
-              <span className="ml-1 px-2 py-0.5 text-[10px] font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-700 hidden sm:inline-block">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-700 hidden sm:inline-block">
                 InfraMinds • MoSPI
               </span>
+              {activeView && activeView !== 'overview' && activeView !== 'dashboard' && (
+                <>
+                  <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
+                  <span className="text-sm font-extrabold text-slate-800 dark:text-slate-100 tracking-tight hidden sm:block">
+                    {getPageTitle(activeView)}
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -124,7 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setShowSearchResults(true);
               }}
               onFocus={() => setShowSearchResults(true)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-500/20 rounded-full text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all outline-hidden shadow-inner focus:shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-500/20 rounded-full text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all outline-hidden shadow-inner focus:shadow-[0_0_15px_rgba(59,130,246,0.15)]"
             />
             {showSearchResults && localSearchQuery.trim().length > 0 && (
               <div className="absolute top-full mt-2 w-full bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 max-h-[400px] overflow-y-auto">
@@ -132,14 +153,14 @@ export const Header: React.FC<HeaderProps> = ({
                   searchResults.map(p => (
                     <div 
                       key={p.id} 
-                      className="px-4 py-2 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0"
+                      className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800 cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
                       onClick={() => {
                         onSelectProject && onSelectProject(p);
                         setShowSearchResults(false);
                         setLocalSearchQuery('');
                       }}
                     >
-                      <div className="text-xs font-bold text-slate-900 truncate">{p.name}</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.name}</div>
                       <div className="flex items-center justify-between mt-1">
                         <span className="text-[10px] font-mono text-blue-600 font-semibold">{p.projectCode}</span>
                         <span className="text-[10px] text-slate-500">{p.state}</span>
@@ -157,11 +178,11 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Actions & Controls */}
         <div className="flex items-center gap-3">
           {/* Theme Switcher Pill matching screenshot */}
-          <div className="flex items-center bg-slate-100 border border-slate-200 p-0.5 rounded-full">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-0.5 rounded-full">
             <button
               onClick={() => setDarkMode(false)}
               className={`p-1.5 rounded-full transition-all ${
-                !isDarkMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400 hover:text-slate-600'
+                !isDarkMode ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 shadow-2xs' : 'text-slate-400 hover:text-slate-600'
               }`}
               title="Light Mode"
             >
@@ -182,7 +203,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2 rounded-full hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all relative"
+              className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 text-slate-600 hover:text-slate-900 dark:text-white transition-all relative"
               title="Notifications & Early Warnings"
             >
               <Bell className="w-4 h-4" />
@@ -193,9 +214,9 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Notifications Dropdown */}
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                  <span className="text-xs font-bold text-slate-800">Critical Alerts</span>
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Critical Alerts</span>
                   <span className="text-[10px] text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded-full">
                     {criticalCount} Immediate
                   </span>
@@ -230,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* User Profile Avatar Pill */}
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-700">
             <div className="relative">
               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-800 to-indigo-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-blue-100 shadow-2xs">
                 {currentUser.name.substring(0, 2).toUpperCase()}
@@ -238,7 +259,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white" />
             </div>
             <div className="hidden xl:block text-left">
-              <div className="text-xs font-bold text-slate-800 leading-tight flex items-center gap-1.5">
+              <div className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight flex items-center gap-1.5">
                 <span>{currentUser.name}</span>
                 <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
                   {currentUser.role}
@@ -251,7 +272,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Logout Button */}
           <button 
             onClick={onLogout}
-            className="ml-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors"
+            className="ml-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-[11px] font-bold rounded-lg transition-colors"
             title="Secure Logout"
           >
             Logout

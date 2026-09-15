@@ -70,10 +70,10 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
     <div className="w-full h-full min-h-[500px] rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-800 z-10 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-center">
       
       {/* Legend */}
-      <div className="absolute right-4 bottom-4 z-20 bg-white/90 dark:bg-slate-800/90 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div className="text-[10px] font-bold text-slate-700 dark:text-slate-200 mb-1">Project Count</div>
+      <div className="absolute right-4 bottom-4 z-20 bg-white/ dark:bg-slate-800/90 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200 mb-1">Project Count</div>
         <div className="flex flex-col items-center gap-1">
-          <div className="w-4 h-32 rounded bg-linear-to-b from-[#1e3a8a] to-[#f8fafc] border border-slate-200"></div>
+          <div className="w-4 h-32 rounded bg-linear-to-b from-[#1e3a8a] to-[#f8fafc] border border-slate-200 dark:border-slate-700"></div>
           <div className="flex flex-col justify-between h-32 absolute left-8 text-[9px] font-mono text-slate-500 py-1">
             <span>{maxProjects}</span>
             <span>{Math.round(maxProjects * 0.75)}</span>
@@ -191,26 +191,26 @@ export const IndiaMap: React.FC<IndiaMapProps> = ({ projects, selectedState, onS
       )}
 
       {/* Map Zoom Controls */}
-      <div className="absolute left-4 bottom-4 z-20 flex flex-col gap-1 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+      <div className="absolute left-4 bottom-4 z-20 flex flex-col gap-1 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
         <button
           onClick={handleZoomIn}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
           title="Zoom In"
         >
           <ZoomIn className="w-4 h-4" />
         </button>
-        <div className="w-full h-px bg-slate-100" />
+        <div className="w-full h-px bg-slate-100 dark:bg-slate-800" />
         <button
           onClick={handleResetZoom}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
           title="Reset Zoom"
         >
           <Maximize className="w-4 h-4" />
         </button>
-        <div className="w-full h-px bg-slate-100" />
+        <div className="w-full h-px bg-slate-100 dark:bg-slate-800" />
         <button
           onClick={handleZoomOut}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-700 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
           title="Zoom Out"
         >
           <ZoomOut className="w-4 h-4" />

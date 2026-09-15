@@ -62,7 +62,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
       case 'Completed': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
       case 'Delayed': return 'bg-rose-100 text-rose-700 border-rose-200';
       case 'In Progress': return 'bg-amber-100 text-amber-700 border-amber-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -70,7 +70,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <Calendar className="w-6 h-6 text-blue-600" />
             Milestones Tracker
           </h1>
@@ -79,7 +79,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-xl shadow-xs border border-slate-200 flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -87,7 +87,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
             placeholder="Search milestones or projects..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
         <div className="flex gap-2 items-center">
@@ -95,7 +95,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="py-2 pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="py-2 pl-3 pr-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           >
             <option value="All">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -107,10 +107,10 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
       </div>
 
       {/* Milestones Table */}
-      <div className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+            <thead className="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-6 py-4 font-semibold">Milestone Name</th>
                 <th className="px-6 py-4 font-semibold">Project</th>
@@ -120,7 +120,7 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
                 <th className="px-6 py-4 font-semibold">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filteredMilestones.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
@@ -129,8 +129,8 @@ export const MilestonesView: React.FC<MilestonesViewProps> = ({ projects, onSele
                 </tr>
               ) : (
                 filteredMilestones.map((milestone) => (
-                  <tr key={`${milestone.projectId}-${milestone.id}`} className="hover:bg-slate-50/80 transition-colors group">
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                  <tr key={`${milestone.projectId}-${milestone.id}`} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/80 transition-colors group">
+                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                       {milestone.name}
                     </td>
                     <td className="px-6 py-4">

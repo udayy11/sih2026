@@ -10,6 +10,7 @@ import { ProjectDetailModal } from './components/projects/ProjectDetailModal';
 import { LoginView, UserSession } from './components/auth/LoginView';
 
 // Lazy-loaded analytical views for ultra-responsive performance
+const OverviewLandingPage = React.lazy(() => import('./components/overview/OverviewLandingPage').then(m => ({ default: m.OverviewLandingPage })));
 const DashboardView = React.lazy(() => import('./components/dashboard/DashboardView').then(m => ({ default: m.DashboardView })));
 const ProjectsTableView = React.lazy(() => import('./components/projects/ProjectsTableView').then(m => ({ default: m.ProjectsTableView })));
 const EarlyWarningsView = React.lazy(() => import('./components/early-warnings/EarlyWarningsView').then(m => ({ default: m.EarlyWarningsView })));
@@ -67,7 +68,7 @@ function AppContent({
 
   // Current active view derived from pathname
   const activeView = useMemo(() => {
-    const path = location.pathname.replace(/^\//, '') || 'dashboard';
+    const path = location.pathname.replace(/^\//, '') || 'overview';
     return path;
   }, [location.pathname]);
 
@@ -78,7 +79,8 @@ function AppContent({
 
   // Handle Navigation by Route
   const handleNavigate = (view: string) => {
-    const route = view === 'dashboard' ? '/dashboard' : `/${view}`;
+    let route = `/${view}`;
+    if (view === 'overview') route = '/';
     navigate(route);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -130,7 +132,22 @@ function AppContent({
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full bg-transparent transition-colors duration-200 custom-scrollbar">
           <Suspense fallback={<ModuleLoader />}>
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route
+                path="/"
+                element={
+                  <OverviewLandingPage
+                    projects={projects}
+                    alerts={alerts}
+                    onNavigate={handleNavigate}
+                    currentUserRole={currentUser.role}
+                  />
+                }
+              />
+              
+              <Route
+                path="/overview"
+                element={<Navigate to="/" replace />}
+              />
               
               <Route
                 path="/dashboard"
@@ -278,7 +295,7 @@ function AppContent({
               <Route path="/reports" element={<Navigate to="/dashboard" replace />} />
 
               {/* Catch-all route */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </main>

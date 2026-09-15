@@ -63,7 +63,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-5xl overflow-hidden flex flex-col max-h-[92vh]">
         
         {/* Modal Header */}
         <div className="bg-slate-900 text-white p-6 border-b border-slate-800 flex items-start justify-between gap-4">
@@ -104,13 +104,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 px-6 py-2.5 bg-slate-100/80 border-b border-slate-200 text-xs font-semibold overflow-x-auto">
+        <div className="flex items-center gap-2 px-6 py-2.5 bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-xs font-semibold overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-4 py-2 rounded-xl transition-all ${
               activeTab === 'overview'
-                ? 'bg-white text-blue-700 shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                ? 'bg-white dark:bg-slate-900 text-blue-700 shadow-xs font-bold'
+                : 'text-slate-600 hover:text-slate-900 dark:text-white hover:bg-slate-200/60'
             }`}
           >
             Project Overview & Financials
@@ -120,8 +120,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             onClick={() => setActiveTab('xai')}
             className={`px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all ${
               activeTab === 'xai'
-                ? 'bg-white text-rose-700 shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                ? 'bg-white dark:bg-slate-900 text-rose-700 shadow-xs font-bold'
+                : 'text-slate-600 hover:text-slate-900 dark:text-white hover:bg-slate-200/60'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -132,8 +132,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             onClick={() => setActiveTab('milestones')}
             className={`px-4 py-2 rounded-xl transition-all ${
               activeTab === 'milestones'
-                ? 'bg-white text-indigo-700 shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                ? 'bg-white dark:bg-slate-900 text-indigo-700 shadow-xs font-bold'
+                : 'text-slate-600 hover:text-slate-900 dark:text-white hover:bg-slate-200/60'
             }`}
           >
             Milestone Readiness ({project.milestones.length})
@@ -143,8 +143,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             onClick={() => setActiveTab('s-curve')}
             className={`px-4 py-2 rounded-xl transition-all ${
               activeTab === 's-curve'
-                ? 'bg-white text-emerald-700 shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                ? 'bg-white dark:bg-slate-900 text-emerald-700 shadow-xs font-bold'
+                : 'text-slate-600 hover:text-slate-900 dark:text-white hover:bg-slate-200/60'
             }`}
           >
             S-Curve Progress Velocity
@@ -152,20 +152,20 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         </div>
 
         {/* Tab Content Area */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-800">
+        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-800 dark:text-slate-200">
           
           {/* TAB 1: OVERVIEW & AI GAUGES */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* AI Risk Scorecards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 rounded-2xl p-5 border border-slate-200/80">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700">
                 {/* Visual Gauge */}
-                <div className="flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 pr-0 md:pr-4">
+                <div className="flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700 pb-4 md:pb-0 pr-0 md:pr-4">
                   <RiskGauge score={project.overallRiskScore} size={170} label="AI Overall Risk Index" />
                 </div>
 
                 {/* Overrun Probability */}
-                <div className="flex flex-col justify-between p-3 bg-white rounded-xl border border-slate-200/60">
+                <div className="flex flex-col justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60">
                   <div className="text-slate-500 text-xs font-semibold uppercase flex items-center justify-between">
                     <span>Cost Overrun Prob</span>
                     <TrendingUp className="w-4 h-4 text-rose-500" />
@@ -179,7 +179,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 </div>
 
                 {/* Delay Probability */}
-                <div className="flex flex-col justify-between p-3 bg-white rounded-xl border border-slate-200/60">
+                <div className="flex flex-col justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60">
                   <div className="text-slate-500 text-xs font-semibold uppercase flex items-center justify-between">
                     <span>Schedule Delay Prob</span>
                     <Clock className="w-4 h-4 text-amber-500" />
@@ -193,7 +193,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 </div>
 
                 {/* Implementation Risk */}
-                <div className="flex flex-col justify-between p-3 bg-white rounded-xl border border-slate-200/60">
+                <div className="flex flex-col justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/60">
                   <div className="text-slate-500 text-xs font-semibold uppercase flex items-center justify-between">
                     <span>Execution Bottleneck</span>
                     <Activity className="w-4 h-4 text-indigo-500" />
@@ -210,47 +210,47 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               {/* Core Project Attributes Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Financial Overview Card */}
-                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-3">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-2xs space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                     <DollarSign className="w-3.5 h-3.5 text-blue-600" />
                     <span>Cost & Expenditure Details</span>
                   </h4>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Approved Cost:</span>
-                      <span className="font-mono font-bold text-slate-900">₹{project.originalCost.toLocaleString()} Cr</span>
+                      <span className="font-mono font-bold text-slate-900 dark:text-white">₹{project.originalCost.toLocaleString()} Cr</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Revised Cost:</span>
                       <span className="font-mono font-bold text-rose-700">₹{project.revisedCost.toLocaleString()} Cr</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Total Expenditure:</span>
-                      <span className="font-mono font-bold text-slate-900">₹{project.expenditure.toLocaleString()} Cr</span>
+                      <span className="font-mono font-bold text-slate-900 dark:text-white">₹{project.expenditure.toLocaleString()} Cr</span>
                     </div>
                     <div className="flex justify-between py-1">
                       <span className="text-slate-500">Financial Progress:</span>
-                      <span className="font-mono font-bold text-slate-900">{project.financialProgress}%</span>
+                      <span className="font-mono font-bold text-slate-900 dark:text-white">{project.financialProgress}%</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Timeline & Schedule Card */}
-                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-3">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-2xs space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Timeline & Completion</span>
                   </h4>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Sanction / Start Date:</span>
-                      <span className="font-mono font-medium text-slate-900">{project.startDate}</span>
+                      <span className="font-mono font-medium text-slate-900 dark:text-white">{project.startDate}</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Original Completion:</span>
-                      <span className="font-mono font-medium text-slate-900">{project.originalCompletionDate}</span>
+                      <span className="font-mono font-medium text-slate-900 dark:text-white">{project.originalCompletionDate}</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Expected Completion:</span>
                       <span className="font-mono font-bold text-rose-700">{project.expectedCompletionDate}</span>
                     </div>
@@ -262,23 +262,23 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 </div>
 
                 {/* Governance & Agency Card */}
-                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-3 md:col-span-2 lg:col-span-1">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-2xs space-y-3 md:col-span-2 lg:col-span-1">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Executing Entity & Status</span>
                   </h4>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Implementing Agency:</span>
-                      <span className="font-medium text-slate-900 truncate max-w-[160px]">{project.implementingAgency}</span>
+                      <span className="font-medium text-slate-900 dark:text-white truncate max-w-[160px]">{project.implementingAgency}</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Lead Contractor:</span>
-                      <span className="font-medium text-slate-900 truncate max-w-[160px]">{project.contractorName}</span>
+                      <span className="font-medium text-slate-900 dark:text-white truncate max-w-[160px]">{project.contractorName}</span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Land Possession:</span>
-                      <span className="font-mono font-semibold text-slate-900">{project.landAcquiredPercent}%</span>
+                      <span className="font-mono font-semibold text-slate-900 dark:text-white">{project.landAcquiredPercent}%</span>
                     </div>
                     <div className="flex justify-between py-1">
                       <span className="text-slate-500">Forest Clearance:</span>
@@ -334,10 +334,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               </div>
 
               {/* Horizontal SHAP Feature Contribution Chart */}
-              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900">Top Contributing Factors (SHAP Feature Importance)</h4>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">Top Contributing Factors (SHAP Feature Importance)</h4>
                     <p className="text-xs text-slate-500">Exact weights assigned by the gradient boosted risk classifier</p>
                   </div>
                   <span className="text-xs font-mono font-semibold text-slate-500">100% Weightage</span>
@@ -358,8 +358,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
               {/* Root Cause vs Mitigating Action Mapping */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                  <h5 className="text-xs font-bold text-slate-700 uppercase mb-2">Primary Cost Drivers</h5>
+                <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Primary Cost Drivers</h5>
                   <ul className="space-y-1.5 text-xs text-slate-600">
                     {project.majorCostEscalationDrivers.map((d, i) => (
                       <li key={i} className="flex items-start gap-1.5">
@@ -370,8 +370,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   </ul>
                 </div>
 
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                  <h5 className="text-xs font-bold text-slate-700 uppercase mb-2">Primary Schedule Drivers</h5>
+                <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Primary Schedule Drivers</h5>
                   <ul className="space-y-1.5 text-xs text-slate-600">
                     {project.majorDelayDrivers.map((d, i) => (
                       <li key={i} className="flex items-start gap-1.5">
@@ -390,7 +390,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Project Execution Milestones & Critical Path</h4>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Project Execution Milestones & Critical Path</h4>
                   <p className="text-xs text-slate-500">Contractual deliverables tracking</p>
                 </div>
                 <span className="text-xs text-slate-500 font-semibold font-mono">
@@ -402,14 +402,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 {project.milestones.map((m, idx) => (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs"
+                    className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700 text-[11px]">
+                      <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-[11px]">
                         {idx + 1}
                       </span>
                       <div>
-                        <div className="font-semibold text-slate-900">{m.name}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white">{m.name}</div>
                         <div className="text-[11px] text-slate-500">
                           Planned: {m.plannedDate} {m.actualDate && `| Actual: ${m.actualDate}`}
                         </div>
@@ -426,7 +426,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                             ? 'bg-rose-100 text-rose-800'
                             : m.status === 'In Progress'
                             ? 'bg-blue-100 text-blue-800'
-                            : 'bg-slate-200 text-slate-700'
+                            : 'bg-slate-200 text-slate-700 dark:text-slate-300'
                         }`}
                       >
                         {m.status}
@@ -442,13 +442,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           {activeTab === 's-curve' && (
             <div className="space-y-4">
               <div>
-                <h4 className="text-sm font-bold text-slate-900">Historical S-Curve Progress Velocity</h4>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Historical S-Curve Progress Velocity</h4>
                 <p className="text-xs text-slate-500">
                   Planned vs Actual Physical Execution (%) vs Financial Expenditure (%)
                 </p>
               </div>
 
-              <div className="h-72 w-full bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <div className="h-72 w-full bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={project.monthlyProgressHistory} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -467,27 +467,27 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         </div>
 
         {/* Modal Footer Quick Action Bar */}
-        <div className="bg-slate-100 px-6 py-3.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="bg-slate-100 dark:bg-slate-800 px-6 py-3.5 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 text-xs">
           <span className="text-slate-500 font-medium">Quick Decision Tools for this Project:</span>
 
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => onNavigateToModule?.('predictive', project.id)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs"
+              className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800 font-semibold shadow-2xs"
             >
               Predict Overruns →
             </button>
 
             <button
               onClick={() => onNavigateToModule?.('benchmarking', project.id)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs"
+              className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800 font-semibold shadow-2xs"
             >
               Benchmark Cohort →
             </button>
 
             <button
               onClick={() => onNavigateToModule?.('scenario', project.id)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold shadow-2xs"
+              className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800 font-semibold shadow-2xs"
             >
               What-If Simulation →
             </button>
